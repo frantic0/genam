@@ -44,7 +44,6 @@ brick_outer = geompy.MakeTranslation(geompy.MakeBoxDXDYDZ(4.288, 4.288, 8.661), 
 l0 = 8.66
 # bar thickness = l0/20
 # brick thickness = l0/40
-# outerRadius = {'b1': 0.062, 'b2': 0.092, 'b3': 0.1, 'b4': 0.1, 'b5': 0.1, 'b6': 0.1, 'b7': 0.1, 'b8': 0.1, 'b9': 0.1, 'b10': 0.1, 'b11': 0.1, 'b12': 0.1, 'b13': 0.1, 'b14': 0.1, 'b15': 0.1}
 # innerRadius = 0.217 # inner radius, l0/40
 # bs = outerDist/2 + outerRad + innerRad
 # bl = outerRad + subLength
@@ -108,7 +107,7 @@ innerRad = 0.2165 # λο / 40
 subLength = 2
 
 
-def parameterize_brick( barLength, barSpacing):
+def parameterize_brick( barLength, barSpacing ):
 
   ### Make brick sketch
   sk = geompy.Sketcher2D()
@@ -118,13 +117,14 @@ def parameterize_brick( barLength, barSpacing):
   IR = 0.433         # inner radius height - l0/20
   Bh = 2 * OR + IR  # bar height 
 
-  S0 = l0 - ( l0/2 + 3* barSpacing/2 + Bh/2 ) 
+  S0 = l0 - ( l0/2 + 3*barSpacing/2 + Bh/2 ) 
 
   S1 = 2 * barSpacing - Bh
 
   barTip = l0/40
 
   sk.addPoint(0., S0) # begin from bottom left
+
 
   # FLAP 1
 
@@ -137,7 +137,6 @@ def parameterize_brick( barLength, barSpacing):
   sk.addSegmentAbsolute( OR, S0 + OR + IR) # Horizontal Segment Top
   
   sk.addArcRadiusAbsolute( 0.0000000, S0 + Bh, -OR, 0.0000000) # outerRadius 2
-
 
   sk.addSegmentAbsolute( 0.0000000, S0 + Bh + S1) # In-between flaps vertical segment LEFT
 
@@ -159,41 +158,41 @@ def parameterize_brick( barLength, barSpacing):
 
 
 
-  sk.addSegmentAbsolute(3.8480000, l0) # top right corner
+  sk.addSegmentAbsolute( l0/2, l0) # top right corner
 
 
   if(S0!=0):
-    sk.addSegmentAbsolute(3.8480000, l0 - S0)
+    sk.addSegmentAbsolute( l0/2, l0 - S0)
 
   # FLAP 3  
   
-  sk.addArcRadiusAbsolute(2.9810000, l0 - S0 - OR, -OR, 0.0000000) # outerRadius 5
+  sk.addArcRadiusAbsolute( l0/2 - OR, l0 - S0 - OR, -OR, 0.0000000) # outerRadius 5   ----
 
-  sk.addSegmentAbsolute(2.981 - barLength, l0 - S0 - OR) # Horizontal Segment Top
+  sk.addSegmentAbsolute( l0/2 - OR - barLength, l0 - S0 - OR) # Horizontal Segment Top    ----
   
-  sk.addArcAbsolute(2.981 - barLength, l0 - S0 - OR - IR) # innerRadius 3
+  sk.addArcAbsolute( l0/2 - OR - barLength, l0 - S0 - OR - IR) # innerRadius 3            ----
 
-  sk.addSegmentAbsolute(2.9810000, l0 - S0 - OR - IR) # Horizontal Segment Top
+  sk.addSegmentAbsolute( l0/2 - OR, l0 - S0 - OR - IR) # Horizontal Segment Top       ----
   
-  sk.addArcRadiusAbsolute(3.8480000, l0 - S0 - Bh, -OR, 0.0000000) # outerRadius 6
+  sk.addArcRadiusAbsolute( l0/2, l0 - S0 - Bh, -OR, 0.0000000) # outerRadius 6       ----
  
 
 
-  sk.addSegmentAbsolute(3.8480000, l0 - S0 - Bh - S1)  # In-between flaps vertical segment RIGHT
+  sk.addSegmentAbsolute( l0/2, l0 - S0 - Bh - S1)  # In-between flaps vertical segment RIGHT 
 
   # FLAP 4
 
-  sk.addArcRadiusAbsolute(2.9810000, l0 - S0 - Bh - S1 - OR, -OR, 0.0000000) # outerRadius 7
+  sk.addArcRadiusAbsolute( l0/2 - OR, l0 - S0 - Bh - S1 - OR, -OR, 0.0000000) # outerRadius 7   ----
 
-  sk.addSegmentAbsolute(2.981 - barLength, l0 - S0 - Bh - S1 - OR) # Horizontal Segment Top
+  sk.addSegmentAbsolute( l0/2 - OR - barLength, l0 - S0 - Bh - S1 - OR) # Horizontal Segment Top    ----
   
-  sk.addArcAbsolute(2.981 - barLength, l0 - S0 - Bh - S1 - OR - IR) # innerRadius 4
+  sk.addArcAbsolute( l0/2 - OR - barLength, l0 - S0 - Bh - S1 - OR - IR) # innerRadius 4            ----
 
-  sk.addSegmentAbsolute(2.9810000, l0 - S0 - Bh - S1 - OR - IR) # Horizontal Segment Bottom
+  sk.addSegmentAbsolute( l0/2 - OR, l0 - S0 - Bh - S1 - OR - IR) # Horizontal Segment Bottom    ----
   
-  sk.addArcRadiusAbsolute(3.8480000, l0 - S0 - Bh - S1 - Bh, -OR, 0.0000000) # outerRadius 8
+  sk.addArcRadiusAbsolute( l0/2, l0 - S0 - Bh - S1 - Bh, -OR, 0.0000000) # outerRadius 8
 
-  sk.addSegmentAbsolute(3.8480000, 0.0000000) # bottom segment
+  sk.addSegmentAbsolute( l0/2, 0.0000000) # bottom segment
 
   sk.addSegmentAbsolute(0.0000000, 0.0000000)
   
@@ -206,20 +205,14 @@ def parameterize_brick( barLength, barSpacing):
 
 
 
-def draw_brick(brickID):
+def sketch_brick(brickID):
 
   barLength = list(barLen.values())[brickID - 1] * l0
   barSpacing = list(barSpa.values())[brickID -1] * l0
 
-  Sketch = parameterize_brick( barLength, barSpacing )
+  return parameterize_brick( barLength, barSpacing )
 
 
-  geompy.addToStudy( x, 'x' )
-  geompy.addToStudy( y, 'y' )
-  geompy.addToStudy( z, 'z' )
-  geompy.addToStudy( Sketch, 'Sketch' )
-
-# draw_brick(6)
 
 def draw_bricks():
 
@@ -230,7 +223,7 @@ def draw_bricks():
   for bID in range(1, 16): 
     barLength = list(barLen.values())[bID - 1] * l0   # bl * l0
     barSpacing = list(barSpa.values())[bID - 1] * l0  # bs * l0
-    Sketch = parameterize_brick( outerRad, barLength, barSpacing )
+    Sketch = parameterize_brick( barLength, barSpacing )
     geompy.addToStudy( Sketch, 'Sketch' + str(bID) )
 
 

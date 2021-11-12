@@ -19,8 +19,10 @@ def sketch_to_volume(geom_builder, sketch_obj, thickness, rotation=None, transla
   #   
   #   sketch_rotation: sketch to 3d object
   
-  sketch_face = geom_builder.MakeFaceWires([sketch_obj], 1) # make sketch object
+  sketch_face = geom_builder.MakeFaceWires( [sketch_obj], 1) # make sketch object
+
   sketch_volume = geom_builder.MakePrismDXDYDZ(sketch_face, 0, 0, thickness) # extrude
+  
   temp = sketch_volume
   
   if rotation is not None:
