@@ -1,2 +1,2 @@
 # acoustic-brick
-Optimised Finite Element Modelling of Labyrinthine Acoustic Metamaterial Bricks
+Optimized Finite Element Modelling of Acoustic Labyrinthine Bricks
