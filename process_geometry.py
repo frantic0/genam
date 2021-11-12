@@ -12,7 +12,9 @@ os.chdir(r"C:/Users/Francisco/Documents/dev/elmer-workshop/acoustic-brick")
 # os.chdir(r"C:\Users\Francisco\dev\acoustic-brick")
 # sys.path.insert(0, "C:\\Users\\Francisco\\dev\\acoustic-brick")
 sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/elmer-workshop/acoustic-brick')
+
 from utility_functions import * 
+from parametric_brick import * 
 
 salome.salome_init()
 import salome_notebook
