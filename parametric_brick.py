@@ -8,10 +8,10 @@ import sys
 import salome
 import numpy as np
 import time, os
-os.chdir(r"C:/Users/Francisco/Documents/dev/elmer-workshop/acoustic-brick")
-# os.chdir(r"C:\Users\Francisco\dev\acoustic-brick")
-# sys.path.insert(0, "C:\\Users\\Francisco\\dev\\acoustic-brick")
-sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/elmer-workshop/acoustic-brick')
+
+os.chdir(r"C:/Users/Francisco/Documents/dev/acoustic-brick")
+sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/acoustic-brick')
+
 from utility_functions import * 
 
 salome.salome_init()
@@ -108,15 +108,15 @@ innerRad = 0.2165 # λο / 40
 subLength = 2
 
 
-def parameterize_brick(outerRadius, barLength, barSpacing):
+def parameterize_brick( barLength, barSpacing):
 
   ### Make brick sketch
   sk = geompy.Sketcher2D()
 
   # Bar height - constant 
-  ORy = 0.866         # outer radius height - 
-  IRy = 0.433         # inner radius height - l0/20
-  Bh = 2 * ORy + IRy  # bar height 
+  OR = 0.866         # outer radius height - 
+  IR = 0.433         # inner radius height - l0/20
+  Bh = 2 * OR + IR  # bar height 
 
   S0 = l0 - ( l0/2 + 3* barSpacing/2 + Bh/2 ) 
 
@@ -126,33 +126,36 @@ def parameterize_brick(outerRadius, barLength, barSpacing):
 
   sk.addPoint(0., S0) # begin from bottom left
 
+  # FLAP 1
 
-  sk.addArcRadiusAbsolute(0.866, S0 + ORy, -outerRadius, 0.0000000) # outerRadius 1
+  sk.addArcRadiusAbsolute( OR, S0 + OR, -OR, 0.0000000) # outerRadius 1
 
-  sk.addSegmentAbsolute(0.866 + barLength, S0 + ORy) 
+  sk.addSegmentAbsolute( OR + barLength, S0 + OR) # Horizontal Segment Bottom
   
-  sk.addArcAbsolute(0.866 + barLength, S0 + ORy + IRy) # innerRadius 1
+  sk.addArcAbsolute( OR + barLength, S0 + OR + IR) # innerRadius 1
 
-  sk.addSegmentAbsolute(0.8660000, S0 + ORy + IRy)
+  sk.addSegmentAbsolute( OR, S0 + OR + IR) # Horizontal Segment Top
   
-  sk.addArcRadiusAbsolute(0.0000000, S0 + Bh, -outerRadius, 0.0000000) # outerRadius 2
+  sk.addArcRadiusAbsolute( 0.0000000, S0 + Bh, -OR, 0.0000000) # outerRadius 2
 
 
-  sk.addSegmentAbsolute(0.0000000, S0 + Bh + S1) # In-between flaps vertical segment LEFT
+  sk.addSegmentAbsolute( 0.0000000, S0 + Bh + S1) # In-between flaps vertical segment LEFT
 
 
-  sk.addArcRadiusAbsolute(0.8660000, S0 + Bh + S1 + ORy, -outerRadius, 0.0000000) # outerRadius 3
+  # FLAP 2
+
+  sk.addArcRadiusAbsolute( OR, S0 + Bh + S1 + OR, -OR, 0.0000000) # outerRadius 3
   
-  sk.addSegmentAbsolute(0.866 + barLength, S0 + Bh + S1 + ORy)
+  sk.addSegmentAbsolute( OR + barLength, S0 + Bh + S1 + OR) # Horizontal Segment Bottom
   
-  sk.addArcAbsolute(0.866 + barLength, S0 + Bh + S1 + ORy + IRy) # innerRadius 2
+  sk.addArcAbsolute( OR + barLength, S0 + Bh + S1 + OR + IR) # innerRadius 2
 
-  sk.addSegmentAbsolute(0.8660000, S0 + Bh + S1 + ORy + IRy)
+  sk.addSegmentAbsolute( OR, S0 + Bh + S1 + OR + IR) # Horizontal Segment Top
 
-  sk.addArcRadiusAbsolute(0.0000000, S0 + S1 + 2 * Bh, -outerRadius, 0.0000000) # outerRadius 4
+  sk.addArcRadiusAbsolute( 0.0000000, S0 + S1 + 2 * Bh, -OR, 0.0000000) # outerRadius 4
   
 
-  sk.addSegmentAbsolute(0.0000000, l0 ) # top left corner
+  sk.addSegmentAbsolute( 0.0000000, l0 ) # top left corner
 
 
 
@@ -161,30 +164,34 @@ def parameterize_brick(outerRadius, barLength, barSpacing):
 
   if(S0!=0):
     sk.addSegmentAbsolute(3.8480000, l0 - S0)
-  
-  sk.addArcRadiusAbsolute(2.9810000, l0 - S0 - ORy, -outerRadius, 0.0000000) # outerRadius 5
 
-  sk.addSegmentAbsolute(2.981 - barLength, l0 - S0 - ORy)
+  # FLAP 3  
   
-  sk.addArcAbsolute(2.981 - barLength, l0 - S0 - ORy - IRy) # innerRadius 3
+  sk.addArcRadiusAbsolute(2.9810000, l0 - S0 - OR, -OR, 0.0000000) # outerRadius 5
 
-  sk.addSegmentAbsolute(2.9810000, l0 - S0 - ORy - IRy)
+  sk.addSegmentAbsolute(2.981 - barLength, l0 - S0 - OR) # Horizontal Segment Top
   
-  sk.addArcRadiusAbsolute(3.8480000, l0 - S0 - Bh, -outerRadius, 0.0000000) # outerRadius 6
+  sk.addArcAbsolute(2.981 - barLength, l0 - S0 - OR - IR) # innerRadius 3
+
+  sk.addSegmentAbsolute(2.9810000, l0 - S0 - OR - IR) # Horizontal Segment Top
+  
+  sk.addArcRadiusAbsolute(3.8480000, l0 - S0 - Bh, -OR, 0.0000000) # outerRadius 6
  
 
 
   sk.addSegmentAbsolute(3.8480000, l0 - S0 - Bh - S1)  # In-between flaps vertical segment RIGHT
 
-  sk.addArcRadiusAbsolute(2.9810000, l0 - S0 - Bh - S1 - ORy, -outerRadius, 0.0000000) # outerRadius 7
+  # FLAP 4
 
-  sk.addSegmentAbsolute(2.981 - barLength, l0 - S0 - Bh - S1 - ORy)
-  
-  sk.addArcAbsolute(2.981 - barLength, l0 - S0 - Bh - S1 - ORy - IRy) # innerRadius 4
+  sk.addArcRadiusAbsolute(2.9810000, l0 - S0 - Bh - S1 - OR, -OR, 0.0000000) # outerRadius 7
 
-  sk.addSegmentAbsolute(2.9810000, l0 - S0 - Bh - S1 - ORy - IRy)
+  sk.addSegmentAbsolute(2.981 - barLength, l0 - S0 - Bh - S1 - OR) # Horizontal Segment Top
   
-  sk.addArcRadiusAbsolute(3.8480000, l0 - S0 - Bh - S1 - Bh, -outerRadius, 0.0000000) # outerRadius 8
+  sk.addArcAbsolute(2.981 - barLength, l0 - S0 - Bh - S1 - OR - IR) # innerRadius 4
+
+  sk.addSegmentAbsolute(2.9810000, l0 - S0 - Bh - S1 - OR - IR) # Horizontal Segment Bottom
+  
+  sk.addArcRadiusAbsolute(3.8480000, l0 - S0 - Bh - S1 - Bh, -OR, 0.0000000) # outerRadius 8
 
   sk.addSegmentAbsolute(3.8480000, 0.0000000) # bottom segment
 
@@ -204,7 +211,7 @@ def draw_brick(brickID):
   barLength = list(barLen.values())[brickID - 1] * l0
   barSpacing = list(barSpa.values())[brickID -1] * l0
 
-  Sketch = parameterize_brick( outerRad, barLength, barSpacing )
+  Sketch = parameterize_brick( barLength, barSpacing )
 
 
   geompy.addToStudy( x, 'x' )
