@@ -86,7 +86,7 @@ End
 
 Equation 1
   Name = "Helmholtz"
-  Angular Frequency = $ 2.0*pi*40000.0
+  Angular Frequency = $ 2.0*pi*1000.0
   Active Solvers(1) = 1
 End
 
