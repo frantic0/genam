@@ -56,7 +56,7 @@ box_2 = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( boxSide, boxSide, air_bott
 
 pml_top = geompy.MakeTranslation( pml_bottom, 0, 0, pml_bottom_height + air_bottom_height + waveLenght + 3*air_bottom_height )
 
-brick_outer = geompy.MakeTranslation(geompy.MakeBoxDXDYDZ( boxSide, boxSide, waveLenght), 0, 0, pml_bottom_height + air_bottom_height )
+brick_outer = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( boxSide, boxSide, waveLenght), 0, 0, pml_bottom_height + air_bottom_height )
 
 
 
@@ -149,7 +149,7 @@ filletRad = { 'b1': 0.062,
 
 
 
-brickID = 1
+brickID = 15
 barLength = list(barLen.values())[brickID - 1] * waveLenght
 barSpacing = list(barSpa.values())[brickID -1] * waveLenght
 
@@ -163,16 +163,16 @@ rotation = [(x, 90)]
 translation = ( waveLenght/40, waveLenght/40 + waveLenght/2, 6.861)
 
 brick_inner = sketch_to_volume( geompy, Sketch_1, waveLenght/2, rotation, translation)
-geompy.addToStudy( brick_inner, 'Inner' )
+# geompy.addToStudy( brick_inner, 'Inner' )
 
 brick_fused = geompy.MakeFuseList([brick_outer, brick_inner], True, True)
-geompy.addToStudy( brick_fused, 'Fused' )
+# geompy.addToStudy( brick_fused, 'Fused' )
 
 brick = geompy.MakeCutList( brick_fused, [brick_inner], True)
-geompy.addToStudy( brick, 'Brick' )
+# geompy.addToStudy( brick, 'Brick' )
 
 air = geompy.MakeFuseList( [box_1, box_2, brick_inner], True, True)
-geompy.addToStudy( air, 'Air' )
+# geompy.addToStudy( air, 'Air' )
 
 Structure = geompy.MakePartition([pml_bottom, pml_top, brick, air], [], [], [], geompy.ShapeType["SOLID"], 0, [], 0)
 # geompy.addToStudy( Structure, 'Structure' )
@@ -239,7 +239,7 @@ start = time.time()
 smesh = smeshBuilder.New()
 
 Structure_1 = smesh.Mesh(Structure)
-NETGEN_1D_2D_3D = Structure_1.Tetrahedron(algo=smeshBuilder.NETGEN_1D2D3D)
+NETGEN_1D_2D_3D = Structure_1.Tetrahedron( algo=smeshBuilder.NETGEN_1D2D3D )
 NETGEN_3D_Parameters_1 = NETGEN_1D_2D_3D.Parameters()
 NETGEN_3D_Parameters_1.SetMaxSize( 3.1461 )
 NETGEN_3D_Parameters_1.SetMinSize( 0.0844741 )

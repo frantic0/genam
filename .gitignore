@@ -3,6 +3,11 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+*.unv
+Structure/*.vtu
+Structure/mesh.*
+
+
 # C extensions
 *.so
 
