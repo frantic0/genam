@@ -1,17 +1,10 @@
-
-#!/usr/bin/env python
-
-###
-### This file is generated automatically by SALOME v9.3.0 with dump python functionality
-###
-
 import sys
 import salome
 import numpy as np
 import time, os
 
-os.chdir(r"C:/Users/francisco/Documents/dev/acoustic-brick")
-sys.path.insert(0, r'C:/Users/francisco/Documents/dev/acoustic-brick')
+os.chdir(r"C:/Users/Francisco/Documents/dev/acoustic-brick")
+sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/acoustic-brick')
 
 
 from utility_functions import * 
@@ -61,40 +54,7 @@ brick_outer = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( boxSide, boxSide, wa
 
 
 
-def draw_hardcoded_brick():
-  ### Make brick sketch
-  sk = geompy.Sketcher2D()
-  sk.addPoint(0.0000000, 1.0910000)
-  sk.addArcRadiusAbsolute(0.8660000, 1.9570000, -0.8660000, 0.0000000)
-  sk.addSegmentAbsolute(1.3990000, 1.9570000)
-  sk.addArcAbsolute(1.3990000, 2.3900000)
-  sk.addSegmentAbsolute(0.8660000, 2.3900000)
-  sk.addArcRadiusAbsolute(0.0000000, 3.2570000, -0.8660000, 0.0000000)
-  sk.addSegmentAbsolute(0.0000000, 3.9670000)
-  sk.addArcRadiusAbsolute(0.8660000, 4.8330000, -0.8660000, 0.0000000)
-  sk.addSegmentAbsolute(1.3990000, 4.8330000)
-  sk.addArcAbsolute(1.3990000, 5.2660000)
-  sk.addSegmentAbsolute(0.8660000, 5.2660000)
-  sk.addArcRadiusAbsolute(0.0000000, 6.1320000, -0.8660000, 0.0000000)
-  sk.addSegmentAbsolute(0.0000000, 8.6610000)
-  sk.addSegmentAbsolute(3.8480000, 8.6610000)
-  sk.addSegmentAbsolute(3.8480000, 7.5700000)
-  sk.addArcRadiusAbsolute(2.9810000, 6.7040000, -0.8660000, 0.0000000)
-  sk.addSegmentAbsolute(2.4480000, 6.7040000)
-  sk.addArcAbsolute(2.4480000, 6.2710000)
-  sk.addSegmentAbsolute(2.9810000, 6.2710000)
-  sk.addArcRadiusAbsolute(3.8480000, 5.4050000, -0.8660000, 0.0000000)
-  sk.addSegmentAbsolute(3.8480000, 4.6940000)
-  sk.addArcRadiusAbsolute(2.9810000, 3.8280000, -0.8660000, 0.0000000)
-  sk.addSegmentAbsolute(2.4480000, 3.8280000)
-  sk.addArcAbsolute(2.4480000, 3.3950000)
-  sk.addSegmentAbsolute(2.9810000, 3.3950000)
-  sk.addArcRadiusAbsolute(3.8480000, 2.5290000, -0.8660000, 0.0000000)
-  sk.addSegmentAbsolute(3.8480000, 0.0000000)
-  sk.addSegmentAbsolute(0.0000000, 0.0000000)
-  sk.addSegmentAbsolute(0.0000000, 1.0910000)
-  wire = geompy.MakeMarker(0, 0, 0, 1, 0, 0, 0, 1, 0)
-  return sk.wire(wire)
+
 
 
 barLen = {  'b1': 0.062, 
@@ -242,11 +202,10 @@ smesh = smeshBuilder.New()
 Structure_1 = smesh.Mesh(Structure)
 NETGEN_1D_2D_3D = Structure_1.Tetrahedron( algo=smeshBuilder.NETGEN_1D2D3D )
 NETGEN_3D_Parameters_1 = NETGEN_1D_2D_3D.Parameters()
-# NETGEN_3D_Parameters_1.SetMaxSize( 3.1461 )
-# NETGEN_3D_Parameters_1.SetMinSize( 0.0844741 )
-NETGEN_3D_Parameters_1.SetMaxSize( 10.1461 )
-NETGEN_3D_Parameters_1.SetMinSize( 1.0844741 )
-
+NETGEN_3D_Parameters_1.SetMaxSize( 3.1461 )
+NETGEN_3D_Parameters_1.SetMinSize( 0.0844741 )
+# NETGEN_3D_Parameters_1.SetMaxSize( 30.1461 )
+# NETGEN_3D_Parameters_1.SetMinSize( 3.0844741 )
 NETGEN_3D_Parameters_1.SetSecondOrder( 0 )
 NETGEN_3D_Parameters_1.SetOptimize( 1 )
 NETGEN_3D_Parameters_1.SetFineness( 4 )
@@ -320,7 +279,7 @@ start = time.time()
   
 # First export mesh in .unv format
 try:
-  Structure_1.ExportUNV( r'C:/Users/francisco/Documents/dev/acoustic-brick/Structure.unv' )
+  Structure_1.ExportUNV( r'C:/Users/Francisco/Documents/acoustic-brick/Structure.unv' )
   pass
 except:
   print('ExportUNV() failed. Invalid file name?')
