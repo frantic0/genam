@@ -62,13 +62,16 @@ End
 
 Solver 1
   Equation = Helmholtz Equation
-  Variable = -dofs 2 Pressure Wave
   Procedure = "HelmholtzSolve" "HelmholtzSolver"
+  Variable = -dofs 2 Pressure Wave
   Exec Solver = Always
+  Stabilize = True
+  Bubbles = False
+  Lumped Mass Matrix = False
   Optimize Bandwidth = True
   Steady State Convergence Tolerance = 1.0e-5
   Nonlinear System Convergence Tolerance = 1.0e-7
-  Nonlinear System Max Iterations = 1
+  Nonlinear System Max Iterations = 20
   Nonlinear System Newton After Iterations = 3
   Nonlinear System Newton After Tolerance = 1.0e-3
   Nonlinear System Relaxation Factor = 1
@@ -165,22 +168,22 @@ End
 
 ! left/right
 
-Boundary Condition 5 
+Boundary Condition 4 
  Target Boundaries(2) = $ left brick_left
 End
 
-Boundary Condition 6 
+Boundary Condition 5 
  Target Boundaries(2) = $ right brick_right
-  Periodic BC = 5
+  Periodic BC = 4
 End
 
 ! front/back
 
-Boundary Condition 7 
+Boundary Condition 6 
  Target Boundaries(2) = $ front brick_front
 End
 
-Boundary Condition 8 
+Boundary Condition 7 
  Target Boundaries(2) = $ back brick_back
-  Periodic BC = 7
+  Periodic BC = 6
 End
