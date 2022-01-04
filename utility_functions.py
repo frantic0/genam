@@ -1,7 +1,7 @@
 import sys
 import salome
 import numpy as np
-import time, os
+import time, os, shutil
 
 import GEOM
 from salome.geom import geomBuilder
@@ -35,6 +35,20 @@ def sketch_to_volume(geom_builder, sketch_obj, thickness, rotation=None, transla
     
   return sketch_rotation
 
+def copy_elmer_template(dirname): 
+  src = r'C:/Users/francisco/Documents/dev/pipeline/template/'  
+  dst = r'C:/Users/francisco/Documents/dev/pipeline/data/' + dirname + '/'
+
+  print('copy template to dest: ' + dst)
+
+  for fileName in os.listdir(src):
+    source = src + fileName
+    destination = dst + fileName 
+    if os.path.isfile(source):
+      shutil.copy(source, destination)
+      print('copied', fileName)
+
+
 def export_elmer(filename):
   """
   Input
@@ -46,4 +60,8 @@ def export_elmer(filename):
     .unv to *.mesh (Elmer format)
   
   """
+  print(filename)
+  # os.system(f'cmd /c "dir C:\Users\francisco\Documents\dev\pipeline\data\brick-15"')
+  # execute comand and terminate
+  # os.chdir(f"C:/Users/francisco/Documents/dev/pipeline/data/{dirname}")
   os.system('cmd /c "ElmerGrid 8 2 {}.unv -autoclean"'.format(filename))  

@@ -1,0 +1,66 @@
+!------ Skeleton for body section -----
+Body 1
+  Name = pml_bottom
+End
+
+Body 2
+  Name = brick
+End
+
+Body 3
+  Name = air
+End
+
+Body 4
+  Name = pml_top
+End
+
+!------ Skeleton for boundary section -----
+Boundary Condition 1
+  Name = top_bottom_walls
+End
+
+Boundary Condition 2
+  Name = inlet
+End
+
+Boundary Condition 3
+  Name = outlet
+End
+
+Boundary Condition 4
+  Name = brick_faces
+End
+
+Boundary Condition 5
+  Name = brick_left
+End
+
+Boundary Condition 6
+  Name = brick_front
+End
+
+Boundary Condition 7
+  Name = brick_back
+End
+
+Boundary Condition 8
+  Name = brick_right
+End
+
+Boundary Condition 9
+  Name = left
+End
+
+Boundary Condition 10
+  Name = front
+End
+
+Boundary Condition 11
+  Name = back
+End
+
+Boundary Condition 12
+  Name = right
+End
+

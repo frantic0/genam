@@ -4,8 +4,8 @@ import numpy as np
 import time, os
 import random
 
-os.chdir(r"C:/Users/Francisco/Documents/dev/acoustic-brick")
-sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/acoustic-brick')
+os.chdir(r"C:/Users/Francisco/Documents/dev/pipeline")
+sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline')
 
 
 from utility_functions import * 
@@ -204,8 +204,9 @@ def process_geometry():
   # Auto_group_for_front = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set front walls
   # geompy.UnionList(Auto_group_for_front, [Face_15, Face_16, Face_18, Face_19])
 
-  # Auto_group_for_left = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set left walls
+  Auto_group_for_left = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set left walls/
   # geompy.UnionList(Auto_group_for_left, [Face_1, Face_2, Face_4, Face_5])
+  geompy.UnionList(Auto_group_for_left, [faces[27], faces[29], faces[31], faces[32] ]) # Face_31 is brick wall
 
   # Auto_group_for_back = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set back walls
   # geompy.UnionList(Auto_group_for_back, [Face_36, Face_37, Face_39, Face_40])
@@ -215,7 +216,7 @@ def process_geometry():
 
   # Add autogroups to study
   # geompy.addToStudyInFather(Structure, Auto_group_for_right, 'Auto_group_for_right')
-  # geompy.addToStudyInFather(Structure, Auto_group_for_left, 'Auto_group_for_left')
+  geompy.addToStudyInFather(Structure, Auto_group_for_left, 'Auto_group_for_left')
   # geompy.addToStudyInFather(Structure, Auto_group_for_back, 'Auto_group_for_back')
   geompy.addToStudyInFather(Structure, Auto_group_for_top_bottom_walls, 'Auto_group_for_top_bottom_walls')
   # geompy.addToStudyInFather(Structure, Auto_group_for_lens_faces, 'Auto_group_for_lens_faces')

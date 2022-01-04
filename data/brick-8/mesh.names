@@ -1,0 +1,18 @@
+! ----- names for bodies -----
+$ pml_bottom = 1
+$ brick = 2
+$ air = 3
+$ pml_top = 4
+! ----- names for boundaries -----
+$ top_bottom_walls = 1
+$ inlet = 2
+$ outlet = 3
+$ brick_faces = 4
+$ brick_left = 5
+$ brick_front = 6
+$ brick_back = 7
+$ brick_right = 8
+$ left = 9
+$ front = 10
+$ back = 11
+$ right = 12

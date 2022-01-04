@@ -10,8 +10,8 @@ import salome
 import numpy as np
 import time, os
 
-os.chdir(r"C:/Users/francisco/Documents/dev/acoustic-brick")
-sys.path.insert(0, r'C:/Users/francisco/Documents/dev/acoustic-brick')
+os.chdir(r"C:/Users/francisco/Documents/dev/pipeline")
+sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline')
 
 
 from utility_functions import * 
@@ -29,6 +29,7 @@ import GEOM
 from salome.geom import geomBuilder
 import math
 import SALOMEDS
+
 
 start = time.time()
 geompy = geomBuilder.New()
@@ -150,7 +151,11 @@ filletRad = { 'b1': 0.062,
 
 
 
-brickID = 15
+# Parse brickID from commandline arguments
+brickID = int(sys.argv[1:][0])
+print("generating brick # " + str(brickID) )
+
+
 barLength = list(barLen.values())[brickID - 1] * waveLenght
 barSpacing = list(barSpa.values())[brickID -1] * waveLenght
 
@@ -328,14 +333,41 @@ print("Mesh computation time: {:.2f} sec".format(end - start))
 start = time.time()
   
 # First export mesh in .unv format
+
+
+
 try:
-  Structure_1.ExportUNV( r'C:/Users/francisco/Documents/dev/acoustic-brick/Structure.unv' )
+  # Generate brick folder
+  newpath = f'C:/Users/francisco/Documents/dev/pipeline/data'
+  if not os.path.exists(newpath):
+    os.makedirs(newpath)
+
+  os.chdir(newpath)
+
+  Structure_1.ExportUNV( r'C:/Users/francisco/Documents/dev/pipeline/data/brick-{}.unv'.format(brickID) )
   pass
 except:
   print('ExportUNV() failed. Invalid file name?')
 
-# Export mesh to Elmer
-export_elmer('Structure')
+# time.sleep(0.5)
+
+# if not os.path.exists(newpath + '/structure.unv'):
+#   print(f'.unv file does NOT exist in {newpath}')
+# if os.path.exists(newpath + '/structure.unv'):
+#   print(f'.unv file exists in {newpath}')
+
+export_elmer( 'brick-{}'.format(brickID) )
+
+copy_elmer_template( 'brick-{}'.format(brickID) )
+
+try:
+  # Export mesh to Elmer
+  # if os.path.exists(newpath + '/structure.unv'):
+  # export_elmer( f'brick-{brickID}' )
+  # copy_elmer_template( f'brick-{brickID}' )
+  pass
+except: 
+  print('Could not find UNV file.')
 
 end = time.time()
 print("Salome to Elmer computation time: {:.2f} sec".format(end - start))

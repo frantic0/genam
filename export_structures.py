@@ -1,10 +1,17 @@
+
+#!/usr/bin/env python
+
+###
+### This file is generated automatically by SALOME v9.3.0 with dump python functionality
+###
+
 import sys
 import salome
 import numpy as np
 import time, os
 
-os.chdir(r"C:/Users/Francisco/Documents/dev/acoustic-brick")
-sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/acoustic-brick')
+os.chdir(r"C:/Users/francisco/Documents/dev/pipeline")
+sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline')
 
 
 from utility_functions import * 
@@ -14,6 +21,19 @@ salome.salome_init()
 import salome_notebook
 notebook = salome_notebook.NoteBook()
 
+
+from salomeContextUtils import getScriptsAndArgs, formatScriptsAndArgs, getShortAndExtraArgs
+
+from salome_utils import getUserName, getPortNumber
+
+# from salome_instance import SalomeInstance
+
+print( 'getScriptsAndArgs - {}'.format(getScriptsAndArgs()) )
+print( 'getShortAndExtraArgs - {}'.format(getShortAndExtraArgs()) )
+print( 'getUserName - {}'.format(getUserName()) )
+print( 'getPortNumber - {}'.format(getPortNumber()) )
+
+
 ###
 ### GEOM component
 ###
@@ -22,6 +42,8 @@ import GEOM
 from salome.geom import geomBuilder
 import math
 import SALOMEDS
+
+
 
 start = time.time()
 geompy = geomBuilder.New()
@@ -54,7 +76,40 @@ brick_outer = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( boxSide, boxSide, wa
 
 
 
-
+def draw_hardcoded_brick():
+  ### Make brick sketch
+  sk = geompy.Sketcher2D()
+  sk.addPoint(0.0000000, 1.0910000)
+  sk.addArcRadiusAbsolute(0.8660000, 1.9570000, -0.8660000, 0.0000000)
+  sk.addSegmentAbsolute(1.3990000, 1.9570000)
+  sk.addArcAbsolute(1.3990000, 2.3900000)
+  sk.addSegmentAbsolute(0.8660000, 2.3900000)
+  sk.addArcRadiusAbsolute(0.0000000, 3.2570000, -0.8660000, 0.0000000)
+  sk.addSegmentAbsolute(0.0000000, 3.9670000)
+  sk.addArcRadiusAbsolute(0.8660000, 4.8330000, -0.8660000, 0.0000000)
+  sk.addSegmentAbsolute(1.3990000, 4.8330000)
+  sk.addArcAbsolute(1.3990000, 5.2660000)
+  sk.addSegmentAbsolute(0.8660000, 5.2660000)
+  sk.addArcRadiusAbsolute(0.0000000, 6.1320000, -0.8660000, 0.0000000)
+  sk.addSegmentAbsolute(0.0000000, 8.6610000)
+  sk.addSegmentAbsolute(3.8480000, 8.6610000)
+  sk.addSegmentAbsolute(3.8480000, 7.5700000)
+  sk.addArcRadiusAbsolute(2.9810000, 6.7040000, -0.8660000, 0.0000000)
+  sk.addSegmentAbsolute(2.4480000, 6.7040000)
+  sk.addArcAbsolute(2.4480000, 6.2710000)
+  sk.addSegmentAbsolute(2.9810000, 6.2710000)
+  sk.addArcRadiusAbsolute(3.8480000, 5.4050000, -0.8660000, 0.0000000)
+  sk.addSegmentAbsolute(3.8480000, 4.6940000)
+  sk.addArcRadiusAbsolute(2.9810000, 3.8280000, -0.8660000, 0.0000000)
+  sk.addSegmentAbsolute(2.4480000, 3.8280000)
+  sk.addArcAbsolute(2.4480000, 3.3950000)
+  sk.addSegmentAbsolute(2.9810000, 3.3950000)
+  sk.addArcRadiusAbsolute(3.8480000, 2.5290000, -0.8660000, 0.0000000)
+  sk.addSegmentAbsolute(3.8480000, 0.0000000)
+  sk.addSegmentAbsolute(0.0000000, 0.0000000)
+  sk.addSegmentAbsolute(0.0000000, 1.0910000)
+  wire = geompy.MakeMarker(0, 0, 0, 1, 0, 0, 0, 1, 0)
+  return sk.wire(wire)
 
 
 barLen = {  'b1': 0.062, 
@@ -156,17 +211,22 @@ faces = [Face_1, Face_2, Face_3, Face_4, Face_5, Face_6, Face_7, Face_8, Face_9,
 Auto_group_for_top_bottom_walls = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set top & bottom walls
 geompy.UnionList(Auto_group_for_top_bottom_walls, [Face_25, Face_30] ) 
 Auto_group_for_brick_faces = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set brick faces
-geompy.UnionList(Auto_group_for_brick_faces, [Face_6, Face_7, Face_8, Face_9, Face_10, Face_11, Face_12, Face_13, \
-                                              Face_14, Face_15, Face_16, Face_17,  Face_18, Face_24, Face_27, \
-                                              Face_28, Face_31, Face_37, Face_38, Face_39, Face_40, Face_41, Face_42, \
-                                              Face_43, Face_44, Face_45, Face_46, Face_47, Face_48, Face_49])
+geompy.UnionList(Auto_group_for_brick_faces, [Face_6, Face_7, Face_8, Face_9, Face_10, Face_11, Face_12, Face_13, Face_14, \
+                                              Face_20, Face_21, Face_22, Face_23, Face_24, \
+                                              Face_31, Face_32, Face_33, Face_34, Face_35, \
+                                              Face_28, Face_31, Face_38, \
+                                              Face_41, Face_42, Face_43, Face_44, Face_45, Face_46, Face_47, Face_48, Face_49, \
+                                              Face_3, Face_17, Face_38, Face_52, Face_27, Face_28])
 
 Auto_group_for_front = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set front walls
-geompy.UnionList(Auto_group_for_front, [Face_19, Face_20, Face_22, Face_23])
+geompy.UnionList(Auto_group_for_front, [Face_15, Face_16, Face_18, Face_19])
+
 Auto_group_for_left = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set left walls
 geompy.UnionList(Auto_group_for_left, [Face_1, Face_2, Face_4, Face_5])
+
 Auto_group_for_back = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set back walls
-geompy.UnionList(Auto_group_for_back, [Face_32, Face_33, Face_35, Face_36])
+geompy.UnionList(Auto_group_for_back, [Face_36, Face_37, Face_39, Face_40])
+
 Auto_group_for_right = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set right walls
 geompy.UnionList(Auto_group_for_right, [Face_50, Face_51, Face_53, Face_54])
 
@@ -204,8 +264,8 @@ NETGEN_1D_2D_3D = Structure_1.Tetrahedron( algo=smeshBuilder.NETGEN_1D2D3D )
 NETGEN_3D_Parameters_1 = NETGEN_1D_2D_3D.Parameters()
 NETGEN_3D_Parameters_1.SetMaxSize( 3.1461 )
 NETGEN_3D_Parameters_1.SetMinSize( 0.0844741 )
-# NETGEN_3D_Parameters_1.SetMaxSize( 30.1461 )
-# NETGEN_3D_Parameters_1.SetMinSize( 3.0844741 )
+# NETGEN_3D_Parameters_1.SetMaxSize( 10.1461 )
+# NETGEN_3D_Parameters_1.SetMinSize( 1.0844741 )
 NETGEN_3D_Parameters_1.SetSecondOrder( 0 )
 NETGEN_3D_Parameters_1.SetOptimize( 1 )
 NETGEN_3D_Parameters_1.SetFineness( 4 )
@@ -221,22 +281,27 @@ pml_bottom_mesh = Structure_1.GroupOnGeom(Solid_1,'pml_bottom',SMESH.VOLUME)
 brick_mesh = Structure_1.GroupOnGeom(Solid_2,'brick',SMESH.VOLUME)
 air_mesh = Structure_1.GroupOnGeom(Solid_3,'air',SMESH.VOLUME)
 pml_top_mesh = Structure_1.GroupOnGeom(Solid_4,'pml_top',SMESH.VOLUME)
+
 top_bottom_walls = Structure_1.GroupOnGeom(Auto_group_for_top_bottom_walls,'Auto_group_for_top_bottom_walls',SMESH.FACE)
 top_bottom_walls.SetName( 'top_bottom_walls' )
+
 inlet = Structure_1.GroupOnGeom(Face_26,'Face_26',SMESH.FACE)
 inlet.SetName('inlet')
 outlet = Structure_1.GroupOnGeom(Face_29,'Face_29',SMESH.FACE)
 outlet.SetName('outlet')
+
 brick_faces = Structure_1.GroupOnGeom(Auto_group_for_brick_faces,'Auto_group_for_brick_faces',SMESH.FACE)
 brick_faces.SetName('brick_faces')
+
 brick_left = Structure_1.GroupOnGeom(Face_3,'Face_3',SMESH.FACE)
 brick_left.SetName('brick_left')
-brick_front = Structure_1.GroupOnGeom(Face_21,'Face_21',SMESH.FACE)
+brick_front = Structure_1.GroupOnGeom(Face_17,'Face_17',SMESH.FACE)
 brick_front.SetName('brick_front')
-brick_back = Structure_1.GroupOnGeom(Face_34,'Face_34',SMESH.FACE)
+brick_back = Structure_1.GroupOnGeom(Face_38,'Face_38',SMESH.FACE)
 brick_back.SetName('brick_back')
 brick_right = Structure_1.GroupOnGeom(Face_52,'Face_52',SMESH.FACE)
 brick_right.SetName('brick_right')
+
 left = Structure_1.GroupOnGeom(Auto_group_for_left,'left',SMESH.FACE)
 front = Structure_1.GroupOnGeom(Auto_group_for_front,'front',SMESH.FACE)
 back = Structure_1.GroupOnGeom(Auto_group_for_back,'back',SMESH.FACE)
@@ -278,14 +343,41 @@ print("Mesh computation time: {:.2f} sec".format(end - start))
 start = time.time()
   
 # First export mesh in .unv format
+
+
+
 try:
-  Structure_1.ExportUNV( r'C:/Users/Francisco/Documents/acoustic-brick/Structure.unv' )
+  # Generate brick folder
+  newpath = f'C:/Users/francisco/Documents/dev/pipeline/data'
+  if not os.path.exists(newpath):
+    os.makedirs(newpath)
+
+  os.chdir(newpath)
+
+  Structure_1.ExportUNV( r'C:/Users/francisco/Documents/dev/pipeline/data/brick-{}.unv'.format(brickID) )
   pass
 except:
   print('ExportUNV() failed. Invalid file name?')
 
-# Export mesh to Elmer
-export_elmer('Structure')
+# time.sleep(0.5)
+
+# if not os.path.exists(newpath + '/structure.unv'):
+#   print(f'.unv file does NOT exist in {newpath}')
+# if os.path.exists(newpath + '/structure.unv'):
+#   print(f'.unv file exists in {newpath}')
+
+export_elmer( 'brick-{}'.format(brickID) )
+
+copy_elmer_template( 'brick-{}'.format(brickID) )
+
+try:
+  # Export mesh to Elmer
+  # if os.path.exists(newpath + '/structure.unv'):
+  # export_elmer( f'brick-{brickID}' )
+  # copy_elmer_template( f'brick-{brickID}' )
+  pass
+except: 
+  print('Could not find UNV file.')
 
 end = time.time()
 print("Salome to Elmer computation time: {:.2f} sec".format(end - start))
