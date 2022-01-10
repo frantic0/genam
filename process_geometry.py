@@ -151,8 +151,15 @@ filletRad = { 'b1': 0.062,
 
 
 
-# Parse brickID from commandline arguments
+# Parse CLI arguments
 brickID = int(sys.argv[1:][0])
+
+
+
+start_frequency = int(sys.argv[1:][1])
+end_frequency = int(sys.argv[1:][2])
+step = int(sys.argv[1:][3])
+
 print("generating brick # " + str(brickID) )
 
 
@@ -358,7 +365,8 @@ except:
 
 export_elmer( 'brick-{}'.format(brickID) )
 
-copy_elmer_template( 'brick-{}'.format(brickID) )
+# copy_elmer_templates( 'brick-{}'.format(brickID), 10000, 45000, 1000 )
+copy_elmer_templates( 'brick-{}'.format(brickID), start_frequency, end_frequency, step )
 
 try:
   # Export mesh to Elmer

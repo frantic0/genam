@@ -3,10 +3,14 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Salome filetype 
 *.unv
 Structure/*.vtu
 Structure/mesh.*
 
+# Elmer filetype 
+data/
+data/*
 
 # C extensions
 *.so
