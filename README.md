@@ -1,2 +1,2 @@
-# acoustic-brick
-Optimized Finite Element Modelling of Acoustic Labyrinthine Bricks
+# Acoustic Metamaterial Generative Design and Optimisation Pipeline
+
