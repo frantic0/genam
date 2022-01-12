@@ -1,29 +1,37 @@
 # Acoustic Metamaterial Generative Design and Optimisation Pipeline
 
-## README in progress
+
 
 ### Dependencies 
 
-* [Python](https://www.python.org/) 
-* [Salome](https://salome-platform.org/) 
-* [ElmerFEM](http://www.csc.fi/elmer)
-* [Paraview](https://www.paraview.org/) 
+This is the list of software required to run the Python scripts in the next section. 
+
+* [Python 3.9](https://www.python.org/) 
+* [Salome 9.7.0](https://salome-platform.org/) – Integration platform for numerical simulation
+* [ElmerFEM](http://www.csc.fi/elmer) – Multiphysical simulation
+* [Paraview](https://www.paraview.org/) – Data analysis and visualization 
 
 
 ### Pythons scripts
 
-* parametric_brick.py
-* assemble_lens.py
-* export_structures.py
-* process_geometry.py
-* run_elmer_solver.py
-* utility_functions.py
+* [parametric_brick.py](https://github.com/frantic0/ammgdop/blob/main/parametric_brick.py) –
+* [assemble_lens.py](https://github.com/frantic0/ammgdop/blob/main/assemble_lens.py) –
+* [export_structures.py](https://github.com/frantic0/ammgdop/blob/main/export_structures.py) – 
+* [process_geometry.py](https://github.com/frantic0/ammgdop/blob/main/process_geometry.py) –
+* [run_elmer_solver.py](https://github.com/frantic0/ammgdop/blob/main/run_elmer_solver.py) – 
+* [utility_functions.py](https://github.com/frantic0/ammgdop/blob/main/utility_functions.py) –
 
 ### Elmer Template
 
 template.sif 
 
 ### Command Line Interface
+
+Start a Salome instance that will generate the labyrinthine brick's geometry and . 
+
+```
+python salome
+```
 
 Generate .unv and Elmer .sif template for for labyrinthine brick #15 
 
