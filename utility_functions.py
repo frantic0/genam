@@ -89,6 +89,9 @@ def export_parameterisable_elmer_sif( dirname, frequency):
  
   sif = f'''
 !match face ids to names according to mesh.names files
+
+$ freqVec = vector(100,1800,50)
+
 Check Keywords "Warn"
   INCLUDE mesh.names
 
@@ -129,6 +132,20 @@ Body 1
   Material = 1
 End
 
+!  Export the Sound Pressure Level in vtu file
+Body Force 1
+  Name = "SPL"
+SPL = Variable Pressure Wave 1, Pressure Wave 2
+      Real MATC "20 * log(((sqrt(tx(0)^2 + tx(1)^2)) /sqrt(2)))"
+End
+
+!  Export the Sound Pressure Level in vtu file
+Body Force 1
+  Name = "SPL"
+SPL = Variable Pressure Wave 1, Pressure Wave 2
+      Real MATC "20 * log(((sqrt(tx(0)^2 + tx(1)^2)) /sqrt(2)))"
+End
+
 Body 2
   Target Bodies(1) = $brick
   Name = "brick"
@@ -141,6 +158,7 @@ Body 3
   Name = "air"
   Equation = 1
   Material = 1
+  Body Force(2) = 1 2
 End
 
 Body 4
@@ -154,6 +172,10 @@ Solver 1
   Equation = Helmholtz Equation
   Procedure = "HelmholtzSolve" "HelmholtzSolver"
   Variable = -dofs 2 Pressure Wave
+  ! Export the Sound Pressure Level with the Pressure Wave variables in vtu file (see below body force)
+  Nonlinear Update Exported Variables = Logical True
+  Exported Variable 1 = SPL
+  Exported Variable 2 = Phase
   Exec Solver = Always
   Stabilize = True
   Bubbles = False
@@ -177,15 +199,66 @@ Solver 1
   Linear System Precondition Recompute = 1
 End
 
+Solver 2
+  Procedure = "SaveData" "SaveScalars"  
+  Filename = SPLmean.dat
+  Operator 1 = boundary mean
+  Variable 1 = SPL
+  ! Want to append to file?
+  File Append = Logical True
+End
+
+Solver 3
+  Equation = "flux compute 1"
+  Procedure = "FluxSolver" "FluxSolver"
+  Calculate Flux = Logical True
+  Target Variable = String "Pressure Wave 2"
+  Flux Coefficient = String "Cv"
+  Linear System Solver = Direct
+  Linear System Direct Method = Banded
+End
+
+Solver 4
+  Equation = "flux compute 2"
+  Procedure = "FluxSolver" "FluxSolver"
+  Calculate Flux = Logical True
+  Target Variable = String "Pressure Wave 1"
+  Flux Coefficient = String "Cv"
+  Linear System Solver = Direct
+  Linear System Direct Method = Banded
+End
+
+
+Solver 5
+  Equation = Result Output
+  Procedure = "ResultOutputSolve" "ResultOutputSolver"
+  Save Geometry Ids = True
+  Output File Name = "brick-{frequency}"
+  Output Format = Vtu
+  Scalar Field 2 = Pressure wave 2
+  Scalar Field 1 = Pressure wave 1
+  Vector Field 1 = Pressure wave 2 flux
+  Vector Field 2 = Pressure wave 1 flux
+  Scalar Field 3 = "SPL"
+End
+
+
 Equation 1
   Name = "Helmholtz"
-  Angular Frequency = $ 2.0*pi*{frequency}
-  Active Solvers(1) = 1
+  ! Frequency = Variable time; Real MATC "freqVec(tx - 1)"
+  Angular Frequency = $ 2.0 * pi * {frequency}
+  Active Solvers(4) = 1 2 3 4
+End
+
+Equation 2
+  Name = "Result Output EQ"
+  Active Solvers(1) = 5
 End
 
 ! %%%%%%%%%
 ! %% Air %%
 ! %%%%%%%%%
+
 Material 1 
   Name = "Air"
   Viscosity = 1.983e-5
@@ -225,7 +298,7 @@ $k1=0.0
 $k2=0.0
 $k3=1.0
   Pressure Wave 1 = Variable Coordinate 
-    Real MATC "p0*cos(k1*tx(0)+k2*tx(1)+k3*tx(2))"
+    Real MATC "p0 * cos(k1*tx(0) + k2*tx(1) + k3*tx(2))"
   Pressure Wave 2 = 0
   Wave Impedance 1 = $ c0
 End
@@ -233,6 +306,7 @@ End
 ! %%%%%%%%%%%
 ! %% Walls %% 
 ! %%%%%%%%%%%
+
 Boundary Condition 2
 Target Boundaries(5) = $ brick_faces brick_left brick_right brick_back brick_front
   Name = "Wall"
@@ -255,7 +329,7 @@ End
 ! %%%%%%%%%%%
 
 ! left/right
-
+ 
 Boundary Condition 4 
 Target Boundaries(2) = $ left brick_left
 End

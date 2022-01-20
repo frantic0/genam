@@ -36,8 +36,7 @@ python salome
 Generate .unv and Elmer .sif template for for labyrinthine brick #15 
 
 ```
-python '..\..\..\..\..\SALOME-9.7.0\salome' shell -p 2819 
-.\process_geometry.py args:15,40000,41000,1000 
+python '..\..\..\..\..\SALOME-9.7.0\salome' shell -p 2819 .\process_geometry.py args:15,40000,41000,1000 
 ```
 
 
@@ -66,9 +65,7 @@ python '..\..\..\..\..\SALOME-9.7.0\salome' shell -p 2819
 Generate .unv and Elmer .sif template first and then and Elmer solver for labyrinthine brick #15 to generate a .vtu file  
 
 ```
-python '..\..\..\..\..\SALOME-9.7.0\salome' shell -p 2821 
-.\process_geometry.py args:15,40000,41000,500 
-.\run_elmer_solver.py args:15
+python ..\..\..\..\..\SALOME-9.7.0\salome shell -p 2821 .\process_geometry.py args:15,40000,41000,500 .\run_elmer_solver.py args:15
 ```
 
 
