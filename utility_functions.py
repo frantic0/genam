@@ -91,6 +91,9 @@ def export_parameterisable_elmer_sif( dirname, frequency):
 !match face ids to names according to mesh.names files
 
 $ freqVec = vector(100,1800,50)
+$ c0 = 343
+$ rho0 = 1.205
+
 
 Check Keywords "Warn"
   INCLUDE mesh.names
@@ -108,12 +111,13 @@ Simulation
   Max Output Level = 5
   Coordinate System = Cartesian
   Coordinate Mapping(3) = 1 2 3
+  !  Simulation Type = Scanning     ! Frequency sweeps
   Simulation Type = Steady state
   Steady State Max Iterations = 1
   Output Intervals = 1
   Timestepping Method = BDF
   BDF Order = 1
-  Coordinate Scaling = Real 0.001 ! notify Elmer that our dimensions are in mm
+  Coordinate Scaling = Real 0.001   ! notify Elmer that our dimensions are in mm
   Post File = case-{frequency}.vtu
 End
 
@@ -136,14 +140,10 @@ End
 Body Force 1
   Name = "SPL"
 SPL = Variable Pressure Wave 1, Pressure Wave 2
-      Real MATC "20 * log(((sqrt(tx(0)^2 + tx(1)^2)) /sqrt(2)))"
-End
-
-!  Export the Sound Pressure Level in vtu file
-Body Force 1
-  Name = "SPL"
-SPL = Variable Pressure Wave 1, Pressure Wave 2
-      Real MATC "20 * log(((sqrt(tx(0)^2 + tx(1)^2)) /sqrt(2)))"
+      Real MATC "20*log(((sqrt(tx(0)^2+tx(1)^2))/sqrt(2)))"
+  Name = "Phase"
+Phase = Variable Pressure Wave 1, Pressure Wave 2
+      Real MATC "atan(tx(0)/(tx(1)))"
 End
 
 Body 2
@@ -158,7 +158,7 @@ Body 3
   Name = "air"
   Equation = 1
   Material = 1
-  Body Force(2) = 1 2
+  Body Force = 1
 End
 
 Body 4
@@ -199,17 +199,19 @@ Solver 1
   Linear System Precondition Recompute = 1
 End
 
+! “Flux Computation” - ElmerModelsManual.pdf
 Solver 2
-  Procedure = "SaveData" "SaveScalars"  
-  Filename = SPLmean.dat
-  Operator 1 = boundary mean
-  Variable 1 = SPL
-  ! Want to append to file?
-  File Append = Logical True
+  Equation = "flux compute 1"
+  Procedure = "FluxSolver" "FluxSolver"
+  Calculate Flux = Logical True
+  Target Variable = String "Pressure Wave 1"
+  Flux Coefficient = String "Cv"
+  Linear System Solver = Direct
+  Linear System Direct Method = Banded
 End
 
 Solver 3
-  Equation = "flux compute 1"
+  Equation = "flux compute 2"
   Procedure = "FluxSolver" "FluxSolver"
   Calculate Flux = Logical True
   Target Variable = String "Pressure Wave 2"
@@ -219,27 +221,74 @@ Solver 3
 End
 
 Solver 4
-  Equation = "flux compute 2"
+  Exec Solver = After Timestep
+  Equation = "Grad compute 1"
   Procedure = "FluxSolver" "FluxSolver"
-  Calculate Flux = Logical True
-  Target Variable = String "Pressure Wave 1"
-  Flux Coefficient = String "Cv"
-  Linear System Solver = Direct
-  Linear System Direct Method = Banded
+  Calculate Grad = True
+  Target Variable = Pressure Wave 1
+  Linear System Solver = Iterative
+  Linear System Iterative Method = BiCGStab
+  Linear System Preconditioning = None
+  Linear System Max Iterations = 100
+  Linear System Convergence Tolerance = 1.0e-10
 End
 
 
 Solver 5
+  Exec Solver = After Timestep
+  Equation = "Grad compute 2"
+  Procedure = "FluxSolver" "FluxSolver"
+  Calculate Grad = True
+  Target Variable = Pressure Wave 2
+  Linear System Solver = Iterative
+  Linear System Iterative Method = BiCGStab
+  Linear System Preconditioning = None
+  Linear System Max Iterations = 100
+  Linear System Convergence Tolerance = 1.0e-10
+End
+
+Solver 6
+  Exec Solver = after Timestep
+  Equation = "SaveScalars"
+  Procedure = "SaveData" "SaveScalars"  
+  Filename = File "SPLmean.dat"
+  Variable 1 = "Pressure Wave 1"
+  Operator 1 = "boundary mean"
+  Variable 2 = "Pressure Wave 2"
+  Operator 2 = "boundary mean"
+  Variable 3 = "Pressure Wave 1 Grad 1"
+  Operator 3 = "boundary mean"
+  Variable 4 = "Pressure Wave 2 Grad 1"
+  Operator 4 = "boundary mean"
+  Variable 5 = "Pressure Wave 1 Grad 2"
+  Operator 5 = "boundary mean"
+  Variable 6 = "Pressure Wave 2 Grad 2"
+  Operator 6 = "boundary mean"
+  Variable 7 = "Pressure Wave 1 Grad 3"       ! Only exists for 3D
+  Operator 7 = "boundary mean"
+  Variable 8 = "Pressure Wave 2 Grad 3"
+  Operator 8 = "boundary mean"
+  ! Want to append to file?
+  File Append = Logical True
+End
+
+
+
+Solver 7
   Equation = Result Output
   Procedure = "ResultOutputSolve" "ResultOutputSolver"
-  Save Geometry Ids = True
-  Output File Name = "brick-{frequency}"
+  Save Geometry Ids = False
+  ! Output File Name = "brick-{frequency}"
+  Output File Name = "case-{frequency}"
   Output Format = Vtu
   Scalar Field 2 = Pressure wave 2
   Scalar Field 1 = Pressure wave 1
   Vector Field 1 = Pressure wave 2 flux
   Vector Field 2 = Pressure wave 1 flux
+  Vector Field 1 = Pressure wave 2 grad
+  Vector Field 2 = Pressure wave 1 grad
   Scalar Field 3 = "SPL"
+  Scalar Field 4 = "Phase"
 End
 
 
@@ -247,7 +296,7 @@ Equation 1
   Name = "Helmholtz"
   ! Frequency = Variable time; Real MATC "freqVec(tx - 1)"
   Angular Frequency = $ 2.0 * pi * {frequency}
-  Active Solvers(4) = 1 2 3 4
+  Active Solvers(6) = 1 2 3 4 5 6 7
 End
 
 Equation 2
@@ -268,6 +317,7 @@ Material 1
   Sound speed = 343.0
   Heat Capacity = 1005.0
   Density = 1.205
+  Cv = Real $ 1/(1.205 * 2.0 * pi * {frequency} )
 End
 
 ! %%%%%%%%%%%%%
@@ -301,6 +351,9 @@ $k3=1.0
     Real MATC "p0 * cos(k1*tx(0) + k2*tx(1) + k3*tx(2))"
   Pressure Wave 2 = 0
   Wave Impedance 1 = $ c0
+  ! We want to save data at the inlet 
+  ! TODO how do we save data at the outlet
+  Save Scalars = Logical True
 End
 
 ! %%%%%%%%%%%
@@ -322,6 +375,7 @@ Boundary Condition 3
 Target Boundaries(2) = $ outlet top_bottom_walls 
   Name = "Air"
   Wave Impedance 1 = $ c0
+  Save Scalars = Logical True
 End
 
 ! %%%%%%%%%%%

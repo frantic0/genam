@@ -12,7 +12,7 @@ def run_elmer_solver(dirname):
   
   os.chdir(path)
 
-  sif_files = [ f for f in os.listdir() if f.endswith(".sif") ]
+  sif_files = [ f for f in os.listdir() if ( f.endswith(".sif") and "entities.sif" not in f ) ]
 
   print( sif_files )
 
