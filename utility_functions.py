@@ -94,6 +94,15 @@ $ freqVec = vector(100,1800,50)
 $ c0 = 343
 $ rho0 = 1.205
 
+! $ function atan2(x,y){{
+!  if ( x>0 ) _atan2=atan(y/x);
+!  else if ( x<0 && y >= 0 ) _atan2=atan(y/x);
+!  else if ( x<0 && y >= 0 ) _atan2=atan(y/x)-pi;
+!  else if ( x == 0 && y>0 ) _atan2=pi/2;
+!  else if ( x == 0 && y<0 ) _atan2=-pi/2;
+!  else _atan2=atan(y/x)
+! }}
+
 
 Check Keywords "Warn"
   INCLUDE mesh.names
@@ -136,14 +145,23 @@ Body 1
   Material = 1
 End
 
-!  Export the Sound Pressure Level in vtu file
+!  Export Scalar Fields in vtu file
 Body Force 1
-  Name = "SPL"
+  ! Absolute Pressure obtained from complex components
+  Name = "Pabs"
+Pabs = Variable Pressure Wave 1, Pressure Wave 2 
+      Real MATC "sqrt(tx(0)^2+tx(1)^2)"
+  ! dB SPL value from the field Where the √2 factor at the denominator is used for harmonic solutions to convert to root mean square.
+  Name = "SPL" 
 SPL = Variable Pressure Wave 1, Pressure Wave 2
-      Real MATC "20*log(((sqrt(tx(0)^2+tx(1)^2))/sqrt(2)))"
+      Real MATC "20*log(((sqrt(tx(0)^2+tx(1)^2))/(sqrt(2)*20e-6)))"
   Name = "Phase"
 Phase = Variable Pressure Wave 1, Pressure Wave 2
       Real MATC "atan(tx(0)/(tx(1)))"
+  Name = "PhaseAtan2"    
+PhaseAtan2 = Variable Pressure Wave 1, Pressure Wave 2
+      Real MATC "atan2(tx(0),tx(1))"
+
 End
 
 Body 2
@@ -174,8 +192,10 @@ Solver 1
   Variable = -dofs 2 Pressure Wave
   ! Export the Sound Pressure Level with the Pressure Wave variables in vtu file (see below body force)
   Nonlinear Update Exported Variables = Logical True
-  Exported Variable 1 = SPL
-  Exported Variable 2 = Phase
+  Exported Variable 1 = Pabs
+  Exported Variable 2 = SPL
+  Exported Variable 3 = Phase
+  Exported Variable 4 = PhaseAtan2
   Exec Solver = Always
   Stabilize = True
   Bubbles = False
@@ -287,8 +307,10 @@ Solver 7
   Vector Field 2 = Pressure wave 1 flux
   Vector Field 1 = Pressure wave 2 grad
   Vector Field 2 = Pressure wave 1 grad
-  Scalar Field 3 = "SPL"
-  Scalar Field 4 = "Phase"
+  Scalar Field 3 = "Pabs"
+  Scalar Field 4 = "SPL"
+  Scalar Field 5 = "Phase"
+  Scalar Field 6 = "PhaseAtan2"
 End
 
 
@@ -301,7 +323,7 @@ End
 
 Equation 2
   Name = "Result Output EQ"
-  Active Solvers(1) = 5
+  Active Solvers(1) = 7
 End
 
 ! %%%%%%%%%
