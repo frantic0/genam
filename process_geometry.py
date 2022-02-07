@@ -371,6 +371,7 @@ if len(sys.argv[1:]) >= 2:
 
   export_elmer( 'brick-{}'.format(brickID) )
 
+  print('checkpoint brick-{}'.format(brickID), start_frequency, end_frequency, step )
   # copy_elmer_templates( 'brick-{}'.format(brickID), 10000, 45000, 1000 )
   copy_elmer_templates( 'brick-{}'.format(brickID), start_frequency, end_frequency, step )
 
