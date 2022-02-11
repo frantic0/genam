@@ -152,13 +152,14 @@ filletRad = { 'b1': 0.062,
 
 
 # Parse CLI arguments
-brickID = int(sys.argv[1:][0])
+if len(sys.argv[1:]) >= 1:
+  brickID = int(sys.argv[1:][0])
+else:
+  brickID = 1
 
 
 
-start_frequency = int(sys.argv[1:][1])
-end_frequency = int(sys.argv[1:][2])
-step = int(sys.argv[1:][3])
+
 
 print("generating brick # " + str(brickID) )
 
@@ -337,48 +338,54 @@ print("Mesh computation time: {:.2f} sec".format(end - start))
 # smesh.SetName(inlet, 'inlet')
 # smesh.SetName(top_bottom_walls, 'top_bottom_walls')
 
-start = time.time()
-  
-# First export mesh in .unv format
 
+if len(sys.argv[1:]) >= 2:
+  start_frequency = int(sys.argv[1:][1])
+  end_frequency = int(sys.argv[1:][2])
+  step = int(sys.argv[1:][3])
 
+  start = time.time()
 
-try:
-  # Generate brick folder
-  newpath = f'C:/Users/francisco/Documents/dev/pipeline/data'
-  if not os.path.exists(newpath):
-    os.makedirs(newpath)
+  try:
+    # Generate brick folder
+    newpath = f'C:/Users/francisco/Documents/dev/pipeline/data'
+    if not os.path.exists(newpath):
+      os.makedirs(newpath)
 
-  os.chdir(newpath)
+    os.chdir(newpath)
 
-  Structure_1.ExportUNV( r'C:/Users/francisco/Documents/dev/pipeline/data/brick-{}.unv'.format(brickID) )
-  pass
-except:
-  print('ExportUNV() failed. Invalid file name?')
+    Structure_1.ExportUNV( r'C:/Users/francisco/Documents/dev/pipeline/data/brick-{}.unv'.format(brickID) )
+    pass
+  except:
+    print('ExportUNV() failed. Invalid file name?')
 
-# time.sleep(0.5)
+  # time.sleep(0.5)
 
-# if not os.path.exists(newpath + '/structure.unv'):
-#   print(f'.unv file does NOT exist in {newpath}')
-# if os.path.exists(newpath + '/structure.unv'):
-#   print(f'.unv file exists in {newpath}')
-
-export_elmer( 'brick-{}'.format(brickID) )
-
-# copy_elmer_templates( 'brick-{}'.format(brickID), 10000, 45000, 1000 )
-copy_elmer_templates( 'brick-{}'.format(brickID), start_frequency, end_frequency, step )
-
-try:
-  # Export mesh to Elmer
+  # if not os.path.exists(newpath + '/structure.unv'):
+  #   print(f'.unv file does NOT exist in {newpath}')
   # if os.path.exists(newpath + '/structure.unv'):
-  # export_elmer( f'brick-{brickID}' )
-  # copy_elmer_template( f'brick-{brickID}' )
-  pass
-except: 
-  print('Could not find UNV file.')
+  #   print(f'.unv file exists in {newpath}')
 
-end = time.time()
-print("Salome to Elmer computation time: {:.2f} sec".format(end - start))
+
+
+
+  export_elmer( 'brick-{}'.format(brickID) )
+
+  print('checkpoint brick-{}'.format(brickID), start_frequency, end_frequency, step )
+  # copy_elmer_templates( 'brick-{}'.format(brickID), 10000, 45000, 1000 )
+  copy_elmer_templates( 'brick-{}'.format(brickID), start_frequency, end_frequency, step )
+
+  try:
+    # Export mesh to Elmer
+    # if os.path.exists(newpath + '/structure.unv'):
+    # export_elmer( f'brick-{brickID}' )
+    # copy_elmer_template( f'brick-{brickID}' )
+    pass
+  except: 
+    print('Could not find UNV file.')
+
+  end = time.time()
+  print("Salome to Elmer computation time: {:.2f} sec".format(end - start))
 
 if salome.sg.hasDesktop():
   salome.sg.updateObjBrowser()
