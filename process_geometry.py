@@ -17,6 +17,7 @@ sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline')
 from utility_functions import * 
 from parametric_brick import * 
 
+salome.standalone()
 salome.salome_init()
 import salome_notebook
 notebook = salome_notebook.NoteBook()

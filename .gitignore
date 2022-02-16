@@ -11,7 +11,10 @@ Structure/mesh.*
 
 # Elmer filetype 
 data/
-data/*
+data/**
+
+**/brick-*/
+
 
 # C extensions
 *.so
