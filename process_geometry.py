@@ -156,7 +156,7 @@ filletRad = { 'b1': 0.062,
 if len(sys.argv[1:]) >= 1:
   brickID = int(sys.argv[1:][0])
 else:
-  brickID = 1
+  brickID = 9
 
 
 
@@ -209,30 +209,82 @@ faces = [Face_1, Face_2, Face_3, Face_4, Face_5, Face_6, Face_7, Face_8, Face_9,
 # print(len(faces))
 
 # Autogroups in geometry for meshing
-Auto_group_for_top_bottom_walls = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set top & bottom walls
-geompy.UnionList(Auto_group_for_top_bottom_walls, [Face_25, Face_30] ) 
 
-Auto_group_for_brick_faces = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set brick faces
-geompy.UnionList(Auto_group_for_brick_faces, [Face_6, Face_7, Face_8, Face_9, Face_10, Face_11, Face_12, Face_13, Face_14, \
-                                              Face_20, Face_21, Face_22, Face_23, Face_24, \
-                                              Face_31, Face_32, Face_33, Face_34, Face_35, \
-                                              Face_28, Face_31, Face_38, \
-                                              Face_41, Face_42, Face_43, Face_44, Face_45, Face_46, Face_47, Face_48, Face_49, \
-                                              Face_3, Face_17, Face_38, Face_52, Face_27, Face_28])
+if brickID == 1: 
+  Auto_group_for_top_bottom_walls = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set top & bottom walls
+  geompy.UnionList(Auto_group_for_top_bottom_walls, [Face_25, Face_30] ) 
 
-Auto_group_for_front = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set front walls
-geompy.UnionList(Auto_group_for_front, [Face_15, Face_16, Face_18, Face_19])
+  Auto_group_for_brick_faces = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set brick faces
+  geompy.UnionList(Auto_group_for_brick_faces, [Face_6, Face_7, Face_8, Face_9, Face_10, Face_11, Face_12, Face_13, Face_14, \
+                                                Face_20, Face_21, Face_22, Face_23, Face_24, \
+                                                Face_31, Face_32, Face_33, Face_34, Face_35, \
+                                                Face_28, Face_31, Face_38, \
+                                                Face_41, Face_42, Face_43, Face_44, Face_45, Face_46, Face_47, Face_48, Face_49, \
+                                                Face_3, Face_17, Face_38, Face_52, Face_27, Face_28])
 
-Auto_group_for_left = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set left walls
-geompy.UnionList(Auto_group_for_left, [Face_1, Face_2, Face_4, Face_5])
+  Auto_group_for_front = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set front walls
+  geompy.UnionList(Auto_group_for_front, [Face_15, Face_16, Face_18, Face_19])
 
-Auto_group_for_back = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set back walls
-geompy.UnionList(Auto_group_for_back, [Face_36, Face_37, Face_39, Face_40])
+  Auto_group_for_left = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set left walls
+  geompy.UnionList(Auto_group_for_left, [Face_1, Face_2, Face_4, Face_5])
 
-Auto_group_for_right = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set right walls
-geompy.UnionList(Auto_group_for_right, [Face_50, Face_51, Face_53, Face_54])
+  Auto_group_for_back = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set back walls
+  geompy.UnionList(Auto_group_for_back, [Face_36, Face_37, Face_39, Face_40])
+
+  Auto_group_for_right = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set right walls
+  geompy.UnionList(Auto_group_for_right, [Face_50, Face_51, Face_53, Face_54])
+
+elif brickID == 9: 
+  Auto_group_for_top_bottom_walls = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set top & bottom walls
+  geompy.UnionList(Auto_group_for_top_bottom_walls, [Face_25, Face_30] ) 
+
+  Auto_group_for_brick_faces = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set brick faces
+  geompy.UnionList(Auto_group_for_brick_faces, [Face_6, Face_7, Face_8, Face_9, Face_10, Face_11, Face_12, Face_13, Face_14, \
+                                                Face_20, Face_21, Face_22, Face_23, Face_24, \
+                                                Face_31, Face_32, Face_33, Face_34, Face_35, \
+                                                Face_28, Face_31, Face_38, \
+                                                Face_41, Face_42, Face_43, Face_44, Face_45, Face_46, Face_47, Face_48, Face_49, \
+                                                Face_3, Face_17, Face_38, Face_52, Face_27, Face_28])
+
+  Auto_group_for_front = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set front walls
+  geompy.UnionList(Auto_group_for_front, [Face_15, Face_16, Face_18, Face_19])
+
+  Auto_group_for_left = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set left walls
+  geompy.UnionList(Auto_group_for_left, [Face_1, Face_2, Face_4, Face_5])
+
+  Auto_group_for_back = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set back walls
+  geompy.UnionList(Auto_group_for_back, [Face_36, Face_37, Face_39, Face_40])
+
+  Auto_group_for_right = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set right walls
+  geompy.UnionList(Auto_group_for_right, [Face_50, Face_51, Face_53, Face_54])
+
+if brickID == 15: 
+  Auto_group_for_top_bottom_walls = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set top & bottom walls
+  geompy.UnionList(Auto_group_for_top_bottom_walls, [Face_25, Face_30] ) 
+
+  Auto_group_for_brick_faces = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set brick faces
+  geompy.UnionList(Auto_group_for_brick_faces, [Face_6, Face_7, Face_8, Face_9, Face_10, Face_11, Face_12, Face_13, Face_14, \
+                                                Face_20, Face_21, Face_22, Face_23, Face_24, \
+                                                Face_31, Face_32, Face_33, Face_34, Face_35, \
+                                                Face_28, Face_31, Face_38, \
+                                                Face_41, Face_42, Face_43, Face_44, Face_45, Face_46, Face_47, Face_48, Face_49, \
+                                                Face_3, Face_17, Face_38, Face_52, Face_27, Face_28])
+
+  Auto_group_for_front = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set front walls
+  geompy.UnionList(Auto_group_for_front, [Face_15, Face_16, Face_18, Face_19])
+
+  Auto_group_for_left = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set left walls
+  geompy.UnionList(Auto_group_for_left, [Face_1, Face_2, Face_4, Face_5])
+
+  Auto_group_for_back = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set back walls
+  geompy.UnionList(Auto_group_for_back, [Face_36, Face_37, Face_39, Face_40])
+
+  Auto_group_for_right = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set right walls
+  geompy.UnionList(Auto_group_for_right, [Face_50, Face_51, Face_53, Face_54])
 
 # Add autogroups to study
+
+
 geompy.addToStudyInFather(Structure, Auto_group_for_right, 'Auto_group_for_right')
 geompy.addToStudyInFather(Structure, Auto_group_for_left, 'Auto_group_for_left')
 geompy.addToStudyInFather(Structure, Auto_group_for_back, 'Auto_group_for_back')
