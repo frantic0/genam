@@ -436,7 +436,7 @@ End
 ! %%%%%%%%%%%%
 
 
-! At the inlet boundary condition, which corresponds to a 
+! At the inlet boundary condition, which corresponds to ! $ inlet = 2
 
 Boundary Condition 1
   Target Boundaries(1) = $ inlet
