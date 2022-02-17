@@ -4,6 +4,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+.DS_Store
+
 # Salome filetype 
 *.unv
 Structure/*.vtu
@@ -11,7 +13,10 @@ Structure/mesh.*
 
 # Elmer filetype 
 data/
-data/*
+data/**
+
+**/brick-*/
+
 
 # C extensions
 *.so

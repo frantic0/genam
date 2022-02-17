@@ -107,6 +107,7 @@ $ rho0 = 1.205
 Check Keywords "Warn"
   INCLUDE mesh.names
 
+! location of mesh files
 Header
   CHECK KEYWORDS Warn
   Mesh DB "." "."
@@ -116,18 +117,19 @@ Header
   $c0 = 343.0
 End
 
+! general information that is not specific to a particular Helmholtz
 Simulation
   Max Output Level = 5
   Coordinate System = Cartesian
   Coordinate Mapping(3) = 1 2 3
   !  Simulation Type = Scanning     ! Frequency sweeps
-  Simulation Type = Steady state
+  Simulation Type = Steady state    ! set Stationary problem
   Steady State Max Iterations = 1
   Output Intervals = 1
   Timestepping Method = BDF
   BDF Order = 1
-  Coordinate Scaling = Real 0.001   ! notify Elmer that our dimensions are in mm
-  Post File = case-{frequency}.vtu
+  Coordinate Scaling = Real 0.001   ! set dimensions in mm (instead of m)
+  Post File = case-{frequency}.vtu  ! Export VTU file for visualization in Paraview
 End
 
 Constants
@@ -138,12 +140,22 @@ Constants
   Unit Charge = 1.602e-19
 End
 
+
+
+! %%%%%%%%%%%%
+! %% BODY SECTIONS %%
+! %% body sections associate each body with an equation set, material properties, body forces, and initial conditions 
+! %% by referring to definitions given in a specified equation section, material section, body force section, and initial condition section. 
+! %%%%%%%%%%%%
+
+
 Body 1
   Target Bodies(1) = $pml_bottom
   Name = "pml_bottom"
   Equation = 1
   Material = 1
 End
+
 
 !  Export Scalar Fields in vtu file
 Body Force 1
@@ -161,7 +173,6 @@ Phase = Variable Pressure Wave 1, Pressure Wave 2
   Name = "PhaseAtan2"    
 PhaseAtan2 = Variable Pressure Wave 1, Pressure Wave 2
       Real MATC "atan2(tx(0),tx(1))"
-
 End
 
 Body 2
@@ -170,6 +181,9 @@ Body 2
   Equation = 1
   Material = 2
 End
+
+
+! Body 3 (Air) has Body Force 1 associated 
 
 Body 3
   Target Bodies(1) = $air
@@ -185,6 +199,15 @@ Body 4
   Equation = 1
   Material = 1
 End
+
+
+
+! %%%%%%%%%%%%
+! %% SOLVER SECTIONS %%
+! %% 
+! %%%%%%%%%%%%
+
+
 
 Solver 1
   Equation = Helmholtz Equation
@@ -213,6 +236,7 @@ Solver 1
   Linear System Convergence Tolerance = 1.0e-10
   BiCGstabl polynomial degree = 2
   Linear System Preconditioning = ILU2
+  ! Linear System Preconditioning = ILUT
   Linear System ILUT Tolerance = 1.0e-3
   Linear System Abort Not Converged = False
   Linear System Residual Output = 10
@@ -314,6 +338,13 @@ Solver 7
 End
 
 
+! %%%%%%%%%%%%
+! %% EQUATION SECTIONS %%
+! %% 
+! %%%%%%%%%%%%
+
+
+
 Equation 1
   Name = "Helmholtz"
   ! Frequency = Variable time; Real MATC "freqVec(tx - 1)"
@@ -325,6 +356,15 @@ Equation 2
   Name = "Result Output EQ"
   Active Solvers(1) = 7
 End
+
+
+
+! %%%%%%%%%%%%
+! %% MATERIAL SECTIONS %%
+! %% 
+! %%%%%%%%%%%%
+
+
 
 ! %%%%%%%%%
 ! %% Air %%
@@ -357,6 +397,39 @@ Material 2
   Youngs modulus = 3.2e9
 End
 
+
+
+
+
+
+
+! %%%%%%%%%%%%
+! %% BOUNDARY CONDITIONS %%
+! %% define the Dirichlet boundary conditions for all the primary field variables
+! %% Elmer mesh files contain information on how the boundaries of the bodies are divided into parts distinguished by their own boundary numbers
+! %% Target Boundaries is used to list the boundary numbers that form the domain for imposing the boundary condition
+! %% mesh.names
+! %% ----- names for bodies -----
+! %% $ pml_bottom = 1
+! %% $ brick = 2
+! %% $ air = 3
+! %% $ pml_top = 4
+! ----- names for boundaries -----
+! $ top_bottom_walls = 1
+! $ inlet = 2
+! $ outlet = 3
+! $ brick_faces = 4
+! $ brick_left = 5
+! $ brick_front = 6
+! $ brick_back = 7
+! $ brick_right = 8
+! $ left = 9
+! $ front = 10
+! $ back = 11
+! $ right = 12
+%%%%%%%%%%%%
+
+
 ! %%%%%%%%%%%%
 ! %% Inlet  %%
 ! %%%%%%%%%%%%
@@ -364,7 +437,7 @@ End
 Boundary Condition 1
   Target Boundaries(1) = $ inlet
   Name = "In"
-  Plane Wave BC = True
+  Plane Wave BC = True ! Automatically sets the boundary conditions assuming outgoing plane waves
 $p0=1.0
 $k1=0.0
 $k2=0.0
@@ -372,7 +445,7 @@ $k3=1.0
   Pressure Wave 1 = Variable Coordinate 
     Real MATC "p0 * cos(k1*tx(0) + k2*tx(1) + k3*tx(2))"
   Pressure Wave 2 = 0
-  Wave Impedance 1 = $ c0
+  Wave Impedance 1 = $ c0 !
   ! We want to save data at the inlet 
   ! TODO how do we save data at the outlet
   Save Scalars = Logical True

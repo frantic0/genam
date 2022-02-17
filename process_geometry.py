@@ -17,6 +17,7 @@ sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline')
 from utility_functions import * 
 from parametric_brick import * 
 
+salome.standalone()
 salome.salome_init()
 import salome_notebook
 notebook = salome_notebook.NoteBook()
@@ -261,7 +262,10 @@ Structure_1 = smesh.Mesh(Structure)
 NETGEN_1D_2D_3D = Structure_1.Tetrahedron( algo=smeshBuilder.NETGEN_1D2D3D )
 NETGEN_3D_Parameters_1 = NETGEN_1D_2D_3D.Parameters()
 NETGEN_3D_Parameters_1.SetMaxSize( 1.1461 )
+# NETGEN_3D_Parameters_1.SetMaxSize( 0.619 )
 NETGEN_3D_Parameters_1.SetMinSize( 0.0844741 )
+# NETGEN_3D_Parameters_1.SetMaxSize( 3.1461 )
+# NETGEN_3D_Parameters_1.SetMinSize( 0.0844741 )
 # NETGEN_3D_Parameters_1.SetMaxSize( 3.1461 )
 # NETGEN_3D_Parameters_1.SetMinSize( 0.0844741 )
 NETGEN_3D_Parameters_1.SetSecondOrder( 0 )
