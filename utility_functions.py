@@ -190,8 +190,7 @@ Body 3
   Name = "air"
   Equation = 1
   Material = 1
-  Body Force = 1
-End
+  Body Force = 1 ! Force applied to Air body, with scalars apply 
 
 Body 4
   Target Bodies(1) = $pml_top
@@ -405,8 +404,10 @@ End
 
 ! %%%%%%%%%%%%
 ! %% BOUNDARY CONDITIONS %%
-! %% define the Dirichlet boundary conditions for all the primary field variables
-! %% Elmer mesh files contain information on how the boundaries of the bodies are divided into parts distinguished by their own boundary numbers
+! %% the usual BC for the Helmholtz PDE is to give the flux on the boundary
+! %% also define the Dirichlet boundary conditions for all the primary field variables -- in our case the real component of pressure, Pressure 1
+! %% can also define the Sommerfeldt or far field BC
+! %% Elmer mesh files (mesh.*) contain information on how the boundaries of the bodies are divided into parts distinguished by their own boundary numbers
 ! %% Target Boundaries is used to list the boundary numbers that form the domain for imposing the boundary condition
 ! %% mesh.names
 ! %% ----- names for bodies -----
@@ -433,6 +434,9 @@ End
 ! %%%%%%%%%%%%
 ! %% Inlet  %%
 ! %%%%%%%%%%%%
+
+
+! At the inlet boundary condition, which corresponds to a 
 
 Boundary Condition 1
   Target Boundaries(1) = $ inlet
