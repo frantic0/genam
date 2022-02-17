@@ -382,6 +382,8 @@ End
 ! %% Walls %% 
 ! %%%%%%%%%%%
 
+! Make boundaries of the brick rigid, 
+! by imposing the normal component particle velocity null at the boundaries
 Boundary Condition 2
 Target Boundaries(5) = $ brick_faces brick_left brick_right brick_back brick_front
   Name = "Wall"
