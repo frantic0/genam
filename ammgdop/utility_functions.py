@@ -37,9 +37,9 @@ def sketch_to_volume(geom_builder, sketch_obj, thickness, rotation=None, transla
 
 
 
-def copy_elmer_templates(dirname, start_frequency, end_frequency, step): 
+def copy_elmer_templates( dirname, start_frequency=40000, end_frequency=41000, step=1000 ): 
 
-  src = r'C:/Users/francisco/Documents/dev/pipeline/template/'  
+  src = r'C:/Users/francisco/Documents/dev/pipeline/solver/'  
   dst = r'C:/Users/francisco/Documents/dev/pipeline/data/' + dirname + '/'
 
   # print('copy template to dest: ' + dst)
@@ -50,9 +50,10 @@ def copy_elmer_templates(dirname, start_frequency, end_frequency, step):
     if os.path.isfile(source):
       shutil.copy(source, destination)
       print('copied', fileName)
-  
+
+  # NOTE: Needs refactor - if optional arguments  
   for frequency in range(start_frequency, end_frequency + step, step):
-    export_parameterisable_elmer_sif( dirname, frequency )
+    export_parameterisable_solver_input_file( dirname, frequency )
 
 
 
@@ -74,7 +75,7 @@ def export_elmer(filename):
   os.system('cmd /c "ElmerGrid 8 2 {}.unv -autoclean"'.format(filename))  
 
 
-def export_parameterisable_elmer_sif( dirname, frequency):
+def export_parameterisable_solver_input_file( dirname, frequency):
   """
   Input
 
@@ -158,12 +159,12 @@ End
 
 
 !  Export Scalar Fields in vtu file
+! Absolute Pressure obtained from complex components
+! dB SPL value from the field Where the √2 factor at the denominator is used for harmonic solutions to convert to root mean square.
 Body Force 1
-  ! Absolute Pressure obtained from complex components
   Name = "Pabs"
 Pabs = Variable Pressure Wave 1, Pressure Wave 2 
       Real MATC "sqrt(tx(0)^2+tx(1)^2)"
-  ! dB SPL value from the field Where the √2 factor at the denominator is used for harmonic solutions to convert to root mean square.
   Name = "SPL" 
 SPL = Variable Pressure Wave 1, Pressure Wave 2
       Real MATC "20*log(((sqrt(tx(0)^2+tx(1)^2))/(sqrt(2)*20e-6)))"

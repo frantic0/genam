@@ -9,8 +9,11 @@ import salome
 import numpy as np
 import time, os
 
-os.chdir(r"C:/Users/francisco/Documents/dev/acoustic-brick")
-sys.path.insert(0, r'C:/Users/francisco/Documents/dev/acoustic-brick')
+# os.chdir(r"C:/Users/francisco/Documents/dev/acoustic-brick")
+# sys.path.insert(0, r'C:/Users/francisco/Documents/dev/acoustic-brick')
+
+os.chdir(r"C:/Users/francisco/Documents/dev/pipeline/ammgdop")
+sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline/ammgdop')
 
 from utility_functions import * 
 
