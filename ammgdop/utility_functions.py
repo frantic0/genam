@@ -89,25 +89,8 @@ def export_parameterisable_solver_input_file( dirname, frequency):
   os.chdir(f"C:/Users/francisco/Documents/dev/pipeline/data/{dirname}")
  
   sif = f'''
-!match face ids to names according to mesh.names files
-
-$ freqVec = vector(100,1800,50)
-$ c0 = 343
-$ rho0 = 1.205
-
-! $ function atan2(x,y){{
-!  if ( x>0 ) _atan2=atan(y/x);
-!  else if ( x<0 && y >= 0 ) _atan2=atan(y/x);
-!  else if ( x<0 && y >= 0 ) _atan2=atan(y/x)-pi;
-!  else if ( x == 0 && y>0 ) _atan2=pi/2;
-!  else if ( x == 0 && y<0 ) _atan2=-pi/2;
-!  else _atan2=atan(y/x)
-! }}
-
-
 Check Keywords "Warn"
   INCLUDE mesh.names
-
 ! location of mesh files
 Header
   CHECK KEYWORDS Warn
@@ -116,6 +99,7 @@ Header
   Results Directory ""
   $rho0 = 1.205
   $c0 = 343.0
+  $freqVec = vector(100,1800,50)
 End
 
 ! general information that is not specific to a particular Helmholtz
@@ -141,8 +125,6 @@ Constants
   Unit Charge = 1.602e-19
 End
 
-
-
 ! %%%%%%%%%%%%
 ! %% BODY SECTIONS %%
 ! %% body sections associate each body with an equation set, material properties, body forces, and initial conditions 
@@ -158,9 +140,6 @@ Body 1
 End
 
 
-!  Export Scalar Fields in vtu file
-! Absolute Pressure obtained from complex components
-! dB SPL value from the field Where the √2 factor at the denominator is used for harmonic solutions to convert to root mean square.
 Body Force 1
   Name = "Pabs"
 Pabs = Variable Pressure Wave 1, Pressure Wave 2 
@@ -192,6 +171,7 @@ Body 3
   Equation = 1
   Material = 1
   Body Force = 1 ! Force applied to Air body, with scalars apply 
+End
 
 Body 4
   Target Bodies(1) = $pml_top
@@ -201,19 +181,11 @@ Body 4
 End
 
 
-
-! %%%%%%%%%%%%
-! %% SOLVER SECTIONS %%
-! %% 
-! %%%%%%%%%%%%
-
-
-
+! Export the Sound Pressure Level with the Pressure Wave variables in vtu file (see below body force)
 Solver 1
   Equation = Helmholtz Equation
   Procedure = "HelmholtzSolve" "HelmholtzSolver"
   Variable = -dofs 2 Pressure Wave
-  ! Export the Sound Pressure Level with the Pressure Wave variables in vtu file (see below body force)
   Nonlinear Update Exported Variables = Logical True
   Exported Variable 1 = Pabs
   Exported Variable 2 = SPL
@@ -322,7 +294,6 @@ Solver 7
   Equation = Result Output
   Procedure = "ResultOutputSolve" "ResultOutputSolver"
   Save Geometry Ids = False
-  ! Output File Name = "brick-{frequency}"
   Output File Name = "case-{frequency}"
   Output Format = Vtu
   Scalar Field 2 = Pressure wave 2
@@ -349,13 +320,13 @@ Equation 1
   Name = "Helmholtz"
   ! Frequency = Variable time; Real MATC "freqVec(tx - 1)"
   Angular Frequency = $ 2.0 * pi * {frequency}
-  Active Solvers(6) = 1 2 3 4 5 6 7
+  Active Solvers(6) = 1 2 3 4 5 6
 End
 
-Equation 2
-  Name = "Result Output EQ"
-  Active Solvers(1) = 7
-End
+! Equation 2
+!   Name = "Result Output EQ"
+!   Active Solvers(1) = 7
+! End
 
 
 
@@ -403,19 +374,20 @@ End
 
 
 
-! %%%%%%%%%%%%
-! %% BOUNDARY CONDITIONS %%
-! %% the usual BC for the Helmholtz PDE is to give the flux on the boundary
-! %% also define the Dirichlet boundary conditions for all the primary field variables -- in our case the real component of pressure, Pressure 1
-! %% can also define the Sommerfeldt or far field BC
-! %% Elmer mesh files (mesh.*) contain information on how the boundaries of the bodies are divided into parts distinguished by their own boundary numbers
-! %% Target Boundaries is used to list the boundary numbers that form the domain for imposing the boundary condition
-! %% mesh.names
-! %% ----- names for bodies -----
-! %% $ pml_bottom = 1
-! %% $ brick = 2
-! %% $ air = 3
-! %% $ pml_top = 4
+! BOUNDARY CONDITIONS
+! 
+! the usual BC for the Helmholtz PDE is to give the flux on the boundary
+! also define the Dirichlet boundary conditions for all the primary field variables -- in our case the real component of pressure, Pressure 1
+! can also define the Sommerfeldt or far field BC
+! Elmer mesh files (mesh.*) contain information on how the boundaries of the bodies are divided into parts distinguished by their own boundary numbers
+! Target Boundaries is used to list the boundary numbers that form the domain for imposing the boundary condition
+! mesh.names
+!
+! ----- names for bodies -----
+! $ pml_bottom = 1
+! $ brick = 2
+! $ air = 3
+! $ pml_top = 4
 ! ----- names for boundaries -----
 ! $ top_bottom_walls = 1
 ! $ inlet = 2
@@ -429,7 +401,6 @@ End
 ! $ front = 10
 ! $ back = 11
 ! $ right = 12
-%%%%%%%%%%%%
 
 
 ! %%%%%%%%%%%%
@@ -463,7 +434,7 @@ End
 ! Make boundaries of the brick rigid, 
 ! by imposing the normal component particle velocity null at the boundaries
 Boundary Condition 2
-Target Boundaries(5) = $ brick_faces brick_left brick_right brick_back brick_front
+Target Boundaries(1) = $ brick_faces 
   Name = "Wall"
   Wave Flux 1 = 0
   Wave Flux 2 = 0
@@ -486,24 +457,59 @@ End
 
 ! left/right
  
+! Target Boundaries(2) = $ left brick_left
 Boundary Condition 4 
-Target Boundaries(2) = $ left brick_left
+Target Boundaries(1) = $ left
 End
 
+! Target Boundaries(2) = $ right brick_right
 Boundary Condition 5 
-Target Boundaries(2) = $ right brick_right
+Target Boundaries(1) = $ right
   Periodic BC = 4
 End
 
 ! front/back
 
+!  Target Boundaries(2) = $ front brick_front
 Boundary Condition 6 
-  Target Boundaries(2) = $ front brick_front
+  Target Boundaries(1) = $ front
 End
 
+! Target Boundaries(2) = $ back brick_back
 Boundary Condition 7 
-Target Boundaries(2) = $ back brick_back
+Target Boundaries(1) = $ back
   Periodic BC = 6
+End
+  '''.format(frequency)
+
+
+  # print(sif)
+  file = open(f"case-{frequency}.sif","w")
+  file.write(sif)
+  file.close()
+  
+
+
+
+def export_parameterisable_solver_input_file1( dirname, frequency):
+  """
+  Input
+
+
+  Output
+
+    .unv to *.mesh (Elmer w)
+  
+  """
+  print(dirname)
+  os.chdir(f"C:/Users/francisco/Documents/dev/pipeline/data/{dirname}")
+ 
+  sif = f'''
+Equation 1
+  Name = "Helmholtz"
+  ! Frequency = Variable time; Real MATC "freqVec(tx - 1)"
+  Angular Frequency = $ 2.0 * pi * {frequency}
+  Active Solvers(6) = 1 2 3 4 5 6 7
 End
   '''.format(frequency)
 
