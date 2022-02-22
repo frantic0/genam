@@ -136,8 +136,8 @@ End
 
 
 Body 1
-  Target Bodies(1) = $pml_bottom
-  Name = "pml_bottom"
+  Target Bodies(1) = $pml_inlet
+  Name = "pml_inlet"
   Equation = 1
   Material = 1
 End
@@ -177,8 +177,8 @@ Body 3
 End
 
 Body 4
-  Target Bodies(1) = $pml_top
-  Name = "pml_top"
+  Target Bodies(1) = $pml_outlet
+  Name = "pml_outlet"
   Equation = 1
   Material = 1
 End
@@ -387,10 +387,10 @@ End
 ! mesh.names
 !
 ! ----- names for bodies -----
-! $ pml_bottom = 1
+! $ pml_inlet = 1
 ! $ brick = 2
 ! $ air = 3
-! $ pml_top = 4
+! $ pml_outlet = 4
 ! ----- names for boundaries -----
 ! $ top_bottom_walls = 1
 ! $ inlet = 2
