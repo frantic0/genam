@@ -27,7 +27,6 @@ This is the list of software required to run the Python scripts in the next sect
 
 ### Elmer Template
 
-template.sif 
 
 ### Command Line Interface
 
@@ -42,6 +41,12 @@ Generate .unv and Elmer .sif template for for labyrinthine brick #15
 ```
 python '..\..\..\..\..\SALOME-9.7.0\salome' shell -p 2819 .\process_geometry.py args:15,40000,41000,1000 
 ```
+
+You can also use salome in batch mode
+
+'''
+..\..\..\..\..\..\SALOME-9.8.0\salome -t -w1 .\process_geometry.py args:12,40000,41000,250 .\run_elmer_solver.py args:12 .\process_geometry.py args:13,40000,41000,250 .\run_elmer_solver.py args:13
+''''
 
 
 Generate .unv and Elmer .sif template for all labyrinthine bricks
