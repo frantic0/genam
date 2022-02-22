@@ -109,7 +109,44 @@ innerRad = 0.2165 # λο / 40
 
 
 
-def parameterize_brick( waveLength, barLength, barSpacing ):
+def draw_hardcoded_brick():
+  ### Make brick sketch
+  sk = geompy.Sketcher2D()
+  sk.addPoint(0.0000000, 1.0910000)
+  sk.addArcRadiusAbsolute(0.8660000, 1.9570000, -0.8660000, 0.0000000)
+  sk.addSegmentAbsolute(1.3990000, 1.9570000)
+  sk.addArcAbsolute(1.3990000, 2.3900000)
+  sk.addSegmentAbsolute(0.8660000, 2.3900000)
+  sk.addArcRadiusAbsolute(0.0000000, 3.2570000, -0.8660000, 0.0000000)
+  sk.addSegmentAbsolute(0.0000000, 3.9670000)
+  sk.addArcRadiusAbsolute(0.8660000, 4.8330000, -0.8660000, 0.0000000)
+  sk.addSegmentAbsolute(1.3990000, 4.8330000)
+  sk.addArcAbsolute(1.3990000, 5.2660000)
+  sk.addSegmentAbsolute(0.8660000, 5.2660000)
+  sk.addArcRadiusAbsolute(0.0000000, 6.1320000, -0.8660000, 0.0000000)
+  sk.addSegmentAbsolute(0.0000000, 8.6610000)
+  sk.addSegmentAbsolute(3.8480000, 8.6610000)
+  sk.addSegmentAbsolute(3.8480000, 7.5700000)
+  sk.addArcRadiusAbsolute(2.9810000, 6.7040000, -0.8660000, 0.0000000)
+  sk.addSegmentAbsolute(2.4480000, 6.7040000)
+  sk.addArcAbsolute(2.4480000, 6.2710000)
+  sk.addSegmentAbsolute(2.9810000, 6.2710000)
+  sk.addArcRadiusAbsolute(3.8480000, 5.4050000, -0.8660000, 0.0000000)
+  sk.addSegmentAbsolute(3.8480000, 4.6940000)
+  sk.addArcRadiusAbsolute(2.9810000, 3.8280000, -0.8660000, 0.0000000)
+  sk.addSegmentAbsolute(2.4480000, 3.8280000)
+  sk.addArcAbsolute(2.4480000, 3.3950000)
+  sk.addSegmentAbsolute(2.9810000, 3.3950000)
+  sk.addArcRadiusAbsolute(3.8480000, 2.5290000, -0.8660000, 0.0000000)
+  sk.addSegmentAbsolute(3.8480000, 0.0000000)
+  sk.addSegmentAbsolute(0.0000000, 0.0000000)
+  sk.addSegmentAbsolute(0.0000000, 1.0910000)
+  wire = geompy.MakeMarker(0, 0, 0, 1, 0, 0, 0, 1, 0)
+  return sk.wire(wire)
+
+
+
+def parameterize_2D_inner_shape( waveLength, barLength, barSpacing ):
 
   ### Make brick sketch
   sk = geompy.Sketcher2D()
@@ -212,7 +249,7 @@ def sketch_brick(brickID):
   barLength = list(barLen.values())[brickID - 1] * l0
   barSpacing = list(barSpa.values())[brickID -1] * l0
 
-  return parameterize_brick( l0, barLength, barSpacing )
+  return parameterize_2D_inner_shape( l0, barLength, barSpacing )
 
 
 
@@ -225,8 +262,8 @@ def draw_bricks():
   for bID in range(1, 16): 
     barLength = list(barLen.values())[bID - 1] * l0   # bl * l0
     barSpacing = list(barSpa.values())[bID - 1] * l0  # bs * l0
-    Sketch = parameterize_brick( l0, barLength, barSpacing )
+    Sketch = parameterize_2D_inner_shape( l0, barLength, barSpacing )
     geompy.addToStudy( Sketch, 'Sketch' + str(bID) )
 
 
-draw_bricks()
+# draw_bricks()

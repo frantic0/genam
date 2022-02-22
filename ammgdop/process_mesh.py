@@ -51,83 +51,20 @@ boxSide = waveLenght/2 + 2 * waveLenght/40
 
 pml_inlet_height = 2.573
 
-pml_inlet = geompy.MakeBoxDXDYDZ(boxSide, boxSide, pml_inlet_height)
 
-air_inlet_height = 4.288
+air_bottom_height = 4.288
 
-
-box_1 = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( boxSide, boxSide, air_inlet_height), 0, 0, pml_inlet_height )
-
-box_2 = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( boxSide, boxSide, air_inlet_height*3 ), 0, 0, pml_inlet_height + air_inlet_height + waveLenght )
-
-pml_outlet = geompy.MakeTranslation( pml_inlet, 0, 0, pml_inlet_height + air_inlet_height + waveLenght + 3*air_inlet_height )
-
-
-
-
-barLen = {  'b1': 0.062, 
-            'b2': 0.092, 
-            'b3': 0.112, 
-            'b4': 0.132, 
-            'b5': 0.152, 
-            'b6': 0.162, 
-            'b7': 0.171, 
-            'b8': 0.191, 
-            'b9': 0.221, 
-            'b10': 0.241, 
-            'b11': 0.251, 
-            'b12': 0.271, 
-            'b13': 0.281, 
-            'b14': 0.301, 
-            'b15': 0.321 
-          }
-
-barSpa = {  'b1': 0.216, 
-            'b2': 0.212, 
-            'b3': 0.207,
-            'b4': 0.189, 
-            'b5': 0.161, 
-            'b6': 0.166, 
-            'b7': 0.171, 
-            'b8': 0.134, 
-            'b9': 0.257, 
-            'b10': 0.234, 
-            'b11': 0.230, 
-            'b12': 0.207, 
-            'b13': 0.203, 
-            'b14': 0.175, 
-            'b15': 0.152 
-          }
-
-filletRad = { 'b1': 0.062, 
-              'b2': 0.092, 
-              'b3': 0.1,
-              'b4': 0.1, 
-              'b5': 0.1, 
-              'b6': 0.1, 
-              'b7': 0.1, 
-              'b8': 0.1, 
-              'b9': 0.1, 
-              'b10': 0.1, 
-              'b11': 0.1, 
-              'b12': 0.1, 
-              'b13': 0.1, 
-              'b14': 0.1, 
-              'b15': 0.1 
-          }
 
 # Parse CLI arguments
 if len(sys.argv[1:]) >= 1:
   brickID = int(sys.argv[1:][0])
 else:
-  brickID = 4
+  brickID = 1
 
 print("Generating brick #" + str(brickID) )
 
 barLength = list(barLen.values())[brickID - 1] * waveLenght
 barSpacing = list(barSpa.values())[brickID -1] * waveLenght
-
-
 
 
 Sketch_1 = parameterize_2D_inner_shape( waveLenght, barLength, barSpacing )
@@ -142,7 +79,7 @@ brick_inner = sketch_to_volume( geompy, Sketch_1, waveLenght/2, rotation, transl
 
 brick_outer = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( boxSide, boxSide, waveLenght), \
                                       0, 0, \
-                                      pml_inlet_height + air_inlet_height )
+                                      pml_inlet_height + air_bottom_height )
 
 brick_fused = geompy.MakeFuseList([brick_outer, brick_inner], True, True)
 # geompy.addToStudy( brick_fused, 'Fused' )
@@ -284,7 +221,7 @@ elif brickID==4:
                                                 Face_19, \
                                                 Face_22, Face_23, Face_24, \
                                                 Face_27, Face_28, \
-                                                Face_30, Face_32, Face_33, \
+                                                Face_30, Face_31, Face_32, Face_33, \
                                                 Face_36, \
                                                 Face_39, Face_40, Face_41, Face_42, Face_43, Face_44, Face_45, Face_46, Face_47, Face_48, Face_49, \
                                                 Face_52])
@@ -460,7 +397,7 @@ for num, f in enumerate(faces): # add faces to study
 for num, s in enumerate(solids): # add solids to study
   geompy.addToStudyInFather(Structure, s, 'solid_{}'.format(num + 1))  
 
-geompy.addToStudy(Sketch_1, 'Sketch') 
+
 
 end = time.time()
 print("Geometry computation time: {:.2f} sec".format(end - start))
