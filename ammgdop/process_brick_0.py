@@ -132,6 +132,8 @@ geompy.UnionList(Auto_group_for_right, [Face_26, Face_27, Face_29, Face_30])
 
 Auto_group_for_brick_faces = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set brick faces
 geompy.UnionList(Auto_group_for_brick_faces, [Face_3, \
+                                              Face_6, \
+                                              Face_9, \
                                               Face_12, \
                                               Face_15, Face_16, \
                                               Face_19, \
@@ -184,7 +186,6 @@ Structure_1 = smesh.Mesh(Structure)
 NETGEN_1D_2D_3D = Structure_1.Tetrahedron( algo=smeshBuilder.NETGEN_1D2D3D )
 NETGEN_3D_Parameters_1 = NETGEN_1D_2D_3D.Parameters()
 NETGEN_3D_Parameters_1.SetMaxSize( 3.1461 )
-
 # At 40 kHz the wavelength is around 8.5 mm. With standard nodal FEs you need at least ~10 elements per wave. 
 # Mesh size, h, should be smaller than 1 mm in order to capture the phenomena.
 NETGEN_3D_Parameters_1.SetMinSize( 0.044741 ) 
@@ -287,7 +288,7 @@ try:
   if not os.path.exists(newpath):
     os.makedirs(newpath)
   os.chdir(newpath)
-  Structure_1.ExportUNV( r'C:/Users/francisco/Documents/dev/pipeline/data/brick-{}.unv'.format(brickID) )
+  Structure_1.ExportUNV( r'C:/Users/francisco/Documents/dev/pipeline/data/brick-{}.unv'.format(0) )
   pass
 except:
   print('ExportUNV() failed. Invalid file name?')

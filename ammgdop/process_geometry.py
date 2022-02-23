@@ -120,7 +120,7 @@ filletRad = { 'b1': 0.062,
 if len(sys.argv[1:]) >= 1:
   brickID = int(sys.argv[1:][0])
 else:
-  brickID = 4
+  brickID = 15
 
 print("Generating brick #" + str(brickID) )
 
