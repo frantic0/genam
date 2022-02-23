@@ -143,20 +143,7 @@ Body 1
 End
 
 
-Body Force 1
-  Name = "Pabs"
-Pabs = Variable Pressure Wave 1, Pressure Wave 2 
-      Real MATC "sqrt(tx(0)^2+tx(1)^2)"
-  Name = "SPL" 
-SPL = Variable Pressure Wave 1, Pressure Wave 2
-      Real MATC "20*log(((sqrt(tx(0)^2+tx(1)^2))/(sqrt(2)*20e-6)))"
-  Name = "Phase"
-Phase = Variable Pressure Wave 1, Pressure Wave 2
-      Real MATC "atan(tx(0)/(tx(1)))"
-  Name = "PhaseAtan2"    
-PhaseAtan2 = Variable Pressure Wave 1, Pressure Wave 2
-      Real MATC "atan2(tx(0),tx(1))"
-End
+
 
 Body 2
   Target Bodies(1) = $brick
@@ -182,6 +169,12 @@ Body 4
   Equation = 1
   Material = 1
 End
+
+
+! %%%%%%%%%%%%
+! %% SOLVERS SECTIONS %%
+! %% 
+! %%%%%%%%%%%%
 
 
 ! Export the Sound Pressure Level with the Pressure Wave variables in vtu file (see below body force)
@@ -373,15 +366,29 @@ End
 
 
 
-
+Body Force 1
+  Name = "Pabs"
+Pabs = Variable Pressure Wave 1, Pressure Wave 2 
+      Real MATC "sqrt(tx(0)^2+tx(1)^2)"
+  Name = "SPL" 
+SPL = Variable Pressure Wave 1, Pressure Wave 2
+      Real MATC "20*log(((sqrt(tx(0)^2+tx(1)^2))/(sqrt(2)*20e-6)))"
+  Name = "Phase"
+Phase = Variable Pressure Wave 1, Pressure Wave 2
+      Real MATC "atan(tx(0)/(tx(1)))"
+  Name = "PhaseAtan2"    
+PhaseAtan2 = Variable Pressure Wave 1, Pressure Wave 2
+      Real MATC "atan2(tx(0),tx(1))"
+End
 
 
 
 ! BOUNDARY CONDITIONS
 ! 
 ! the usual BC for the Helmholtz PDE is to give the flux on the boundary
-! also define the Dirichlet boundary conditions for all the primary field variables -- in our case the real component of pressure, Pressure 1
-! can also define the Sommerfeldt or far field BC
+! also define the Dirichlet boundary conditions for all the primary field variables 
+! -- in our case the real component of pressure, Pressure 1
+! we can also define the Sommerfeldt or far field BC
 ! Elmer mesh files (mesh.*) contain information on how the boundaries of the bodies are divided into parts distinguished by their own boundary numbers
 ! Target Boundaries is used to list the boundary numbers that form the domain for imposing the boundary condition
 ! mesh.names
@@ -411,7 +418,9 @@ End
 ! %%%%%%%%%%%%
 
 
-! At the inlet boundary condition, which corresponds to ! $ inlet = 2
+! Boundary condition at the inlet ($inlet = 2) for variable Pressure
+! Pressure i Real - Dirichlet boundary condition for real and imaginary parts of the variable. 
+! Here the values i= 1, 2 correspond to the real and imaginary parts of the unknown field.
 
 Boundary Condition 1
   Target Boundaries(1) = $ inlet
@@ -434,8 +443,12 @@ End
 ! %% Walls %% 
 ! %%%%%%%%%%%
 
+
+! Wave Flux 1,2 Real
+! Values i= 1, 2 correspond to the real and imaginary parts of the boundary flux.
 ! Make boundaries of the brick rigid, 
 ! by imposing the normal component particle velocity null at the boundaries
+
 Boundary Condition 2
 Target Boundaries(1) = $ brick_faces 
   Name = "Wall"
@@ -446,6 +459,10 @@ End
 ! %%%%%%%%%%%%
 ! %% Air    %% 
 ! %%%%%%%%%%%%
+
+! Wave Impedance 1,2 Real — used to define the real and imaginary parts of the complex-valued quantity Z in the Sommerfeldt or far field boundary condition.
+! which may be defined by the user. Incoming and outgoing waves may be approximated by setting Z = ±c, respectively.
+! Here the values i= 1, 2 correspond to the real and imaginary parts of Z.
 
 Boundary Condition 3
 Target Boundaries(2) = $ outlet top_bottom_walls 
