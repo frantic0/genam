@@ -140,11 +140,6 @@ geompy.UnionList(Auto_group_for_brick_faces, [Face_3, \
                                               Face_22, \
                                               Face_25, Face_28 ])
 
-
-
-
-
-
 # Add autogroups to study
 
 

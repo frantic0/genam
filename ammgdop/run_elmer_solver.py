@@ -1,7 +1,5 @@
-#
 
 import sys, os
-
 
 
 def run_elmer_solver(dirname):

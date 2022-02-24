@@ -1,5 +1,8 @@
-from process_geometry import pg 
-from run_elmer_solver import rs
-from utility_functions import 
-from export_solver_input_file import export_parameterisable_solver_input_file as export_sif
-from parametric_shape import parameterize_2D_inner_shape
+from . import process_geometry as geo 
+from . import run_elmer_solver as solver
+from . import utility_functions as util  
+from . import export_solver_input_file as sif
+# from . import parametric_shape as shape
+
+
+

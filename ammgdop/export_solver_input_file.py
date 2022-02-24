@@ -1,4 +1,40 @@
 
+import os
+
+class sif_exporter:
+  def __init__(self):
+    pass
+
+  def export_parameterisable_solver_input_file( dirname, frequency):
+  
+    sif = """
+    Input
+
+
+    Output
+
+      .unv to *.mesh (Elmer w)
+    
+    """
+    
+    print(dirname)
+    os.chdir(f"C:/Users/francisco/Documents/dev/pipeline/data/{dirname}")
+  
+    sif = f'''
+  Equation 1
+    Name = "Helmholtz"
+    ! Frequency = Variable time; Real MATC "freqVec(tx - 1)"
+    Angular Frequency = $ 2.0 * pi * {frequency}
+    Active Solvers(6) = 1 2 3 4 5 6 7
+  End
+    '''.format(frequency)
+
+
+    print(sif)
+    file = open(f"case-{frequency}.sif","w")
+    file.write(sif)
+    file.close() 
+
 
 def export_parameterisable_solver_input_file( dirname, frequency):
   """
@@ -65,7 +101,7 @@ Body 1
 End
 
 
-Body Force 1
+Body Forc e 1
   Name = "Pabs"
 Pabs = Variable Pressure Wave 1, Pressure Wave 2 
       Real MATC "sqrt(tx(0)^2+tx(1)^2)"
@@ -375,7 +411,12 @@ Target Boundaries(2) = $ outlet top_bottom_walls
   Wave Impedance 1 = $ c0
   Save Scalars = Logical True
 End
+  '''.format(frequency)
 
+
+def write_periodic_boundary_conditions():
+
+  pbc = f''' 
 ! %%%%%%%%%%%
 ! %%  PBC  %%
 ! %%%%%%%%%%%
@@ -415,31 +456,3 @@ End
   
 
 
-
-def export_parameterisable_solver_input_file1( dirname, frequency):
-  """
-  Input
-
-
-  Output
-
-    .unv to *.mesh (Elmer w)
-  
-  """
-  print(dirname)
-  os.chdir(f"C:/Users/francisco/Documents/dev/pipeline/data/{dirname}")
- 
-  sif = f'''
-Equation 1
-  Name = "Helmholtz"
-  ! Frequency = Variable time; Real MATC "freqVec(tx - 1)"
-  Angular Frequency = $ 2.0 * pi * {frequency}
-  Active Solvers(6) = 1 2 3 4 5 6 7
-End
-  '''.format(frequency)
-
-
-  print(sif)
-  file = open(f"case-{frequency}.sif","w")
-  file.write(sif)
-  file.close() 
