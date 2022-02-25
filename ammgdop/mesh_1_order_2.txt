@@ -1,0 +1,152 @@
+----------------
+Base information
+----------------
+
+Name: Structure-1
+Object: Mesh
+
+Nodes: 272834
+
+Elements: 218483
+    Linear: 0
+    Quadratic: 218483
+    Bi-Quadratic: 0
+
+    0D: 0
+
+    Balls: 0
+
+    1D (edges): 1623
+        Linear: 0
+        Quadratic: 1623
+
+    2D (faces): 21043
+        Linear: 0
+        Quadratic: 21043
+        Bi-Quadratic: 0
+
+        Triangles: 21043
+            Linear: 0
+            Quadratic: 21043
+            Bi-Quadratic: 0
+        Quadrangles: 0
+            Linear: 0
+            Quadratic: 0
+            Bi-Quadratic: 0
+        Polygons: 0
+            Linear: 0
+            Quadratic: 0
+
+    3D (volumes): 195817
+        Linear: 0
+        Quadratic: 195817
+        Bi-Quadratic: 0
+
+        Tetrahedrons: 195817
+            Linear: 0
+            Quadratic: 195817
+        Hexahedrons: 0
+            Linear: 0
+            Quadratic: 0
+            Bi-Quadratic: 0
+        Pyramids: 0
+            Linear: 0
+            Quadratic: 0
+        Prisms: 0
+            Linear: 0
+            Quadratic: 0
+            Bi-Quadratic: 0
+        Hexagonal Prisms: 0
+        Polyhedrons: 0
+
+-------------------
+Element information
+-------------------
+
+----------------------
+Additional information
+----------------------
+
+Name: Structure-1
+    Type: Based on geometry
+    Shape: Structure-1
+    Groups
+        Volumes
+            pml_inlet
+                Type: Group on geometry
+                Shape: solid_1
+                Size: 668
+                Color: #ffaa00
+                Underlying nodes: 1210
+            brick
+                Type: Group on geometry
+                Shape: solid_2
+                Size: 38816
+                Color: #ffaa00
+                Underlying nodes: 69180
+            air
+                Type: Group on geometry
+                Shape: solid_3
+                Size: 155872
+                Color: #ffaa00
+                Underlying nodes
+            pml_outlet
+                Type: Group on geometry
+                Shape: solid_4
+                Size: 461
+                Color: #ffaa00
+                Underlying nodes: 898
+        Faces
+            top_bottom_walls
+                Type: Group on geometry
+                Shape: Auto_group_for_top_bottom_walls
+                Size: 126
+                Color: #ffaa00
+                Underlying nodes: 294
+            inlet
+                Type: Group on geometry
+                Shape: Auto_group_for_inlet
+                Size: 86
+                Color: #ffaa00
+                Underlying nodes: 197
+            outlet
+                Type: Group on geometry
+                Shape: Auto_group_for_outlet
+                Size: 62
+                Color: #ffaa00
+                Underlying nodes: 145
+            brick_faces
+                Type: Group on geometry
+                Shape: Auto_group_for_brick_faces
+                Size: 17140
+                Color: #ffaa00
+                Underlying nodes: 34280
+            brick_left
+                Type: Group on geometry
+                Shape: face_3
+                Size: 1361
+                Color: #ffaa00
+                Underlying nodes: 2828
+            brick_front
+                Type: Group on geometry
+                Shape: face_21
+                Size: 1640
+                Color: #ffaa00
+                Underlying nodes: 3409
+
+-------------------
+Quality information
+-------------------
+
+Name:  Structure-1
+Nodes Information:
+    Number of the free nodes: 
+    Number of the double nodes: 
+Edges Information:
+    Number of the double edges: 0
+Faces Information:
+    Number of the double faces: 
+    Number of the over-constrained: 
+Volumes Information:
+    Number of the double volumes: 
+    Number of the over-constrained: 

@@ -19,5 +19,5 @@ def run_elmer_solver(dirname):
     os.system('cmd /c "ElmerSolver {}"'.format(fileName))  
 
 
-dirname = int(sys.argv[1:][0])
-run_elmer_solver(dirname)
+# dirname = int(sys.argv[1:][0])
+# run_elmer_solver(dirname)

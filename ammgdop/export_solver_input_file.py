@@ -1,11 +1,14 @@
 
 import os
 
-class sif_exporter:
+class SIF_Exporter:
   def __init__(self):
     pass
 
-  def export_parameterisable_solver_input_file( dirname, frequency):
+  def __repr__(self):
+    return 'SIF_Exporter()'
+
+  def export_parameterisable_solver_input_file(self, dirname, frequency):
   
     sif = """
     Input
@@ -18,7 +21,8 @@ class sif_exporter:
     """
     
     print(dirname)
-    os.chdir(f"C:/Users/francisco/Documents/dev/pipeline/data/{dirname}")
+    print(os.getcwd())
+    # os.chdir(f"C:/Users/francisco/Documents/dev/pipeline/data/{dirname}")
   
     sif = f'''
   Equation 1

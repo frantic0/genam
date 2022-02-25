@@ -1,0 +1,152 @@
+----------------
+Base information
+----------------
+
+Name: Structure-no-brick
+Object: Mesh
+
+Nodes: 74999
+
+Elements: 57947
+    Linear: 0
+    Quadratic: 57947
+    Bi-Quadratic: 0
+
+    0D: 0
+
+    Balls: 0
+
+    1D (edges): 408
+        Linear: 0
+        Quadratic: 408
+
+    2D (faces): 6016
+        Linear: 0
+        Quadratic: 6016
+        Bi-Quadratic: 0
+
+        Triangles: 6016
+            Linear: 0
+            Quadratic: 6016
+            Bi-Quadratic: 0
+        Quadrangles: 0
+            Linear: 0
+            Quadratic: 0
+            Bi-Quadratic: 0
+        Polygons: 0
+            Linear: 0
+            Quadratic: 0
+
+    3D (volumes): 51523
+        Linear: 0
+        Quadratic: 51523
+        Bi-Quadratic: 0
+
+        Tetrahedrons: 51523
+            Linear: 0
+            Quadratic: 51523
+        Hexahedrons: 0
+            Linear: 0
+            Quadratic: 0
+            Bi-Quadratic: 0
+        Pyramids: 0
+            Linear: 0
+            Quadratic: 0
+        Prisms: 0
+            Linear: 0
+            Quadratic: 0
+            Bi-Quadratic: 0
+        Hexagonal Prisms: 0
+        Polyhedrons: 0
+
+-------------------
+Element information
+-------------------
+
+----------------------
+Additional information
+----------------------
+
+Name: Structure-no-brick
+    Type: Based on geometry
+    Shape: Structure-no-brick
+    Groups
+        Volumes
+            pml_inlet
+                Type: Group on geometry
+                Shape: solid_1
+                Size: 4011
+                Color: #ffaa00
+                Underlying nodes: 6289
+            air
+                Type: Group on geometry
+                Shape: solid_2
+                Size: 43567
+                Color: #ffaa00
+                Underlying nodes: 63427
+            pml_outlet
+                Type: Group on geometry
+                Shape: solid_3
+                Size: 3945
+                Color: #ffaa00
+                Underlying nodes: 6209
+        Faces
+            top_bottom_walls
+                Type: Group on geometry
+                Shape: Auto_group_for_top_bottom_walls
+                Size: 422
+                Color: #ffaa00
+                Underlying nodes: 926
+            inlet
+                Type: Group on geometry
+                Shape: Auto_group_for_inlet
+                Size: 214
+                Color: #ffaa00
+                Underlying nodes: 469
+            outlet
+                Type: Group on geometry
+                Shape: Auto_group_for_outlet
+                Size: 208
+                Color: #ffaa00
+                Underlying nodes: 457
+            left
+                Type: Group on geometry
+                Shape: left
+                Size: 1358
+                Color: #ffaa00
+                Underlying nodes: 2861
+            front
+                Type: Group on geometry
+                Shape: front
+                Size: 1280
+                Color: #ffaa00
+                Underlying nodes: 2705
+            back
+                Type: Group on geometry
+                Shape: back
+                Size: 1266
+                Color: #ffaa00
+                Underlying nodes: 2677
+            right
+                Type: Group on geometry
+                Shape: right
+                Size: 1268
+                Color: #ffaa00
+                Underlying nodes: 2681
+
+-------------------
+Quality information
+-------------------
+
+Name:  Structure-no-brick
+Nodes Information:
+    Number of the free nodes: 
+    Number of the double nodes: 
+Edges Information:
+    Number of the double edges: 0
+Faces Information:
+    Number of the double faces: 
+    Number of the over-constrained: 
+Volumes Information:
+    Number of the double volumes: 
+    Number of the over-constrained: 

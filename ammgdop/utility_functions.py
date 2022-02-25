@@ -100,9 +100,12 @@ Header
   Mesh DB "." "."
   Include Path ""
   Results Directory ""
-  $rho0 = 1.205
-  $c0 = 343.0
-  $freqVec = vector(100,1800,50)
+  $ rho0 = 1.205
+  $ c0 = -343.0
+  $ f = 40000
+  $ p = 1.205
+  $ U = 10
+  ! $freqVec = vector(100,1800,50)
 End
 
 ! general information that is not specific to a particular Helmholtz
@@ -110,13 +113,13 @@ Simulation
   Max Output Level = 5
   Coordinate System = Cartesian
   Coordinate Mapping(3) = 1 2 3
-  !  Simulation Type = Scanning     ! Frequency sweeps
+  Coordinate Scaling = Real 0.001   ! set dimensions in mm (instead of m)
+  !  Simulation Type = Scanning     ! set Frequency sweeps
   Simulation Type = Steady state    ! set Stationary problem
   Steady State Max Iterations = 1
   Output Intervals = 1
   Timestepping Method = BDF
   BDF Order = 1
-  Coordinate Scaling = Real 0.001   ! set dimensions in mm (instead of m)
   Post File = case-{frequency}.vtu  ! Export VTU file for visualization in Paraview
 End
 
@@ -134,16 +137,12 @@ End
 ! %% by referring to definitions given in a specified equation section, material section, body force section, and initial condition section. 
 ! %%%%%%%%%%%%
 
-
 Body 1
   Target Bodies(1) = $pml_inlet
   Name = "pml_inlet"
   Equation = 1
   Material = 1
 End
-
-
-
 
 Body 2
   Target Bodies(1) = $brick
@@ -152,15 +151,12 @@ Body 2
   Material = 2
 End
 
-
-! Body 3 (Air) has Body Force 1 associated 
-
 Body 3
   Target Bodies(1) = $air
   Name = "air"
   Equation = 1
   Material = 1
-  Body Force = 1 ! Force applied to Air body, with scalars apply 
+  Body Force = 1                    ! Force applied to Air body, with scalars apply 
 End
 
 Body 4
@@ -203,106 +199,108 @@ Solver 1
   Linear System Max Iterations = 1000
   Linear System Convergence Tolerance = 1.0e-10
   BiCGstabl polynomial degree = 2
-  Linear System Preconditioning = ILU2
-  ! Linear System Preconditioning = ILUT
+  ! Linear System Preconditioning = ILU0
+  ! Linear System Preconditioning = ILU1
+  ! Linear System Preconditioning = ILU2
+  Linear System Preconditioning = ILUT
   Linear System ILUT Tolerance = 1.0e-3
   Linear System Abort Not Converged = False
   Linear System Residual Output = 10
   Linear System Precondition Recompute = 1
 End
 
-! “Flux Computation” - ElmerModelsManual.pdf
-Solver 2
-  Equation = "flux compute 1"
-  Procedure = "FluxSolver" "FluxSolver"
-  Calculate Flux = Logical True
-  Target Variable = String "Pressure Wave 1"
-  Flux Coefficient = String "Cv"
-  Linear System Solver = Direct
-  Linear System Direct Method = Banded
-End
+! ! “Flux Computation” - ElmerModelsManual.pdf
+! Solver 2
+!   Equation = "flux compute 1"
+!   Procedure = "FluxSolver" "FluxSolver"
+!   Calculate Flux = Logical True
+!   Target Variable = String "Pressure Wave 1"
+!   Flux Coefficient = String "Cv"
+!   Linear System Solver = Direct
+!   Linear System Direct Method = Banded
+! End
 
-Solver 3
-  Equation = "flux compute 2"
-  Procedure = "FluxSolver" "FluxSolver"
-  Calculate Flux = Logical True
-  Target Variable = String "Pressure Wave 2"
-  Flux Coefficient = String "Cv"
-  Linear System Solver = Direct
-  Linear System Direct Method = Banded
-End
+! Solver 3
+!   Equation = "flux compute 2"
+!   Procedure = "FluxSolver" "FluxSolver"
+!   Calculate Flux = Logical True
+!   Target Variable = String "Pressure Wave 2"
+!   Flux Coefficient = String "Cv"
+!   Linear System Solver = Direct
+!   Linear System Direct Method = Banded
+! End
 
-Solver 4
-  Exec Solver = After Timestep
-  Equation = "Grad compute 1"
-  Procedure = "FluxSolver" "FluxSolver"
-  Calculate Grad = True
-  Target Variable = Pressure Wave 1
-  Linear System Solver = Iterative
-  Linear System Iterative Method = BiCGStab
-  Linear System Preconditioning = None
-  Linear System Max Iterations = 100
-  Linear System Convergence Tolerance = 1.0e-10
-End
-
-
-Solver 5
-  Exec Solver = After Timestep
-  Equation = "Grad compute 2"
-  Procedure = "FluxSolver" "FluxSolver"
-  Calculate Grad = True
-  Target Variable = Pressure Wave 2
-  Linear System Solver = Iterative
-  Linear System Iterative Method = BiCGStab
-  Linear System Preconditioning = None
-  Linear System Max Iterations = 100
-  Linear System Convergence Tolerance = 1.0e-10
-End
-
-Solver 6
-  Exec Solver = after Timestep
-  Equation = "SaveScalars"
-  Procedure = "SaveData" "SaveScalars"  
-  Filename = File "SPLmean.dat"
-  Variable 1 = "Pressure Wave 1"
-  Operator 1 = "boundary mean"
-  Variable 2 = "Pressure Wave 2"
-  Operator 2 = "boundary mean"
-  Variable 3 = "Pressure Wave 1 Grad 1"
-  Operator 3 = "boundary mean"
-  Variable 4 = "Pressure Wave 2 Grad 1"
-  Operator 4 = "boundary mean"
-  Variable 5 = "Pressure Wave 1 Grad 2"
-  Operator 5 = "boundary mean"
-  Variable 6 = "Pressure Wave 2 Grad 2"
-  Operator 6 = "boundary mean"
-  Variable 7 = "Pressure Wave 1 Grad 3"       ! Only exists for 3D
-  Operator 7 = "boundary mean"
-  Variable 8 = "Pressure Wave 2 Grad 3"
-  Operator 8 = "boundary mean"
-  ! Want to append to file?
-  File Append = Logical True
-End
+! Solver 4
+!   Exec Solver = After Timestep
+!   Equation = "Grad compute 1"
+!   Procedure = "FluxSolver" "FluxSolver"
+!   Calculate Grad = True
+!   Target Variable = Pressure Wave 1
+!   Linear System Solver = Iterative
+!   Linear System Iterative Method = BiCGStab
+!   Linear System Preconditioning = None
+!   Linear System Max Iterations = 100
+!   Linear System Convergence Tolerance = 1.0e-10
+! End
 
 
+! Solver 5
+!   Exec Solver = After Timestep
+!   Equation = "Grad compute 2"
+!   Procedure = "FluxSolver" "FluxSolver"
+!   Calculate Grad = True
+!   Target Variable = Pressure Wave 2
+!   Linear System Solver = Iterative
+!   Linear System Iterative Method = BiCGStab
+!   Linear System Preconditioning = None
+!   Linear System Max Iterations = 100
+!   Linear System Convergence Tolerance = 1.0e-10
+! End
 
-Solver 7
-  Equation = Result Output
-  Procedure = "ResultOutputSolve" "ResultOutputSolver"
-  Save Geometry Ids = False
-  Output File Name = "case-{frequency}"
-  Output Format = Vtu
-  Scalar Field 2 = Pressure wave 2
-  Scalar Field 1 = Pressure wave 1
-  Vector Field 1 = Pressure wave 2 flux
-  Vector Field 2 = Pressure wave 1 flux
-  Vector Field 1 = Pressure wave 2 grad
-  Vector Field 2 = Pressure wave 1 grad
-  Scalar Field 3 = "Pabs"
-  Scalar Field 4 = "SPL"
-  Scalar Field 5 = "Phase"
-  Scalar Field 6 = "PhaseAtan2"
-End
+! Solver 6
+!   Exec Solver = after Timestep
+!   Equation = "SaveScalars"
+!   Procedure = "SaveData" "SaveScalars"  
+!   Filename = File "SPLmean.dat"
+!   Variable 1 = "Pressure Wave 1"
+!   Operator 1 = "boundary mean"
+!   Variable 2 = "Pressure Wave 2"
+!   Operator 2 = "boundary mean"
+!   Variable 3 = "Pressure Wave 1 Grad 1"
+!   Operator 3 = "boundary mean"
+!   Variable 4 = "Pressure Wave 2 Grad 1"
+!   Operator 4 = "boundary mean"
+!   Variable 5 = "Pressure Wave 1 Grad 2"
+!   Operator 5 = "boundary mean"
+!   Variable 6 = "Pressure Wave 2 Grad 2"
+!   Operator 6 = "boundary mean"
+!   Variable 7 = "Pressure Wave 1 Grad 3"       ! Only exists for 3D
+!   Operator 7 = "boundary mean"
+!   Variable 8 = "Pressure Wave 2 Grad 3"
+!   Operator 8 = "boundary mean"
+!   ! Want to append to file?
+!   File Append = Logical True
+! End
+
+
+
+! Solver 7
+!   Equation = Result Output
+!   Procedure = "ResultOutputSolve" "ResultOutputSolver"
+!   Save Geometry Ids = False
+!   Output File Name = "case-{frequency}"
+!   Output Format = Vtu
+!   Scalar Field 2 = Pressure wave 2
+!   Scalar Field 1 = Pressure wave 1
+!   Vector Field 1 = Pressure wave 2 flux
+!   Vector Field 2 = Pressure wave 1 flux
+!   Vector Field 1 = Pressure wave 2 grad
+!   Vector Field 2 = Pressure wave 1 grad
+!   Scalar Field 3 = "Pabs"
+!   Scalar Field 4 = "SPL"
+!   Scalar Field 5 = "Phase"
+!   Scalar Field 6 = "PhaseAtan2"
+! End
 
 
 ! %%%%%%%%%%%%
@@ -315,8 +313,8 @@ End
 Equation 1
   Name = "Helmholtz"
   ! Frequency = Variable time; Real MATC "freqVec(tx - 1)"
-  Angular Frequency = $ 2.0 * pi * {frequency}
-  Active Solvers(6) = 1 2 3 4 5 6
+Angular Frequency = $ 2.0 * pi * {frequency}
+  Active Solvers(1) = 1
 End
 
 ! Equation 2
@@ -338,15 +336,16 @@ End
 ! %%%%%%%%%
 
 Material 1 
-  Name = "Air"
+  Name = "Air (room temperature)"
+  Relative Permittivity = 1.00059
+  Heat Conductivity = 0.0257
+  Sound speed = 343.0
+  Density = Real MATC "p"
+  Porosity Model = Always saturated
+  Heat Capacity = 1005.0
   Viscosity = 1.983e-5
   Heat expansion Coefficient = 3.43e-3
-  Heat Conductivity = 0.0257
-  Relative Permittivity = 1.00059
-  Sound speed = 343.0
-  Heat Capacity = 1005.0
-  Density = 1.205
-  Cv = Real $ 1/(1.205 * 2.0 * pi * {frequency} )
+  !  Cv = Real $ 1/(1.205 * 2.0 * pi * {frequency} )
 End
 
 ! %%%%%%%%%%%%%
@@ -363,7 +362,6 @@ Material 2
   Poisson ratio = 0.35
   Youngs modulus = 3.2e9
 End
-
 
 
 Body Force 1
@@ -433,9 +431,8 @@ $k3=1.0
   Pressure Wave 1 = Variable Coordinate 
     Real MATC "p0 * cos(k1*tx(0) + k2*tx(1) + k3*tx(2))"
   Pressure Wave 2 = 0
-  Wave Impedance 1 = $ c0 !
+  ! Wave Impedance 1 = $ c0 !
   ! We want to save data at the inlet 
-  ! TODO how do we save data at the outlet
   Save Scalars = Logical True
 End
 
@@ -450,7 +447,7 @@ End
 ! by imposing the normal component particle velocity null at the boundaries
 
 Boundary Condition 2
-Target Boundaries(1) = $ brick_faces 
+Target Boundaries(5) = $ brick_faces brick_left brick_right brick_front brick_back
   Name = "Wall"
   Wave Flux 1 = 0
   Wave Flux 2 = 0
@@ -465,8 +462,15 @@ End
 ! Here the values i= 1, 2 correspond to the real and imaginary parts of Z.
 
 Boundary Condition 3
-Target Boundaries(2) = $ outlet top_bottom_walls 
+  Target Boundaries(1) = $ outlet 
   Name = "Air"
+  Wave Impedance 1 = $ c0
+  Save Scalars = Logical True
+End
+
+Boundary Condition 4
+  Target Boundaries(1) = $ top_bottom_walls 
+  Name = "PML"
   Wave Impedance 1 = $ c0
   Save Scalars = Logical True
 End
@@ -475,30 +479,22 @@ End
 ! %%  PBC  %%
 ! %%%%%%%%%%%
 
-! left/right
- 
-!Target Boundaries(1) = $ left
-Boundary Condition 4 
-Target Boundaries(2) = $ left brick_left
-End
-
-! Target Boundaries(1) = $ right
 Boundary Condition 5 
-Target Boundaries(2) = $ right brick_right
-  Periodic BC = 4
+  Target Boundaries(1) = $ left 
 End
 
-! front/back
-
-! Target Boundaries(1) = $ front
 Boundary Condition 6 
-  Target Boundaries(2) = $ front brick_front
+  Target Boundaries(1) = $ right 
+  Periodic BC = 5
 End
 
-! Target Boundaries(1) = $ back
 Boundary Condition 7 
-Target Boundaries(2) = $ back brick_back
-  Periodic BC = 6
+  Target Boundaries(1) = $ front 
+End
+
+Boundary Condition 8 
+  Target Boundaries(1) = $ back 
+  Periodic BC = 7
 End
   '''.format(frequency)
 

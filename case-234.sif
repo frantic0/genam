@@ -1,0 +1,8 @@
+
+  Equation 1
+    Name = "Helmholtz"
+    ! Frequency = Variable time; Real MATC "freqVec(tx - 1)"
+    Angular Frequency = $ 2.0 * pi * 234
+    Active Solvers(6) = 1 2 3 4 5 6 7
+  End
+    
