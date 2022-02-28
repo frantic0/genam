@@ -4,12 +4,13 @@ import numpy as np
 import time, os
 import random
 
-os.chdir(r"C:/Users/Francisco/Documents/dev/pipeline")
-sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline')
-
+# os.chdir(r"C:/Users/Francisco/Documents/dev/pipeline")
+# sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline')
+os.chdir(r"C:/Users/francisco/Documents/dev/pipeline/ammgdop")
+sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline/ammgdop')
 
 from utility_functions import * 
-from parametric_brick import * 
+from parametric_shape import * 
 
 salome.salome_init()
 import salome_notebook
@@ -32,44 +33,6 @@ from salome.smesh import smeshBuilder
 
 
 def process_geometry():
-
-  start = time.time()
-  geompy = geomBuilder.New()
-
-  origin = geompy.MakeVertex(0, 0, 0)
-
-  x = geompy.MakeVectorDXDYDZ(1, 0, 0)
-  y = geompy.MakeVectorDXDYDZ(0, 1, 0)
-  z = geompy.MakeVectorDXDYDZ(0, 0, 1)
-
-  geompy.addToStudy( x, 'x' )
-  geompy.addToStudy( y, 'y' )
-  geompy.addToStudy( z, 'z' )
-
-  lens_grid_n = 8 
-  waveLenght = 8.661
-
-  lens_side = waveLenght/40 + lens_grid_n * (waveLenght/2 + waveLenght/40)
-
-  boxSide = waveLenght/2 + 2 * waveLenght/40
-  
-  pml_bottom_height = 2.573
-  pml_bottom = geompy.MakeBoxDXDYDZ(lens_side, lens_side, pml_bottom_height)
-
-  air_bottom_height = 4.288
-  box_1 = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( lens_side, lens_side, air_bottom_height), 0, 0, pml_bottom_height )
-
-  box_2 = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( lens_side, lens_side, air_bottom_height*3 ), 0, 0, pml_bottom_height + air_bottom_height + waveLenght )
-
-  pml_top = geompy.MakeTranslation( pml_bottom, 0, 0, pml_bottom_height + air_bottom_height + waveLenght + 3*air_bottom_height )
-
-  # brick_outer = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( boxSide, boxSide, waveLenght), 0, 0, pml_bottom_height + air_bottom_height )
-
-
-
-
-  lens_outer = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( lens_side, lens_side, waveLenght ), 0, 0, pml_bottom_height + air_bottom_height )
-  
   barLen = {  'b1': 0.062, 
               'b2': 0.092, 
               'b3': 0.112, 
@@ -120,6 +83,71 @@ def process_geometry():
                 'b14': 0.1, 
                 'b15': 0.1 
             }
+
+  start = time.time()
+  geompy = geomBuilder.New()
+
+  origin = geompy.MakeVertex(0, 0, 0)
+
+  x = geompy.MakeVectorDXDYDZ(1, 0, 0)
+  y = geompy.MakeVectorDXDYDZ(0, 1, 0)
+  z = geompy.MakeVectorDXDYDZ(0, 0, 1)
+
+  geompy.addToStudy( x, 'x' )
+  geompy.addToStudy( y, 'y' )
+  geompy.addToStudy( z, 'z' )
+
+  lens_grid_n = 8 
+  waveLenght = 8.661
+
+  lens_side = waveLenght/40 + lens_grid_n * (waveLenght/2 + waveLenght/40)
+
+  array_side = 2* waveLenght/40 + waveLenght/2
+
+  boxSide = waveLenght/2 + 2 * waveLenght/40
+  
+  pml_bottom_height = 2.573
+  # pml_bottom_height = 0
+ 
+ 
+
+
+  air_bottom_height = 4.288
+ 
+  y_translation_shift = - ( waveLenght/40 + 4* (waveLenght/2 + waveLenght/40) )
+ 
+  pml_bottom = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( array_side, lens_side, pml_bottom_height), \
+                                        0, y_translation_shift, \
+                                        0 )
+  geompy.addToStudy( pml_bottom, 'pml_bottom' )
+
+  air_inlet = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( array_side, lens_side, air_bottom_height), \
+                                  0, y_translation_shift, \
+                                  pml_bottom_height )
+  geompy.addToStudy( air_inlet, 'air_inlet' )
+
+  lens_outer = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( array_side, lens_side, waveLenght ), \
+                                        0, y_translation_shift, \
+                                        pml_bottom_height + air_bottom_height )
+  geompy.addToStudy( lens_outer, 'lens_outer' )
+
+  air_height = 100 - (pml_bottom_height + air_bottom_height + waveLenght)
+
+  # box_2 = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ(  array_side, lens_side, air_bottom_height*3 ),\
+  air_outlet = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( array_side, lens_side, air_height ),\
+                                  0, y_translation_shift, \
+                                  pml_bottom_height + air_bottom_height + waveLenght )
+  geompy.addToStudy( air_outlet, 'air_outlet' )
+
+  probing_distance = 100
+
+  pml_top = geompy.MakeTranslation( pml_bottom, \
+                                    # 0, y_translation_shift, \
+                                    0, 0, \
+                                    # pml_bottom_height + air_bottom_height + waveLenght + 3*air_bottom_height )
+                                    probing_distance )
+                                    
+  geompy.addToStudy( pml_top, 'pml_top' )
   
   row = 0
   column = 0
@@ -127,39 +155,28 @@ def process_geometry():
   bricks = list()
 
   translation = ( 0, 0, 0 )
-
+  translation_shift = ( 0, y_translation_shift , 0 )
+  
   for m in range( 0, lens_grid_n ):
-
-    for n in range( 0, lens_grid_n ):
-
-      brickID = random.randint(1, 15)                                   # generate random brickID
-      barLength = list(barLen.values())[brickID - 1] * waveLenght
-      barSpacing = list(barSpa.values())[brickID - 1] * waveLenght
-
-      Sketch_1 = parameterize_brick( waveLenght, barLength, barSpacing )
-
-      # geompy.addToStudy( Sketch_1, 'Sketch' )
-
-      rotation = [(x, 90)]
-
-      # translation = ( waveLenght/40, waveLenght/40 + waveLenght/2, 6.861)
-
-      translation_x = waveLenght/40 + column * ( waveLenght/40 + waveLenght/2 )     
-
-      translation_y = waveLenght/40 + row * (waveLenght/40 + waveLenght/2 )     
-
-      translation = ( translation_x , translation_y + waveLenght/2 , 6.861 )
-
-      brick_inner = sketch_to_volume( geompy, Sketch_1, waveLenght/2, rotation, translation)
-      
-      # geompy.addToStudy( brick_inner, 'Inner_' + f'{row}' + '_' + f'{column}' )
-
-      bricks.append(brick_inner)
-      
-      
-      column += 1
-
-    column = 0
+  # for n in range( 0, lens_grid_n ):
+    brickID = random.randint(1, 15)                                   # generate random brickID
+    barLength = list(barLen.values())[brickID - 1] * waveLenght
+    barSpacing = list(barSpa.values())[brickID - 1] * waveLenght
+    Sketch_1 = parameterize_2D_inner_shape( waveLenght, barLength, barSpacing )
+    # geompy.addToStudy( Sketch_1, 'Sketch' )
+    rotation = [(x, 90)]
+    # translation = ( waveLenght/40, waveLenght/40 + waveLenght/2, 6.861)
+    translation_x = waveLenght/40 + column * ( waveLenght/40 + waveLenght/2 )     
+    translation_y = waveLenght/40 + row * (waveLenght/40 + waveLenght/2 )     
+    
+    translation = ( translation_shift[0] + translation_x, translation_shift[1] + translation_y + waveLenght/2 , 6.861 )
+    
+    brick_inner = sketch_to_volume( geompy, Sketch_1, waveLenght/2, rotation, translation)
+    
+    # geompy.addToStudy( brick_inner, 'Inner_' + f'{row}' + '_' + f'{column}' )
+    bricks.append(brick_inner)
+    # column += 1
+  # column = 0
     row += 1
 
 
@@ -171,7 +188,7 @@ def process_geometry():
   lens = geompy.MakeCutList( lens_fused, bricks, True)
   # geompy.addToStudy( lens, 'Lens' )
   
-  air = geompy.MakeFuseList( [ box_1, box_2 ] + bricks, True, True)
+  air = geompy.MakeFuseList( [ air_inlet, air_outlet ] + bricks, True, True)
   # geompy.addToStudy( air, 'Air' )
   
   Structure = geompy.MakePartition([pml_bottom, pml_top, lens, air], [], [], [], geompy.ShapeType["SOLID"], 0, [], 0)
@@ -180,6 +197,7 @@ def process_geometry():
   # solids = [Solid_1, Solid_2, Solid_3, Solid_4] = geompy.ExtractShapes(Structure, geompy.ShapeType["SOLID"], True)
   solids = geompy.ExtractShapes(Structure, geompy.ShapeType["SOLID"], True)
   
+  print(len(solids))
   print(solids)
   
   # faces = [Face_1, Face_2, Face_3, Face_4, Face_5, Face_6, Face_7, Face_8, Face_9, Face_10, Face_11, Face_12,\
