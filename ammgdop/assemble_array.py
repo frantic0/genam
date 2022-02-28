@@ -1,6 +1,7 @@
 import sys
 import salome
 import numpy as np
+# import pandas as pd
 import time, os
 import random
 
@@ -31,58 +32,14 @@ import SALOMEDS
 import  SMESH, SALOMEDS
 from salome.smesh import smeshBuilder
 
+data = { 
+  'length': [.062, .092, .112, .132, .152, .162, .171, .191, .221, .241, .251, .271, .281, .301, .321],
+  'distance': [.216, .212, .207, .189, .161, .166, .171, .134, .257, .234, .230, .207, .203, .175, .152],  
+  'radius': [.062, .092, .1, .1, .1, .1, .1, .1, .1, .1, .1, .1, .1, .1, .1] 
+}
 
-def process_geometry():
-  barLen = {  'b1': 0.062, 
-              'b2': 0.092, 
-              'b3': 0.112, 
-              'b4': 0.132, 
-              'b5': 0.152, 
-              'b6': 0.162, 
-              'b7': 0.171, 
-              'b8': 0.191, 
-              'b9': 0.221, 
-              'b10': 0.241, 
-              'b11': 0.251, 
-              'b12': 0.271, 
-              'b13': 0.281, 
-              'b14': 0.301, 
-              'b15': 0.321 
-            }
 
-  barSpa = {  'b1': 0.216, 
-              'b2': 0.212, 
-              'b3': 0.207,
-              'b4': 0.189, 
-              'b5': 0.161, 
-              'b6': 0.166, 
-              'b7': 0.171, 
-              'b8': 0.134, 
-              'b9': 0.257, 
-              'b10': 0.234, 
-              'b11': 0.230, 
-              'b12': 0.207, 
-              'b13': 0.203, 
-              'b14': 0.175, 
-              'b15': 0.152 
-            }
-
-  filletRad = { 'b1': 0.062, 
-                'b2': 0.092, 
-                'b3': 0.1,
-                'b4': 0.1, 
-                'b5': 0.1, 
-                'b6': 0.1, 
-                'b7': 0.1, 
-                'b8': 0.1, 
-                'b9': 0.1, 
-                'b10': 0.1, 
-                'b11': 0.1, 
-                'b12': 0.1, 
-                'b13': 0.1, 
-                'b14': 0.1, 
-                'b15': 0.1 
-            }
+def process_geometry(data):
 
   start = time.time()
   geompy = geomBuilder.New()
@@ -97,7 +54,10 @@ def process_geometry():
   geompy.addToStudy( y, 'y' )
   geompy.addToStudy( z, 'z' )
 
+  probing_distance = 100
+
   lens_grid_n = 8 
+  
   waveLenght = 8.661
 
   lens_side = waveLenght/40 + lens_grid_n * (waveLenght/2 + waveLenght/40)
@@ -109,45 +69,41 @@ def process_geometry():
   pml_bottom_height = 2.573
   # pml_bottom_height = 0
  
- 
-
-
   air_bottom_height = 4.288
  
-  y_translation_shift = - ( waveLenght/40 + 4* (waveLenght/2 + waveLenght/40) )
+  y_translation_shift = -(waveLenght/40 + 4*(waveLenght/2 + waveLenght/40))
  
   pml_bottom = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( array_side, lens_side, pml_bottom_height), \
                                         0, y_translation_shift, \
                                         0 )
-  geompy.addToStudy( pml_bottom, 'pml_bottom' )
+  # geompy.addToStudy( pml_bottom, 'pml_bottom' )
 
   air_inlet = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( array_side, lens_side, air_bottom_height), \
-                                  0, y_translation_shift, \
-                                  pml_bottom_height )
-  geompy.addToStudy( air_inlet, 'air_inlet' )
+                                      0, y_translation_shift, \
+                                      pml_bottom_height )
+  # geompy.addToStudy( air_inlet, 'air_inlet' )
 
   lens_outer = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( array_side, lens_side, waveLenght ), \
                                         0, y_translation_shift, \
                                         pml_bottom_height + air_bottom_height )
-  geompy.addToStudy( lens_outer, 'lens_outer' )
+  # geompy.addToStudy( lens_outer, 'lens_outer' )
 
-  air_height = 100 - (pml_bottom_height + air_bottom_height + waveLenght)
+  air_height = probing_distance - (pml_bottom_height + air_bottom_height + waveLenght)
 
   # box_2 = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ(  array_side, lens_side, air_bottom_height*3 ),\
   air_outlet = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( array_side, lens_side, air_height ),\
-                                  0, y_translation_shift, \
-                                  pml_bottom_height + air_bottom_height + waveLenght )
-  geompy.addToStudy( air_outlet, 'air_outlet' )
+                                        0, y_translation_shift, \
+                                        pml_bottom_height + air_bottom_height + waveLenght )
+  # geompy.addToStudy( air_outlet, 'air_outlet' )
 
-  probing_distance = 100
 
   pml_top = geompy.MakeTranslation( pml_bottom, \
                                     # 0, y_translation_shift, \
                                     0, 0, \
                                     # pml_bottom_height + air_bottom_height + waveLenght + 3*air_bottom_height )
                                     probing_distance )
-                                    
-  geompy.addToStudy( pml_top, 'pml_top' )
+
+  # geompy.addToStudy( pml_top, 'pml_top' )
   
   row = 0
   column = 0
@@ -157,12 +113,18 @@ def process_geometry():
   translation = ( 0, 0, 0 )
   translation_shift = ( 0, y_translation_shift , 0 )
   
+  bricks_faces = []
+
   for m in range( 0, lens_grid_n ):
   # for n in range( 0, lens_grid_n ):
-    brickID = random.randint(1, 15)                                   # generate random brickID
-    barLength = list(barLen.values())[brickID - 1] * waveLenght
-    barSpacing = list(barSpa.values())[brickID - 1] * waveLenght
-    Sketch_1 = parameterize_2D_inner_shape( waveLenght, barLength, barSpacing )
+
+    # brickID = random.randint(1, 15)                                   # generate random brickID
+    brickID = [*range(1,9),*range(10,16)][random.randint(0, 13)]        # generate random brickID, but exclude index 9, shape is buggy 
+
+    Sketch_1 = parameterize_2D_inner_shape( waveLenght, \
+                                            data['length'][brickID - 1] * waveLenght, \
+                                            data['distance'][brickID - 1] * waveLenght )
+
     # geompy.addToStudy( Sketch_1, 'Sketch' )
     rotation = [(x, 90)]
     # translation = ( waveLenght/40, waveLenght/40 + waveLenght/2, 6.861)
@@ -173,23 +135,39 @@ def process_geometry():
     
     brick_inner = sketch_to_volume( geompy, Sketch_1, waveLenght/2, rotation, translation)
     
+    
+    # print(*bricks_faces, sep='\n')
+    
     # geompy.addToStudy( brick_inner, 'Inner_' + f'{row}' + '_' + f'{column}' )
     bricks.append(brick_inner)
+    bricks_faces.append( geompy.ExtractShapes(brick_inner, geompy.ShapeType["FACE"], True) ) # generates 1946 faces instead of 54
+    print('Brick {} - type:{} #faces:{}'.format(m+1, brickID, len(bricks_faces[m]) ) )
     # column += 1
   # column = 0
     row += 1
 
+  print('#brickFaces: {}'.format( len(bricks_faces) * 30 ))
 
   # print(bricks)
+  # print(*bricks_faces, sep='\n')
 
   lens_fused = geompy.MakeFuseList( [ lens_outer ] + bricks, True, True)
-  # geompy.addToStudy( lens_fused, 'Fused' )
+  geompy.addToStudy( lens_fused, 'Fused' )
 
   lens = geompy.MakeCutList( lens_fused, bricks, True)
-  # geompy.addToStudy( lens, 'Lens' )
+
+  lens_faces = []
+  lens_faces =  geompy.ExtractShapes(lens, geompy.ShapeType["FACE"], True) # generates 1946 faces instead of 54
+  print( '#lensFaces: {}'.format(len(lens_faces)) ) 
+  print( *lens_faces, sep='\n') 
+  
+  # print('intersection: ', set(lens_faces) & set(bricks_faces) )  
+
+
+  geompy.addToStudy( lens, 'Lens' )
   
   air = geompy.MakeFuseList( [ air_inlet, air_outlet ] + bricks, True, True)
-  # geompy.addToStudy( air, 'Air' )
+  geompy.addToStudy( air, 'Air' )
   
   Structure = geompy.MakePartition([pml_bottom, pml_top, lens, air], [], [], [], geompy.ShapeType["SOLID"], 0, [], 0)
   # geompy.addToStudy( Structure, 'Structure' )
@@ -197,8 +175,8 @@ def process_geometry():
   # solids = [Solid_1, Solid_2, Solid_3, Solid_4] = geompy.ExtractShapes(Structure, geompy.ShapeType["SOLID"], True)
   solids = geompy.ExtractShapes(Structure, geompy.ShapeType["SOLID"], True)
   
-  print(len(solids))
-  print(solids)
+  print('#solids: {}'.format(len(solids)) )
+  # print(solids)
   
   # faces = [Face_1, Face_2, Face_3, Face_4, Face_5, Face_6, Face_7, Face_8, Face_9, Face_10, Face_11, Face_12,\
   #         Face_13, Face_14, Face_15, Face_16, Face_17, Face_18, Face_19, Face_20, Face_21, Face_22, Face_23, \
@@ -206,7 +184,14 @@ def process_geometry():
   #         Face_35, Face_36, Face_37, Face_38, Face_39, Face_40, Face_41, Face_42, Face_43, Face_44, Face_45, \
   #         Face_46, Face_47, Face_48, Face_49, Face_50, Face_51, Face_52, Face_53, Face_54] = geompy.ExtractShapes(Structure, geompy.ShapeType["FACE"], True)
   faces = geompy.ExtractShapes(Structure, geompy.ShapeType["FACE"], True) # generates 1946 faces instead of 54
-  print(len(faces))
+  print('#faces: {}'.format(len(faces)) )
+  # print(*faces, sep='\n')
+  print( type(faces[0]) )
+  print( dir(faces[0]) )
+  print( faces[1].GetType() )
+  print( geompy.ShapeIdToType(faces[0].GetType()) ) # 28 - SUBSHAPE
+  # print( geompy.BasicProperties( faces[0].GetType() ) ) # 28 - SUBSHAPE
+
   
   # Autogroups in geometry for meshing
   Auto_group_for_top_bottom_walls = geompy.CreateGroup( Structure, geompy.ShapeType["FACE"]) # set top & bottom walls
@@ -334,7 +319,7 @@ def process_geometry():
 
 
 
-Structure = process_geometry()
+Structure = process_geometry(data)
 
 # # First export mesh in .unv format
 # try:
