@@ -73,20 +73,36 @@ def process_geometry(data):
  
   y_translation_shift = -(waveLenght/40 + 4*(waveLenght/2 + waveLenght/40))
  
+  counter = 0
+
   pml_bottom = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( array_side, lens_side, pml_bottom_height), \
                                         0, y_translation_shift, \
                                         0 )
-  # geompy.addToStudy( pml_bottom, 'pml_bottom' )
+  geompy.addToStudy( pml_bottom, 'pml_bottom' )
+  pml_bottom_faces = geompy.ExtractShapes(pml_bottom, geompy.ShapeType["FACE"], True)
+
+  for num, f in enumerate(pml_bottom_faces): # add faces to study
+    counter += 1
+    geompy.addToStudyInFather( pml_bottom, f, 'face_{}'.format(counter) )
 
   air_inlet = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( array_side, lens_side, air_bottom_height), \
                                       0, y_translation_shift, \
                                       pml_bottom_height )
-  # geompy.addToStudy( air_inlet, 'air_inlet' )
+  geompy.addToStudy( air_inlet, 'air_inlet' )
+  air_inlet_faces = geompy.ExtractShapes(air_inlet, geompy.ShapeType["FACE"], True)
+  
+  for num, f in enumerate(air_inlet_faces): # add faces to study
+    counter += 1
+    geompy.addToStudyInFather(air_inlet, f, 'face_{}'.format(counter) ) 
+
+  # isOk, res1, res2 = geompy.FastIntersect(pml_bottom, air_inlet)
+
+  # print('OK {} res1 {} res2 {}'.format(isOk, res1, res2))
 
   lens_outer = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( array_side, lens_side, waveLenght ), \
                                         0, y_translation_shift, \
                                         pml_bottom_height + air_bottom_height )
-  # geompy.addToStudy( lens_outer, 'lens_outer' )
+  geompy.addToStudy( lens_outer, 'lens_outer' )
 
   air_height = probing_distance - (pml_bottom_height + air_bottom_height + waveLenght)
 
@@ -94,8 +110,16 @@ def process_geometry(data):
   air_outlet = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( array_side, lens_side, air_height ),\
                                         0, y_translation_shift, \
                                         pml_bottom_height + air_bottom_height + waveLenght )
-  # geompy.addToStudy( air_outlet, 'air_outlet' )
+  geompy.addToStudy( air_outlet, 'air_outlet' )
+  air_outlet_faces = geompy.ExtractShapes(air_outlet, geompy.ShapeType["FACE"], True)
 
+  for num, f in enumerate(air_outlet_faces): # add faces to study
+    counter += 1
+    geompy.addToStudyInFather(air_outlet, f, 'face_{}'.format(counter) ) 
+
+  # isOk, res1, res2 = geompy.FastIntersect(lens_outer, air_outlet)
+
+  # print('OK {} res1 {} res2 {}'.format(isOk, res1, res2))
 
   pml_top = geompy.MakeTranslation( pml_bottom, \
                                     # 0, y_translation_shift, \
@@ -103,8 +127,12 @@ def process_geometry(data):
                                     # pml_bottom_height + air_bottom_height + waveLenght + 3*air_bottom_height )
                                     probing_distance )
 
-  # geompy.addToStudy( pml_top, 'pml_top' )
-  
+  geompy.addToStudy( pml_top, 'pml_top' )
+
+  isOk, res1, res2 = geompy.FastIntersect(pml_top, air_outlet)
+
+  print('OK {} res1 {} res2 {}'.format(isOk, res1, res2))
+
   row = 0
   column = 0
 
@@ -140,43 +168,99 @@ def process_geometry(data):
     
     # geompy.addToStudy( brick_inner, 'Inner_' + f'{row}' + '_' + f'{column}' )
     bricks.append(brick_inner)
-    bricks_faces.append( geompy.ExtractShapes(brick_inner, geompy.ShapeType["FACE"], True) ) # generates 1946 faces instead of 54
-    print('Brick {} - type:{} #faces:{}'.format(m+1, brickID, len(bricks_faces[m]) ) )
+    brick_faces = geompy.ExtractShapes(brick_inner, geompy.ShapeType["FACE"], True)  # generates 1946 faces instead of 54
+    bricks_faces.append(brick_faces) 
+
+    for num, f in enumerate(brick_faces): # add faces to study
+      counter += 1
+      name = 'face_{}'.format(counter)
+      f.SetName(name)
+      # print('face_{}: {}'.format(name, f.GetEntry()))
+      bricks_faces.append(f) 
+
+
+    # print('Brick {} - type:{} #faces:{}'.format(m+1, brickID, len(bricks_faces[m]) ) )
+    # print( *brick_faces, sep='\n')
     # column += 1
   # column = 0
     row += 1
 
-  print('#brickFaces: {}'.format( len(bricks_faces) * 30 ))
 
+
+
+
+  print('#brickFaces: {}'.format( len(bricks_faces) ) )
   # print(bricks)
   # print(*bricks_faces, sep='\n')
 
+  # Fuse the Lens_Outer (box that will contain all the brics ) with all the bricks  
   lens_fused = geompy.MakeFuseList( [ lens_outer ] + bricks, True, True)
   geompy.addToStudy( lens_fused, 'Fused' )
 
+  lens_fused_faces = geompy.ExtractShapes(lens_fused, geompy.ShapeType["FACE"], True)
+
+  for num, f in enumerate(lens_fused_faces): # add faces to study
+    counter += 1
+    geompy.addToStudyInFather(lens_fused, f, 'face_{}'.format(counter) ) 
+
+
+  # Cut the bricks positives from the above fused result 
   lens = geompy.MakeCutList( lens_fused, bricks, True)
+  geompy.addToStudy( lens, 'Lens' )
 
   lens_faces = []
   lens_faces =  geompy.ExtractShapes(lens, geompy.ShapeType["FACE"], True) # generates 1946 faces instead of 54
   print( '#lensFaces: {}'.format(len(lens_faces)) ) 
-  print( *lens_faces, sep='\n') 
-  
-  # print('intersection: ', set(lens_faces) & set(bricks_faces) )  
+  # print( *lens_faces, sep='\n') 
+
+  # lens_faces = geompy.ExtractShapes(lens, geompy.ShapeType["FACE"], True)
+
+  for num, f in enumerate(lens_faces): # add faces to study
+    counter += 1
+    geompy.addToStudyInFather(lens, f, 'face_{}'.format(counter) ) 
+
+  # print( [ f.GetEntry() for num, f in enumerate(lens_faces) ] )
 
 
-  geompy.addToStudy( lens, 'Lens' )
+  # print('intersection: ', set(lens_faces)ks & set(bricks_faces) )  
+
+
+
   
+  # Fuse all the air sections, the bricks positives with air sections at the inlet and outlet 
   air = geompy.MakeFuseList( [ air_inlet, air_outlet ] + bricks, True, True)
   geompy.addToStudy( air, 'Air' )
-  
+
+  air_faces = geompy.ExtractShapes(lens, geompy.ShapeType["FACE"], True) # generates 1946 faces instead of 54
+  # print( '#airFaces: {}'.format(len(air_faces)) ) 
+  # print( *air_faces, sep='\n') 
+
+  for num, f in enumerate(air_faces): # add faces to study
+    counter += 1
+    geompy.addToStudyInFather(air, f, 'face_{}'.format(counter) ) 
+
+  print( [ f.GetEntry() for num,f in enumerate(air_faces) ] )
+
+  isOk, res1, res2 = geompy.FastIntersect(air, lens)
+
+  print('OK', isOk, 'List of sub-shapes IDs from 1st shape that localize intersection.', res1, \
+          'List of sub-shapes IDs from 2st shape that localize intersection.', res2, sep='\n')
+
+  print(len(geompy.SubShapes(air, res1)))
+  print(geompy.SubShapes(air, res1))
+
+  print(len(geompy.SubShapes(lens, res2)))
+  print(geompy.SubShapes(lens, res2))
+
+
   Structure = geompy.MakePartition([pml_bottom, pml_top, lens, air], [], [], [], geompy.ShapeType["SOLID"], 0, [], 0)
   # geompy.addToStudy( Structure, 'Structure' )
   
   # solids = [Solid_1, Solid_2, Solid_3, Solid_4] = geompy.ExtractShapes(Structure, geompy.ShapeType["SOLID"], True)
   solids = geompy.ExtractShapes(Structure, geompy.ShapeType["SOLID"], True)
   
-  print('#solids: {}'.format(len(solids)) )
-  # print(solids)
+  # print('#solids: {}'.format(len(solids)) )
+  # print(*solids, sep='\n')
   
   # faces = [Face_1, Face_2, Face_3, Face_4, Face_5, Face_6, Face_7, Face_8, Face_9, Face_10, Face_11, Face_12,\
   #         Face_13, Face_14, Face_15, Face_16, Face_17, Face_18, Face_19, Face_20, Face_21, Face_22, Face_23, \
@@ -184,19 +268,24 @@ def process_geometry(data):
   #         Face_35, Face_36, Face_37, Face_38, Face_39, Face_40, Face_41, Face_42, Face_43, Face_44, Face_45, \
   #         Face_46, Face_47, Face_48, Face_49, Face_50, Face_51, Face_52, Face_53, Face_54] = geompy.ExtractShapes(Structure, geompy.ShapeType["FACE"], True)
   faces = geompy.ExtractShapes(Structure, geompy.ShapeType["FACE"], True) # generates 1946 faces instead of 54
-  print('#faces: {}'.format(len(faces)) )
-  # print(*faces, sep='\n')
-  print( type(faces[0]) )
-  print( dir(faces[0]) )
-  print( faces[1].GetType() )
-  print( geompy.ShapeIdToType(faces[0].GetType()) ) # 28 - SUBSHAPE
+  # print( '#faces: {}'.format(len(faces)) )
+  # # print( *faces, sep='\n' )
+  # print( type(faces[0]) )
+  # print( dir(faces[0]) )
+  # print( faces[1].GetType() )
+  # print( faces[1].GetName() )
+  # print( faces[1].GetParameters() )
+  # print( geompy.GetNormal(faces[0]) ) # 28 - SUBSHAPE
+  # print( geompy.ShapeIdToType(faces[0].GetType()) ) # 28 - SUBSHAPE
   # print( geompy.BasicProperties( faces[0].GetType() ) ) # 28 - SUBSHAPE
 
   
   # Autogroups in geometry for meshing
   Auto_group_for_top_bottom_walls = geompy.CreateGroup( Structure, geompy.ShapeType["FACE"]) # set top & bottom walls
   geompy.UnionList(Auto_group_for_top_bottom_walls, [ faces[24], faces[30] ] ) # [Face_25, Face_30] ) 
+
   Auto_group_for_brick_faces = geompy.CreateGroup( Structure, geompy.ShapeType["FACE"]) # set brick faces
+  # geompy.UnionList( Auto_group_for_brick_faces, bricks_faces )
   # geompy.UnionList( Auto_group_for_brick_faces, [Faces[5], Face_7, Face_8, Face_9, Face_10, Face_11, Face_12, Face_13, Face_14, \
   #                                               Face_20, Face_21, Face_22, Face_23, Face_24, \
   #                                               Face_31, Face_32, Face_33, Face_34, Face_35, \
@@ -206,6 +295,9 @@ def process_geometry(data):
 
   # Auto_group_for_front = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set front walls
   # geompy.UnionList(Auto_group_for_front, [Face_15, Face_16, Face_18, Face_19])
+  
+  # Auto_group_for_air = geompy.CreateGroup(air, geompy.ShapeType["FACE"]) # set front walls
+  Auto_group_for_air = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set front walls
 
   Auto_group_for_left = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set left walls/
   # geompy.UnionList(Auto_group_for_left, [Face_1, Face_2, Face_4, Face_5])
@@ -219,9 +311,10 @@ def process_geometry(data):
 
   # Add autogroups to study
   # geompy.addToStudyInFather(Structure, Auto_group_for_right, 'Auto_group_for_right')
+  geompy.addToStudyInFather(Structure, Auto_group_for_air, 'Auto_group_for_air')
   geompy.addToStudyInFather(Structure, Auto_group_for_left, 'Auto_group_for_left')
   # geompy.addToStudyInFather(Structure, Auto_group_for_back, 'Auto_group_for_back')
-  geompy.addToStudyInFather(Structure, Auto_group_for_top_bottom_walls, 'Auto_group_for_top_bottom_walls')
+  # geompy.addToStudyInFather(Structure, Auto_group_for_top_bottom_walls, 'Auto_group_for_top_bottom_walls')
   # geompy.addToStudyInFather(Structure, Auto_group_for_lens_faces, 'Auto_group_for_lens_faces')
   # geompy.addToStudyInFather(Structure, Auto_group_for_front, 'Auto_group_for_front')
 
@@ -238,25 +331,25 @@ def process_geometry(data):
   print("Geometry computation time: {:.2f} sec".format(end - start))
   
   # start = time.time()
-  # smesh = smeshBuilder.New()
+  smesh = smeshBuilder.New()
   
-  # Structure_1 = smesh.Mesh(Structure)
+  Structure_1 = smesh.Mesh(Structure)
   
-  # NETGEN_1D_2D_3D = Structure_1.Tetrahedron( algo=smeshBuilder.NETGEN_1D2D3D )
-  # NETGEN_3D_Parameters_1 = NETGEN_1D_2D_3D.Parameters()
-  # NETGEN_3D_Parameters_1.SetMaxSize( 3.1461 )
-  # NETGEN_3D_Parameters_1.SetMinSize( 0.0844741 )
-  # # NETGEN_3D_Parameters_1.SetMaxSize( 30.1461 )
-  # # NETGEN_3D_Parameters_1.SetMinSize( 3.0844741 )
-  # NETGEN_3D_Parameters_1.SetSecondOrder( 0 )
-  # NETGEN_3D_Parameters_1.SetOptimize( 1 )
-  # NETGEN_3D_Parameters_1.SetFineness( 4 )
-  # NETGEN_3D_Parameters_1.SetChordalError( -1 )
-  # NETGEN_3D_Parameters_1.SetChordalErrorEnabled( 0 )
-  # NETGEN_3D_Parameters_1.SetUseSurfaceCurvature( 1 )
-  # NETGEN_3D_Parameters_1.SetFuseEdges( 1 )
-  # NETGEN_3D_Parameters_1.SetQuadAllowed( 0 )
-  # NETGEN_3D_Parameters_1.SetCheckChartBoundary( 72 )
+  NETGEN_1D_2D_3D = Structure_1.Tetrahedron( algo=smeshBuilder.NETGEN_1D2D3D )
+  NETGEN_3D_Parameters_1 = NETGEN_1D_2D_3D.Parameters()
+  NETGEN_3D_Parameters_1.SetMaxSize( 3.1461 )
+  NETGEN_3D_Parameters_1.SetMinSize( 0.0844741 )
+  # NETGEN_3D_Parameters_1.SetMaxSize( 30.1461 )
+  # NETGEN_3D_Parameters_1.SetMinSize( 3.0844741 )
+  NETGEN_3D_Parameters_1.SetSecondOrder( 0 )
+  NETGEN_3D_Parameters_1.SetOptimize( 1 )
+  NETGEN_3D_Parameters_1.SetFineness( 4 )
+  NETGEN_3D_Parameters_1.SetChordalError( -1 )
+  NETGEN_3D_Parameters_1.SetChordalErrorEnabled( 0 )
+  NETGEN_3D_Parameters_1.SetUseSurfaceCurvature( 1 )
+  NETGEN_3D_Parameters_1.SetFuseEdges( 1 )
+  NETGEN_3D_Parameters_1.SetQuadAllowed( 0 )
+  NETGEN_3D_Parameters_1.SetCheckChartBoundary( 72 )
 
   # # Add meshing groups
   # pml_bottom_mesh = Structure_1.GroupOnGeom(Solid_1,'pml_bottom',SMESH.VOLUME)
