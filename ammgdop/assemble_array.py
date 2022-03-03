@@ -44,6 +44,7 @@ def process_geometry(data):
   start = time.time()
   geompy = geomBuilder.New()
 
+
   origin = geompy.MakeVertex(0, 0, 0)
 
   x = geompy.MakeVectorDXDYDZ(1, 0, 0)
@@ -75,6 +76,9 @@ def process_geometry(data):
  
   counter = 0
 
+
+  #################################
+
   pml_bottom = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( array_side, lens_side, pml_bottom_height), \
                                         0, y_translation_shift, \
                                         0 )
@@ -85,8 +89,9 @@ def process_geometry(data):
     counter += 1
     geompy.addToStudyInFather( pml_bottom, f, 'face_{}'.format(counter) )
 
-  air_inlet = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( array_side, lens_side, air_bottom_height), \
-                                      0, y_translation_shift, \
+  #################################
+  air_inlet = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( array_side, lens_side, air_bottom_height),
+                                      0, y_translation_shift,
                                       pml_bottom_height )
   geompy.addToStudy( air_inlet, 'air_inlet' )
   air_inlet_faces = geompy.ExtractShapes(air_inlet, geompy.ShapeType["FACE"], True)
@@ -95,17 +100,30 @@ def process_geometry(data):
     counter += 1
     geompy.addToStudyInFather(air_inlet, f, 'face_{}'.format(counter) ) 
 
+  #################################
+
+  section_intersect_PML_in_air_in = geompy.MakeFaceWires([ geompy.MakeSection(pml_bottom, air_inlet) ], 1) 
+
+
+  id_section = geompy.addToStudy(section_intersect_PML_in_air_in, "intersect_PML_air_in")
+  print(section_intersect_PML_in_air_in)
+  print(type(section_intersect_PML_in_air_in))
+  print( section_intersect_PML_in_air_in.GetType() )
+
   # isOk, res1, res2 = geompy.FastIntersect(pml_bottom, air_inlet)
 
   # print('OK {} res1 {} res2 {}'.format(isOk, res1, res2))
 
-  lens_outer = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( array_side, lens_side, waveLenght ), \
-                                        0, y_translation_shift, \
+  #################################
+  lens_outer = geompy.MakeTranslation(  geompy.MakeBoxDXDYDZ( array_side, lens_side, waveLenght ),
+                                        0, y_translation_shift,
                                         pml_bottom_height + air_bottom_height )
   geompy.addToStudy( lens_outer, 'lens_outer' )
+  #################################
 
   air_height = probing_distance - (pml_bottom_height + air_bottom_height + waveLenght)
 
+  #################################
   # box_2 = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ(  array_side, lens_side, air_bottom_height*3 ),\
   air_outlet = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( array_side, lens_side, air_height ),\
                                         0, y_translation_shift, \
@@ -117,10 +135,13 @@ def process_geometry(data):
     counter += 1
     geompy.addToStudyInFather(air_outlet, f, 'face_{}'.format(counter) ) 
 
+  #################################
+
   # isOk, res1, res2 = geompy.FastIntersect(lens_outer, air_outlet)
 
   # print('OK {} res1 {} res2 {}'.format(isOk, res1, res2))
 
+  #################################
   pml_top = geompy.MakeTranslation( pml_bottom, \
                                     # 0, y_translation_shift, \
                                     0, 0, \
@@ -128,11 +149,20 @@ def process_geometry(data):
                                     probing_distance )
 
   geompy.addToStudy( pml_top, 'pml_top' )
+  #################################
 
-  isOk, res1, res2 = geompy.FastIntersect(pml_top, air_outlet)
+  section_intersect_PML_out_air_out = geompy.MakeFaceWires([ geompy.MakeSection(pml_top, air_outlet) ], 1) 
 
-  print('OK {} res1 {} res2 {}'.format(isOk, res1, res2))
+  id_section = geompy.addToStudy(section_intersect_PML_out_air_out, "intersect_PML_air_out")
+  print(section_intersect_PML_out_air_out)
+  print(type(section_intersect_PML_out_air_out))
+  print( section_intersect_PML_out_air_out.GetType() )
 
+  # isOk, res1, res2 = geompy.FastIntersect(pml_top, air_outlet)
+
+  # print('OK {} res1 {} res2 {}'.format(isOk, res1, res2))
+
+  #################################
   row = 0
   column = 0
 
@@ -186,6 +216,7 @@ def process_geometry(data):
     row += 1
 
 
+  #################################
 
 
 
@@ -193,6 +224,7 @@ def process_geometry(data):
   # print(bricks)
   # print(*bricks_faces, sep='\n')
 
+  #################################
   # Fuse the Lens_Outer (box that will contain all the brics ) with all the bricks  
   lens_fused = geompy.MakeFuseList( [ lens_outer ] + bricks, True, True)
   geompy.addToStudy( lens_fused, 'Fused' )
@@ -203,6 +235,7 @@ def process_geometry(data):
     counter += 1
     geompy.addToStudyInFather(lens_fused, f, 'face_{}'.format(counter) ) 
 
+  #################################
 
   # Cut the bricks positives from the above fused result 
   lens = geompy.MakeCutList( lens_fused, bricks, True)
@@ -219,13 +252,10 @@ def process_geometry(data):
     counter += 1
     geompy.addToStudyInFather(lens, f, 'face_{}'.format(counter) ) 
 
+  #################################
   # print( [ f.GetEntry() for num, f in enumerate(lens_faces) ] )
 
-
   # print('intersection: ', set(lens_faces)ks & set(bricks_faces) )  
-
-
-
   
   # Fuse all the air sections, the bricks positives with air sections at the inlet and outlet 
   air = geompy.MakeFuseList( [ air_inlet, air_outlet ] + bricks, True, True)
@@ -239,25 +269,51 @@ def process_geometry(data):
     counter += 1
     geompy.addToStudyInFather(air, f, 'face_{}'.format(counter) ) 
 
-  print( [ f.GetEntry() for num,f in enumerate(air_faces) ] )
+  #################################
 
-  isOk, res1, res2 = geompy.FastIntersect(air, lens)
+  section_intersect_lens_air = geompy.MakeBoolean(lens, air, 4)
+  # section_intersect_lens_air = geompy.MakeFaceFromSurface(geompy.MakeBoolean(lens, air, 4), True)
+  # section_intersect_lens_air = geompy.MakeFaceWires([geompy.MakeSection(lens, air)], 1) 
+  # section_intersect_lens_air = geompy.MakeFace(geompy.MakeBoolean(lens, air, 4), True)
 
-  print('OK', isOk, 'List of sub-shapes IDs from 1st shape that localize intersection.', res1, \
-          'List of sub-shapes IDs from 2st shape that localize intersection.', res2, sep='\n')
+  # section_intersect_lens_air = geompy.MakeSection(lens, air)
+  id_section = geompy.addToStudy(section_intersect_lens_air, "intersect_lens_air")
+  # print( section_intersect_lens_air )
+  # print( type(section_intersect_lens_air) )
+  # print( geompy.ShapeIdToType(section_intersect_lens_air.GetType()) )
+  
+  # print( id_section )
+  # print( type(id_section) )
+  # print( geompy.ShapeIdToType(id_section.GetType()) )
 
-  print(len(geompy.SubShapes(air, res1)))
-  print(geompy.SubShapes(air, res1))
 
-  print(len(geompy.SubShapes(lens, res2)))
-  print(geompy.SubShapes(lens, res2))
+  # face_intersect_lens_air = geompy.ExtractShapes(section_intersect_lens_air, air, geompy.ShapeType["FACE"], True)
+  
+  # print( face_intersect_lens_air )
+  # print( type(face_intersect_lens_air) )
+  # print( geompy.ShapeIdToType(face_intersect_lens_air.GetType()) )
+  
+  # print( [ f.GetEntry() for num,f in enumerate(air_faces) ] )
 
+  # isOk, res1, res2 = geompy.FastIntersect(air, lens)
+
+  # print('OK', isOk, 'List of sub-shapes IDs from 1st shape that localize intersection.', res1, \
+  #         'List of sub-shapes IDs from 2st shape that localize intersection.', res2, sep='\n')
+
+  # print(len(geompy.SubShapes(air, res1)))
+  # print(geompy.SubShapes(air, res1))
+
+  # print(len(geompy.SubShapes(lens, res2)))
+  # print(geompy.SubShapes(lens, res2))
+
+  #################################
 
   Structure = geompy.MakePartition([pml_bottom, pml_top, lens, air], [], [], [], geompy.ShapeType["SOLID"], 0, [], 0)
   # geompy.addToStudy( Structure, 'Structure' )
   
-  # solids = [Solid_1, Solid_2, Solid_3, Solid_4] = geompy.ExtractShapes(Structure, geompy.ShapeType["SOLID"], True)
-  solids = geompy.ExtractShapes(Structure, geompy.ShapeType["SOLID"], True)
+  solids = [Solid_1, Solid_2, Solid_3, Solid_4] = geompy.ExtractShapes(Structure, geompy.ShapeType["SOLID"], True)
+  
+  # solids = geompy.ExtractShapes(Structure, geompy.ShapeType["SOLID"], True)
   
   # print('#solids: {}'.format(len(solids)) )
   # print(*solids, sep='\n')
@@ -279,10 +335,11 @@ def process_geometry(data):
   # print( geompy.ShapeIdToType(faces[0].GetType()) ) # 28 - SUBSHAPE
   # print( geompy.BasicProperties( faces[0].GetType() ) ) # 28 - SUBSHAPE
 
-  
+  #################################
   # Autogroups in geometry for meshing
   Auto_group_for_top_bottom_walls = geompy.CreateGroup( Structure, geompy.ShapeType["FACE"]) # set top & bottom walls
-  geompy.UnionList(Auto_group_for_top_bottom_walls, [ faces[24], faces[30] ] ) # [Face_25, Face_30] ) 
+  # geompy.UnionList(Auto_group_for_top_bottom_walls, [ faces[24], faces[30] ] ) # [Face_25, Face_30] ) 
+  # geompy.UnionList(Auto_group_for_top_bottom_walls, [ section_intersect_PML_in_air_in, section_intersect_PML_out_air_out ] )
 
   Auto_group_for_brick_faces = geompy.CreateGroup( Structure, geompy.ShapeType["FACE"]) # set brick faces
   # geompy.UnionList( Auto_group_for_brick_faces, bricks_faces )
@@ -309,15 +366,17 @@ def process_geometry(data):
   # Auto_group_for_right = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"]) # set right walls
   # geompy.UnionList(Auto_group_for_right, [Face_50, Face_51, Face_53, Face_54])
 
+  #################################
   # Add autogroups to study
   # geompy.addToStudyInFather(Structure, Auto_group_for_right, 'Auto_group_for_right')
   geompy.addToStudyInFather(Structure, Auto_group_for_air, 'Auto_group_for_air')
   geompy.addToStudyInFather(Structure, Auto_group_for_left, 'Auto_group_for_left')
   # geompy.addToStudyInFather(Structure, Auto_group_for_back, 'Auto_group_for_back')
-  # geompy.addToStudyInFather(Structure, Auto_group_for_top_bottom_walls, 'Auto_group_for_top_bottom_walls')
+  # geompy.addTo  'Auto_group_for_top_bottom_walls')
   # geompy.addToStudyInFather(Structure, Auto_group_for_lens_faces, 'Auto_group_for_lens_faces')
   # geompy.addToStudyInFather(Structure, Auto_group_for_front, 'Auto_group_for_front')
 
+  #################################
   # Add to solids & faces to study
   geompy.addToStudy(Structure, 'Structure')
   for num, f in enumerate(faces): # add faces to study
@@ -352,10 +411,11 @@ def process_geometry(data):
   NETGEN_3D_Parameters_1.SetCheckChartBoundary( 72 )
 
   # # Add meshing groups
-  # pml_bottom_mesh = Structure_1.GroupOnGeom(Solid_1,'pml_bottom',SMESH.VOLUME)
-  # brick_mesh = Structure_1.GroupOnGeom(Solid_2,'brick',SMESH.VOLUME)
-  # air_mesh = Structure_1.GroupOnGeom(Solid_3,'air',SMESH.VOLUME)
-  # pml_top_mesh = Structure_1.GroupOnGeom(Solid_4,'pml_top',SMESH.VOLUME)
+  pml_bottom_mesh = Structure_1.GroupOnGeom(Solid_1,'pml_bottom',SMESH.VOLUME)
+  brick_mesh = Structure_1.GroupOnGeom(Solid_2,'brick',SMESH.VOLUME)
+  air_mesh = Structure_1.GroupOnGeom(Solid_3,'air',SMESH.VOLUME)
+  pml_top_mesh = Structure_1.GroupOnGeom(Solid_4,'pml_top',SMESH.VOLUME)
+  
   # top_bottom_walls = Structure_1.GroupOnGeom(Auto_group_for_top_bottom_walls,'Auto_group_for_top_bottom_walls',SMESH.FACE)
   # top_bottom_walls.SetName( 'top_bottom_walls' )
   # inlet = Structure_1.GroupOnGeom(Face_26,'Face_26',SMESH.FACE)
@@ -377,14 +437,15 @@ def process_geometry(data):
   # back = Structure_1.GroupOnGeom(Auto_group_for_back,'back',SMESH.FACE)
   # right = Structure_1.GroupOnGeom(Auto_group_for_right,'right',SMESH.FACE)
 
-  # isDone = Structure_1.Compute()
+  isDone = Structure_1.Compute()  
 
   # Add groups in mesh.unv
   # [pml_bottom, pml_top, brick, air, top_bottom_walls, inlet, outlet, lens_faces, brick_left, brick_front, brick_back, brick_right, left, front, back, right ] = Structure_1.GetGroups()
+  [pml_bottom, pml_top, air, lens_faces ] = Structure_1.GetGroups()
 
   # Mesh computation time
-  # end = time.time()
-  # print("Mesh computation time: {:.2f} sec".format(end - start))
+  end = time.time()
+  print("Mesh computation time: {:.2f} sec".format(end - start))
 
   # # Rename bodies for Elmer
   # # smesh.SetName(solids_mesh[0], 'pml_bot')
