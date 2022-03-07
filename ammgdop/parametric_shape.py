@@ -238,7 +238,9 @@ def parameterize_2D_inner_shape( waveLength, barLength, barSpacing ):
   if(S0!=0):
     sk.addSegmentAbsolute(0.0000000, S0) 
 
-  wire = geompy.MakeMarker(0, 0, 0, 1, 0, 0, 0, 1, 0)
+  wire = geompy.MakeMarker(0, 0, 0, 
+                           1, 0, 0, 
+                           0, 1, 0)
 
   return sk.wire(wire)
 

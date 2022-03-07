@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 from stringprep import in_table_c12
 import sys
 import salome
@@ -35,20 +36,59 @@ import SALOMEDS
 start = time.time()
 geompy = geomBuilder.New()
 
-origin = geompy.MakeVertex(0, 0, 0)
-
-x = geompy.MakeVectorDXDYDZ(1, 0, 0)
-y = geompy.MakeVectorDXDYDZ(0, 1, 0)
-z = geompy.MakeVectorDXDYDZ(0, 0, 1)
-
-geompy.addToStudy( x, 'x' )
-geompy.addToStudy( y, 'y' )
-geompy.addToStudy( z, 'z' )
-
-
 waveLenght = 8.661
 
 boxSide = waveLenght/2 + 2 * waveLenght/40
+
+
+#Create vertexes, vectors and shapes to construct local CS
+Vertex_1 = geompy.MakeVertex(50, 50, 50)
+Vertex_2 = geompy.MakeVertex(70, 70, 70)
+Vertex_3 = geompy.MakeVertex(0, 0, 0)
+
+Vector_X = geompy.MakeVectorDXDYDZ(50, 0, 0)
+Vector_Y = geompy.MakeVectorDXDYDZ(0, 50, 0)
+
+# Face_1 = geompy.MakeFaceHW(100, 100, 1)
+Box_1 = geompy.MakeBoxTwoPnt(Vertex_1, Vertex_2)
+
+# cs1 = geompy.MakeMarker( 0, 0, 0, 1,0,0, 0,1,0)
+cs1 = geompy.MakeMarker(boxSide/2,boxSide/2,0, 1,0,0, 0,1,0)
+
+# id_cs1 = geompy.addToStudy(cs1, "Coordinate system 1")
+id_cs1 = geompy.addToStudy(cs1, "Coordinate system 2")
+
+#Construct local CS by manual definition
+# LocalCS_1 = geompy.MakeMarker(0, 0, 0, 1, 0, 0, 0, 1, 0)
+
+#Construct local CS by center point and two vectors (X and Y directions)
+# LocalCS_2 = geompy.MakeMarkerPntTwoVec(Vertex_3, Vector_X, Vector_Y)
+
+# #Construct local CS from shape orientation
+# LocalCS_FACE = geompy.MakeMarkerFromShape(Face_1)
+# LocalCS_BOX = geompy.MakeMarkerFromShape(Box_1)
+
+# # Add created object to study
+# geompy.addToStudy( Face_1, "Face_1" )
+
+
+
+
+origin = geompy.MakeVertex(0, 0, 0)
+
+Vector_X = geompy.MakeVectorDXDYDZ(50, 0, 0)
+Vector_Y = geompy.MakeVectorDXDYDZ(0, 50, 0)
+z = geompy.MakeVectorDXDYDZ(0, 0, 1)
+
+# geompy.addToStudy( x, 'x' )
+# geompy.addToStudy( y, 'y' )
+# geompy.addToStudy( z, 'z' )
+
+geompy.addToStudy( Vector_X, 'x' )
+geompy.addToStudy( Vector_Y, 'y' )
+geompy.addToStudy( z, 'z' )
+
+LocalCS_1 = geompy.MakeMarkerPntTwoVec(origin, Vector_X, Vector_Y)
 
 pml_inlet_height = 2.573
 
@@ -57,29 +97,70 @@ pml_inlet = geompy.MakeBoxDXDYDZ(boxSide, boxSide, pml_inlet_height)
 air_inlet_height = 4.288
 
 
-box_1 = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( boxSide, boxSide, air_inlet_height), 0, 0, pml_inlet_height )
+box_1 = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( boxSide, boxSide, air_inlet_height), 
+                                                      -boxSide/2, -boxSide/2,
+                                                      pml_inlet_height )
 
-box_2 = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( boxSide, boxSide, air_inlet_height*3 ), 0, 0, pml_inlet_height + air_inlet_height + waveLenght )
+box_2 = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( boxSide, boxSide, air_inlet_height*3 ), 
+                                                      -boxSide/2, -boxSide/2,
+                                                      pml_inlet_height + air_inlet_height + waveLenght )
 
-pml_outlet = geompy.MakeTranslation( pml_inlet, 0, 0, pml_inlet_height + air_inlet_height + waveLenght + 3*air_inlet_height )
+# geompy.addToStudy( air, 'Air' )
 
-air = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( boxSide, boxSide, waveLenght), \
-                                      0, 0, \
-                                      pml_inlet_height + air_inlet_height )
+air = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( boxSide, boxSide, waveLenght),
+                                                    -boxSide/2, -boxSide/2,
+                                                    pml_inlet_height + air_inlet_height )
 
 air = geompy.MakeFuseList( [box_1, box_2, air], True, True)
-# geompy.addToStudy( air, 'Air' )
+geompy.addToStudy( air, 'Air' )
+
+
+pml_inlet = geompy.MakeTranslation( pml_inlet, 
+                                     -boxSide/2, -boxSide/2,
+                                     pml_inlet_height )
+
+pml_outlet = geompy.MakeTranslation( pml_inlet, 
+                                     0,0,
+                                     air_inlet_height + waveLenght + 3*air_inlet_height )
+# air = geompy.MakeFuseList( [pml_inlet, pml_outlet, box_1, box_2, air], True, True)
+
+
+
+# position = geompy.MakePosition(box_1, cs1, cs2)
+# position = geompy.MakePosition(box_2, cs1, cs2)
+# position = geompy.MakePosition(air, cs1, cs2)
+# position = geompy.MakePosition(pml_outlet, cs1, cs2)
+# position = geompy.MakePosition(pml_inlet, cs1, cs2)
+position = geompy.MakePosition(box_1, theStartLCS=None, theEndLCS=cs1)
+position = geompy.MakePosition(box_2, theStartLCS=None, theEndLCS=cs1)
+position = geompy.MakePosition(air, theStartLCS=None, theEndLCS=cs1)
+position = geompy.MakePosition(pml_outlet, theStartLCS=None, theEndLCS=cs1)
+position = geompy.MakePosition(pml_inlet, theStartLCS=None, theEndLCS=cs1)
 
 Structure = geompy.MakePartition([pml_inlet, pml_outlet, air], [], [], [], geompy.ShapeType["SOLID"], 0, [], 0)
 
+
+# cs1 = geompy.MakeMarker( 0, 0, 0, 1,0,0, 0,1,0)
+# cs2 = geompy.MakeMarker(30,40,40, 1,0,0, 0,1,0)
+# modify the location of the given object
+
+# geompy.MakeTranslation(Structure,
+#                        boxSide/2, boxSide/2,
+#                        0,)
+
 solids = [Solid_1, Solid_2, Solid_3] = geompy.ExtractShapes(Structure, geompy.ShapeType["SOLID"], True)
-# print(solids)
+# solids = geompy.ExtractShapes(Structure, geompy.ShapeType["SOLID"], True)
+print(solids)
 
-faces = [Face_1, Face_2, Face_3, Face_4, Face_5, Face_6, Face_7, Face_8, Face_9,\
-        Face_10, Face_11, Face_12, Face_13, Face_14, Face_15, Face_16] = geompy.ExtractShapes(Structure, geompy.ShapeType["FACE"], True)
+faces = [
+  Face_1, Face_2, Face_3, Face_4, Face_5, Face_6, Face_7, Face_8, Face_9,
+  Face_10, Face_11, Face_12, Face_13, Face_14, Face_15, Face_16, 
+  # Face_17, Face_18, 
+  # Face_19, Face_20
+] = geompy.ExtractShapes(Structure, geompy.ShapeType["FACE"], True)
 
-faces = geompy.ExtractShapes(Structure, geompy.ShapeType["FACE"], True) # generates 16 faces instead of 54
-# print(len(faces))
+# faces = geompy.ExtractShapes(Structure, geompy.ShapeType["FACE"], True) # generates 16 faces instead of 54
+print(len(faces))
 
 
 
