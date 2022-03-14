@@ -11,7 +11,8 @@ import time, os
 salome.salome_init()
 import salome_notebook
 notebook = salome_notebook.NoteBook()
-sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline/ammgdop')
+
+sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline/ammgdop')
 
 ###
 ### GEOM component
@@ -31,27 +32,17 @@ O = geompy.MakeVertex(0, 0, 0)
 OX = geompy.MakeVectorDXDYDZ(1, 0, 0)
 OY = geompy.MakeVectorDXDYDZ(0, 1, 0)
 OZ = geompy.MakeVectorDXDYDZ(0, 0, 1)
-Sphere_1 = geompy.MakeSpherePntR(O, 5)
-Sphere_2 = geompy.MakeSpherePntR(O, 20)
-# Sphere_2 = geompy.MakeSpherePntR(O, 100)
-Partition_1 = geompy.MakePartition([Sphere_1, Sphere_2], [], [], [], geompy.ShapeType["SOLID"], 0, [], 0)
-[Face_1,Face_2] = geompy.ExtractShapes(Partition_1, geompy.ShapeType["FACE"], True)
-solids = [Solid_1, Solid_2] = geompy.ExtractShapes(Partition_1, geompy.ShapeType["SOLID"], True)
-print(solids)
+geometry_brep_1 = geompy.ImportBREP("C:/Users/francisco/Documents/dev/pipeline/data/geometry.brep" )
+[Solid_1] = geompy.ExtractShapes(geometry_brep_1, geompy.ShapeType["SOLID"], True)
+[Face_1,Face_2] = geompy.ExtractShapes(Solid_1, geompy.ShapeType["FACE"], True)
 geompy.addToStudy( O, 'O' )
 geompy.addToStudy( OX, 'OX' )
 geompy.addToStudy( OY, 'OY' )
 geompy.addToStudy( OZ, 'OZ' )
-geompy.addToStudy( Sphere_2, 'Sphere_2' )
-geompy.addToStudy( Sphere_1, 'Sphere_1' )
-geompy.addToStudy( Partition_1, 'Partition_1' )
-
-geompy.addToStudyInFather( Partition_1, Face_1, 'Face_1' )
-geompy.addToStudyInFather( Partition_1, Face_2, 'Face_2' )
-geompy.addToStudyInFather( Partition_1, Solid_1, 'Solid_1' )
-geompy.addToStudyInFather( Partition_1, Solid_2, 'Solid_2' )
-
-
+geompy.addToStudy( geometry_brep_1, 'geometry.brep_1' )
+geompy.addToStudyInFather( geometry_brep_1, Solid_1, 'Solid_1' )
+geompy.addToStudyInFather( Solid_1, Face_1, 'Face_1' )
+geompy.addToStudyInFather( Solid_1, Face_2, 'Face_2' )
 
 ###
 ### SMESH component
@@ -70,7 +61,7 @@ smesh = smeshBuilder.New()
 #smesh.SetEnablePublish( False ) # Set to False to avoid publish in study if not needed or in some particular situations:
                                  # multiples meshes built in parallel, complex and numerous mesh edition (performance)
 
-Mesh_1 = smesh.Mesh(Partition_1)
+Mesh_1 = smesh.Mesh(Solid_1)
 NETGEN_1D_2D_3D = Mesh_1.Tetrahedron(algo=smeshBuilder.NETGEN_1D2D3D)
 NETGEN_3D_Parameters_1 = NETGEN_1D_2D_3D.Parameters()
 # NETGEN_3D_Parameters_1.SetMaxSize( 3.4641 )                 # default parameter  
@@ -90,6 +81,7 @@ NETGEN_3D_Parameters_1.SetQuadAllowed( 0 )
 NETGEN_3D_Parameters_1.SetCheckChartBoundary( 120 )
 Face_1_1 = Mesh_1.GroupOnGeom(Face_1,'Face_1',SMESH.FACE)
 Face_2_1 = Mesh_1.GroupOnGeom(Face_2,'Face_2',SMESH.FACE)
+Solid_1_1 = Mesh_1.GroupOnGeom(Solid_1,'Solid_1',SMESH.VOLUME)
 
 isDone = Mesh_1.Compute()
 
