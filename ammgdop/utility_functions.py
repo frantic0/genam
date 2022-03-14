@@ -100,11 +100,11 @@ Header
   Mesh DB "." "."
   Include Path ""
   Results Directory ""
-  $ rho0 = 1.205
-  $ c0 = -343.0
-  $ f = 40000
-  $ p = 1.205
-  $ U = 10
+  $ rho0 = 1.205                     ! Medium (Air) Equilibrium Density
+  $ c0 = -343.                       ! Medium Sound Phase Speed
+  $ f = 40000                        ! Source Frequency
+  $ p = 1.205                        ! Medium (Air) Equilibrium Density
+  $ U = 10                           ! Source Surface Velocity (Orthogonal to surface)
   ! $freqVec = vector(100,1800,50)
 End
 
