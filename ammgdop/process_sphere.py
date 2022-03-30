@@ -68,7 +68,7 @@ NETGEN_3D_Parameters_1 = NETGEN_1D_2D_3D.Parameters()
 # NETGEN_3D_Parameters_1.SetMinSize( 0.141616 )               # default parameter 
 # NETGEN_3D_Parameters_1.SetMaxSize( 0.08575 )
 # NETGEN_3D_Parameters_1.SetMinSize( 0.01616 )
-NETGEN_3D_Parameters_1.SetMaxSize( 0.8575 )
+NETGEN_3D_Parameters_1.SetMaxSize( 1.8575 )
 NETGEN_3D_Parameters_1.SetMinSize( 0.1616 )
 NETGEN_3D_Parameters_1.SetSecondOrder( 1 )
 NETGEN_3D_Parameters_1.SetOptimize( 1 )

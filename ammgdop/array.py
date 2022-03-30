@@ -334,12 +334,34 @@ def process_geometry(data):
   #################################
 
   Structure = geompy.MakePartition([pml_bottom, pml_top, lens, air], [], [], [], geompy.ShapeType["SOLID"], 0, [], 0)
-  # geompy.addToStudy( Structure, 'Structure' )
+  geompy.addToStudy( Structure, 'Structure' )
   
-  geompy.addToStudy(Structure, 'Structure')
+  # solids = [Solid_1, Solid_2, Solid_3, Solid_4] = geompy.ExtractShapes(Structure, geompy.ShapeType["SOLID"], True)
+  solids = [Solid_1, Solid_2, Solid_3, Solid_4] = geompy.SubShapeAllSortedCentres(Structure, geompy.ShapeType["SOLID"])
+  # solids = geompy.SubShapeAllSortedCentres(Structure, geompy.ShapeType["SOLID"])
 
-  solids = [Solid_1, Solid_2, Solid_3, Solid_4] = geompy.ExtractShapes(Structure, geompy.ShapeType["SOLID"], True)
-  
+
+  print( geompy.PointCoordinates(geompy.MakeCDG(Solid_1))[2] )
+  print( geompy.PointCoordinates(geompy.MakeCDG(Solid_2))[2] )
+  print( geompy.PointCoordinates(geompy.MakeCDG(Solid_3))[2] )
+  print( geompy.PointCoordinates(geompy.MakeCDG(Solid_4))[2] )
+
+  solids_sorted = sorted(solids, key=lambda s: geompy.PointCoordinates(geompy.MakeCDG(s))[2] )
+  # solids.sort( key=lambda s: geompy.PointCoordinates(geompy.MakeCDG(s))[2] )
+
+  [pml_inlet_solid, lens_solid, air_solid, pml_outlet_solid] = solids_sorted
+
+  print( "sorted" )
+
+  print( geompy.PointCoordinates(geompy.MakeCDG(pml_inlet_solid))[2] )
+  print( geompy.PointCoordinates(geompy.MakeCDG(lens_solid))[2] )
+  print( geompy.PointCoordinates(geompy.MakeCDG(air_solid))[2] )
+  print( geompy.PointCoordinates(geompy.MakeCDG(pml_outlet_solid))[2] )
+
+
+  #################################
+
+
   # faces = geompy.ExtractShapes(Structure, geompy.ShapeType["FACE"], True)
 
 
@@ -554,33 +576,14 @@ def process_geometry(data):
 
 
   # # Add meshing groups
-  pml_bottom_mesh = Structure_1.GroupOnGeom(Solid_1,'lens',SMESH.VOLUME)
-  brick_mesh = Structure_1.GroupOnGeom(Solid_2,'pml_inlet',SMESH.VOLUME)
-  air_mesh = Structure_1.GroupOnGeom(Solid_3,'air',SMESH.VOLUME)
-  pml_top_mesh = Structure_1.GroupOnGeom(Solid_4,'pml_outlet',SMESH.VOLUME)
+  pml_bottom_mesh = Structure_1.GroupOnGeom(pml_inlet_solid,'pml_inlet',SMESH.VOLUME)
+  brick_mesh = Structure_1.GroupOnGeom(lens_solid,'lens',SMESH.VOLUME)
+  air_mesh = Structure_1.GroupOnGeom(air_solid,'air',SMESH.VOLUME)
+  pml_top_mesh = Structure_1.GroupOnGeom(pml_outlet_solid,'pml_outlet',SMESH.VOLUME)
   
-  # top_bottom_walls = Structure_1.GroupOnGeom(Auto_group_for_top_bottom_walls,'Auto_group_for_top_bottom_walls',SMESH.FACE)
-  # top_bottom_walls.SetName( 'top_bottom_walls' )
-  # inlet = Structure_1.GroupOnGeom(Face_26,'Face_26',SMESH.FACE)
-  # inlet.SetName('inlet')
-  # outlet = Structure_1.GroupOnGeom(Face_29,'Face_29',SMESH.FACE)
-  # outlet.SetName('outlet')
-  # brick_faces = Structure_1.GroupOnGeom(Auto_group_for_brick_faces,'Auto_group_for_brick_faces',SMESH.FACE)
-  # brick_faces.SetName('brick_faces')
-  # brick_left = Structure_1.GroupOnGeom(Face_3,'Face_3',SMESH.FACE)
-  # brick_left.SetName('brick_left')
-  # brick_front = Structure_1.GroupOnGeom(Face_21,'Face_21',SMESH.FACE)
-  # brick_front.SetName('brick_front')
-  # brick_back = Structure_1.GroupOnGeom(Face_34,'Face_34',SMESH.FACE)
-  # brick_back.SetName('brick_back')
-  # brick_right = Structure_1.GroupOnGeom(Face_52,'Face_52',SMESH.FACE)
-  # brick_right.SetName('brick_right')
-  # left = Structure_1.GroupOnGeom(Auto_group_for_left,'left',SMESH.FACE)
-  # front = Structure_1.GroupOnGeom(Auto_group_for_front,'front',SMESH.FACE)
-  # back = Structure_1.GroupOnGeom(Auto_group_for_back,'back',SMESH.FACE)
-  # right = Structure_1.GroupOnGeom(Auto_group_for_right,'right',SMESH.FACE)
-
   isDone = Structure_1.Compute()  
+
+  print(Structure_1.GetGroups())
 
   # Add groups in mesh.unv
   # [pml_bottom, pml_top, brick, air, top_bottom_walls, inlet, outlet, lens_faces, brick_left, brick_front, brick_back, brick_right, left, front, back, right ] = Structure_1.GetGroups()
@@ -614,9 +617,9 @@ def process_geometry(data):
   # start = time.time()
   # return Structure_1
 
+process_geometry(data)
 
-
-Structure = process_geometry(data)
+# Structure = process_geometry(data)
 
 # # First export mesh in .unv format
 # try:
