@@ -340,7 +340,6 @@ def process_geometry(data):
   solids = [Solid_1, Solid_2, Solid_3, Solid_4] = geompy.SubShapeAllSortedCentres(Structure, geompy.ShapeType["SOLID"])
   # solids = geompy.SubShapeAllSortedCentres(Structure, geompy.ShapeType["SOLID"])
 
-
   print( geompy.PointCoordinates(geompy.MakeCDG(Solid_1))[2] )
   print( geompy.PointCoordinates(geompy.MakeCDG(Solid_2))[2] )
   print( geompy.PointCoordinates(geompy.MakeCDG(Solid_3))[2] )
@@ -362,11 +361,16 @@ def process_geometry(data):
   #################################
 
 
-  # faces = geompy.ExtractShapes(Structure, geompy.ShapeType["FACE"], True)
+  faces = geompy.ExtractShapes(Structure, geompy.ShapeType["FACE"], True)
 
+  print( 'len faces: ', len(faces))
 
-
-
+  pml_inlet_air_shared_faces = geompy.GetSharedShapesMulti( [ pml_inlet_solid, air_solid ],  geompy.ShapeType['FACE'], False) 
+  pml_outlet_air_shared_faces = geompy.GetSharedShapesMulti( [ pml_outlet_solid, air_solid ],  geompy.ShapeType['FACE'], False) 
+  lens_solid_air_shared_faces = geompy.GetSharedShapesMulti( [ lens_solid, air_solid ],  geompy.ShapeType['FACE'], False) 
+  # geompy.addToStudy( pml_inlet_air_shared_faces, 'pml_inlet_air_shared_faces' )
+  print( "pml_inlet_air_shared_faces" )
+  print( pml_inlet_air_shared_faces )
 
   # SubFaceList = geompy.SubShapeAll(lens, geompy.ShapeType["FACE"])
   # print(len(SubFaceList))
@@ -377,16 +381,18 @@ def process_geometry(data):
   # print(len(SubFaceListIDs))
   # # geompy.addToStudy( SubFaceListIDs, 'SubFaceList' )
 
-  # # structure_lens = geompy.GetInPlace(Structure, lens, True)
-  # # geompy.SubShapeAll(structure_lens, geompy.ShapeType["VERTEX"])
-  # Group_Lens = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"])
+  structure_lens = geompy.GetInPlace(Structure, lens, True)
+  geompy.SubShapeAll(structure_lens, geompy.ShapeType["VERTEX"])
+
+
+  Group_Lens = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"])
   # # geompy.UnionIDs(Group_Lens, [1015, 1018, 1025, 1075, 1080, 72, 82, 89, 1128, 1131, 1134, 1137, 1140, 1143, 1146, 1149, 1152, 1155, 1158, 1161, 1164, 1167, 1170, 1173, 166, 1176, 1179, 171, 1182, 1185, 1188, 1191, 1194, 1197, 1200, 1203, 1206, 1208, 1211, 1214, 1217, 1220, 1223, 1226, 1229, 1232, 1235, 1238, 1240, 1243, 1246, 1249, 1252, 246, 1255, 248, 1258, 1261, 255, 1264, 1267, 1270, 1272, 1275, 1278, 1281, 1284, 1287, 1290, 1293, 1296, 1299, 1302, 1304, 1307, 1310, 1313, 305, 1316, 1319, 1322, 1325, 1328, 1331, 1334, 1336, 1339, 1342, 1345, 1348, 1351, 1354, 1357, 1360, 1363, 355, 1366, 358, 1368, 1371, 1374, 365, 1377, 1380, 1383, 1386, 1389, 1392, 1395, 1398, 1400, 1403, 1406, 1409, 1412, 1415, 1418, 1421, 1424, 415, 1427, 1430, 1432, 1435, 1438, 1441, 1444, 1447, 1450, 1453, 1456, 1459, 1462, 1464, 1467, 1470, 1473, 465, 1476, 468, 1479, 1482, 475, 1485, 1488, 1491, 1494, 1496, 1499, 1502, 1505, 1508, 1511, 1514, 1517, 1520, 1523, 1526, 1528, 1531, 1534, 525, 1537, 1540, 1543, 1546, 1549, 1552, 1555, 1558, 1560, 1563, 1566, 1569, 1572, 1575, 1578, 1581, 1584, 575, 1587, 578, 1590, 1592, 585, 1595, 1598, 1601, 1604, 1607, 1610, 1613, 1616, 1619, 1622, 1624, 1627, 1630, 1633, 1636, 1639, 1642, 635, 1645, 1648, 1651, 1654, 1656, 1659, 1662, 1665, 1668, 1671, 1674, 1677, 1680, 1683, 1686, 685, 688, 695, 745, 795, 798, 805, 855, 905, 908, 915, 965])
   # geompy.UnionIDs(Group_Lens, SubFaceListIDs)
 
   # # geompy.UnionList(Group_Lens, [lens_faces] )
   # # geompy.UnionList(Group_Lens, [SubFaceList] )
 
-  # geompy.addToStudyInFather( Structure, Group_Lens, 'Group_Lens' ) 
+  geompy.addToStudyInFather( Structure, Group_Lens, 'Group_Lens' ) 
 
   # def flatten(t):
   #   return [item for sublist in t for item in sublist]
@@ -401,21 +407,21 @@ def process_geometry(data):
 
   # SubFaceListAir = geompy.ExtractShapes(air, geompy.ShapeType["FACE"], True)
   # SubFaceListAir = geompy.SubShapeAll(air, geompy.ShapeType["FACE"])
-  SubFaceListAir = geompy.SubShapeAll(air, geompy.ShapeType["VERTEX"])
+  # SubFaceListAir = geompy.SubShapeAll(air, geompy.ShapeType["VERTEX"])
 
-  SubFaceListAirIDs = [ geompy.GetSubShapeID(air, sf) for sf in SubFaceListAir ] 
+  # SubFaceListAirIDs = [ geompy.GetSubShapeID(air, sf) for sf in SubFaceListAir ] 
     
   Group_Air_Faces = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"])
-  
-  geompy.UnionIDs(Group_Air_Faces, SubFaceListAirIDs)
-
+  geompy.UnionList(Group_Air_Faces, lens_solid_air_shared_faces )
   geompy.addToStudyInFather( Structure, Group_Air_Faces, 'Group_Air_Faces' )
+
+  Group_PML_In_Faces = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"])
+  geompy.UnionList(Group_PML_In_Faces, pml_inlet_air_shared_faces )
+  geompy.addToStudyInFather( Structure, Group_PML_In_Faces, 'Group_PML_In_Faces' )
   
-
-
-
-  # geompy.addToStudyInFather( Structure, Group_PML_In_Faces, 'Group_PML_In_Faces' )
-  # geompy.addToStudyInFather( Structure, Group_PML_Out_Faces, 'Group_PML_Out_Faces' )
+  Group_PML_Out_Faces = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"])
+  geompy.UnionList(Group_PML_Out_Faces, pml_outlet_air_shared_faces )
+  geompy.addToStudyInFather( Structure, Group_PML_Out_Faces, 'Group_PML_Out_Faces' )
 
   # print('#solids: {}'.format(len(solids)) )
   # print(*solids, sep='\n')
@@ -444,7 +450,7 @@ def process_geometry(data):
   # geompy.UnionList(Auto_group_for_top_bottom_walls, [ section_intersect_PML_in_air_in, section_intersect_PML_out_air_out ] )
 
   Auto_group_for_brick_faces = geompy.CreateGroup( Structure, geompy.ShapeType["FACE"]) # set brick faces
-  # geompy.UnionList( Auto_group_for_brick_faces, bricks_faces )
+  # geompy.UnionList( Auto_group_for_brick_faces, [ bricks_faces ] )
   # geompy.UnionList( Auto_group_for_brick_faces, [Faces[5], Face_7, Face_8, Face_9, Face_10, Face_11, Face_12, Face_13, Face_14, \
   #                                               Face_20, Face_21, Face_22, Face_23, Face_24, \
   #                                               Face_31, Face_32, Face_33, Face_34, Face_35, \
@@ -581,9 +587,14 @@ def process_geometry(data):
   air_mesh = Structure_1.GroupOnGeom(air_solid,'air',SMESH.VOLUME)
   pml_top_mesh = Structure_1.GroupOnGeom(pml_outlet_solid,'pml_outlet',SMESH.VOLUME)
   
+
+  # brick_faces_mesh = Structure_1.GroupOnGeom(Auto_group_for_brick_faces,'bricks_faces',SMESH.FACE)
+
+
+
   isDone = Structure_1.Compute()  
 
-  print(Structure_1.GetGroups())
+  # print(Structure_1.GetGroups())
 
   # Add groups in mesh.unv
   # [pml_bottom, pml_top, brick, air, top_bottom_walls, inlet, outlet, lens_faces, brick_left, brick_front, brick_back, brick_right, left, front, back, right ] = Structure_1.GetGroups()
