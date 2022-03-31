@@ -588,9 +588,11 @@ def process_geometry(data):
   pml_top_mesh = Structure_1.GroupOnGeom(pml_outlet_solid,'pml_outlet',SMESH.VOLUME)
   
 
-  # brick_faces_mesh = Structure_1.GroupOnGeom(Auto_group_for_brick_faces,'bricks_faces',SMESH.FACE)
 
-
+  # air_faces_mesh = Structure_1.GroupOnGeom(Group_Air_Faces,'air_faces',SMESH.FACE)
+  brick_faces_mesh = Structure_1.GroupOnGeom(Group_Air_Faces,'bricks_faces',SMESH.FACE)
+  inlet_face_mesh = Structure_1.GroupOnGeom(Group_PML_In_Faces,'inlet',SMESH.FACE)
+  outlet_faces_mesh = Structure_1.GroupOnGeom(Group_PML_Out_Faces,'outlet',SMESH.FACE)
 
   isDone = Structure_1.Compute()  
 
