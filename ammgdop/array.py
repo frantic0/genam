@@ -185,7 +185,7 @@ def process_geometry(data, mesh):
 
   # Cut the bricks positives from the above fused result 
   lens = geompy.MakeCutList( lens_fused, bricks, True)
-  geompy.addToStudy( lens, 'Lens' )
+  # geompy.addToStudy( lens, 'Lens' )
 
   lens_faces = []
   lens_faces =  geompy.ExtractShapes(lens, geompy.ShapeType["FACE"], True) # generates 1946 faces instead of 54
@@ -195,7 +195,7 @@ def process_geometry(data, mesh):
   
   # Fuse all the air sections, the bricks positives with air sections at the inlet and outlet 
   air = geompy.MakeFuseList( [ air_inlet, air_outlet ] + bricks, True, True)
-  geompy.addToStudy( air, 'Air' )
+  # geompy.addToStudy( air, 'Air' )
 
   Structure = geompy.MakePartition([pml_bottom, pml_top, lens, air], [], [], [], geompy.ShapeType["SOLID"], 0, [], 0)
   geompy.addToStudy( Structure, 'Structure' )
@@ -230,6 +230,12 @@ def process_geometry(data, mesh):
   shared_faces_pml_inlet_air = geompy.GetSharedShapesMulti( [ solid_pml_inlet, solid_air ],  geompy.ShapeType['FACE'], False) 
   shared_faces_pml_outlet_air = geompy.GetSharedShapesMulti( [ solid_pml_outlet, solid_air ],  geompy.ShapeType['FACE'], False) 
   shared_faces_lens_solid_air = geompy.GetSharedShapesMulti( [ solid_lens, solid_air ],  geompy.ShapeType['FACE'], False) 
+
+  # face_top = geompy.GetOppositeFace( shared_faces_pml_inlet_air[0], solid_pml_inlet )	
+  # geompy.addToStudy(face_top, 'face_top')
+  # face_bottom = geompy.GetOppositeFace( shared_faces_pml_outlet_air[0], solid_pml_outlet )	
+  # geompy.addToStudy(face_bottom, 'face_bottom')
+
 
   group_faces_air_lens = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"])
   geompy.UnionList(group_faces_air_lens, shared_faces_lens_solid_air )
@@ -415,7 +421,7 @@ def process_geometry(data, mesh):
   # air_faces_mesh = Structure_1.GroupOnGeom(Group_Air_Faces,'air_faces', SMESH.FACE)
   inlet_face_mesh = Structure_1.GroupOnGeom(group_faces_inlet,'inlet', SMESH.FACE)
   outlet_faces_mesh = Structure_1.GroupOnGeom(group_faces_outlet,'outlet', SMESH.FACE)
-  faces_air_cut_mesh = Structure_1.GroupOnGeom( group_faces_air_cut, 'air', SMESH.FACE)
+  # faces_air_cut_mesh = Structure_1.GroupOnGeom( group_faces_air_cut, 'air', SMESH.FACE)
   brick_faces_mesh = Structure_1.GroupOnGeom(group_faces_air_lens, 'lens', SMESH.FACE)
   faces_lens_cut_mesh = Structure_1.GroupOnGeom( group_faces_lens_cut, 'lens_shell', SMESH.FACE)
 
