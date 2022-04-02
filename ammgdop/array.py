@@ -236,13 +236,13 @@ def process_geometry(data, mesh):
   geompy.addToStudyInFather( Structure, group_faces_air_lens, 'group_faces_air_lens' )
 
 
-  group_faces_PML_inlet = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"])
-  geompy.UnionList(group_faces_PML_inlet, shared_faces_pml_inlet_air )
-  geompy.addToStudyInFather( Structure, group_faces_PML_inlet, 'group_faces_PML_inlet' )
+  group_faces_inlet = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"])
+  geompy.UnionList(group_faces_inlet, shared_faces_pml_inlet_air )
+  geompy.addToStudyInFather( Structure, group_faces_inlet, 'group_faces_inlet' )
   
-  group_faces_PML_outlet = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"])
-  geompy.UnionList(group_faces_PML_outlet, shared_faces_pml_outlet_air )
-  geompy.addToStudyInFather( Structure, group_faces_PML_outlet, 'group_faces_PML_outlet' )
+  group_faces_outlet = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"])
+  geompy.UnionList(group_faces_outlet, shared_faces_pml_outlet_air )
+  geompy.addToStudyInFather( Structure, group_faces_outlet, 'group_faces_outlet' )
 
   subshapes_air = geompy.SubShapeAll(solid_air, geompy.ShapeType["FACE"])
   # air_subshapes = geompy.SubShapeAll(air, geompy.ShapeType["FACE"])
@@ -256,7 +256,7 @@ def process_geometry(data, mesh):
     
   # group_faces_air_cut = geompy.CutGroups( group_faces_air, group_faces_air_lens )
   group_faces_air_cut = geompy.CutListOfGroups( [ group_faces_air ],
-                                                [ group_faces_air_lens, group_faces_PML_inlet, group_faces_PML_outlet] )
+                                                [ group_faces_air_lens, group_faces_inlet, group_faces_outlet] )
 
   geompy.addToStudyInFather(Structure, group_faces_air_cut, 'group_faces_air_cut' )
 
@@ -268,56 +268,60 @@ def process_geometry(data, mesh):
   geompy.addToStudyInFather(Structure, group_faces_lens_cut, 'group_faces_lens_cut' )
 
 
-  subshapes_pml_inlet = geompy.SubShapeAll(solid_pml_inlet, geompy.ShapeType["FACE"])
-  subshapes_pml_outlet = geompy.SubShapeAll(solid_pml_outlet, geompy.ShapeType["FACE"])
-
-  group_faces_air = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"])
-  geompy.UnionList( group_faces_air, subshapes_air )
-  geompy.addToStudyInFather(Structure, group_faces_air, 'group_faces_air' )
-
-  group_faces_air = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"])
-  geompy.UnionList( group_faces_air, subshapes_air )
-  geompy.addToStudyInFather(Structure, group_faces_air, 'group_faces_air' )
 
   ##############################################
 
   # Group Air and PML faces for BCs and PBCs
+  # which require specific points for extracting the faces
 
-  face_air_left_1 = geompy.GetFaceNearPoint(group_faces_air, geompy.MakeVertex(0, -0.108263, 57.761))
-  face_air_left_2 = geompy.GetFaceNearPoint(group_faces_air, geompy.MakeVertex(0, -0.108263, 4.717))
-  face_air_left_3 = geompy.GetFaceNearPoint(group_faces_air, geompy.MakeVertex(0, -0.108263, 4.717))
-  face_air_left_4 = geompy.GetFaceNearPoint(group_faces_air, geompy.MakeVertex(0, -0.108263, 4.717))
+  subshapes_pml_inlet = geompy.SubShapeAll(solid_pml_inlet, geompy.ShapeType["FACE"])
+  subshapes_pml_outlet = geompy.SubShapeAll(solid_pml_outlet, geompy.ShapeType["FACE"])
+
+  group_faces_pml_inlet = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"])
+  geompy.UnionList( group_faces_pml_inlet, subshapes_pml_inlet )
+  geompy.addToStudyInFather(Structure, group_faces_pml_inlet, 'group_faces_pml_inlet' )
+
+  group_faces_pml_outlet = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"])
+  geompy.UnionList( group_faces_pml_outlet, subshapes_pml_outlet )
+  geompy.addToStudyInFather(Structure, group_faces_pml_outlet, 'group_faces_pml_outlet' )
+
+
+
+  face_pml_inlet_left = geompy.GetFaceNearPoint(group_faces_pml_inlet,    geompy.MakeVertex(0, -0.108263, 1.2865))
+  face_air_left_1 = geompy.GetFaceNearPoint(group_faces_air,              geompy.MakeVertex(0, -0.108263, 57.761))
+  face_air_left_2 = geompy.GetFaceNearPoint(group_faces_air,              geompy.MakeVertex(0, -0.108263, 4.717))
+  face_pml_outlet_left = geompy.GetFaceNearPoint(group_faces_pml_outlet,  geompy.MakeVertex(0, -0.108263, 101.2865))
 
   group_faces_air_left = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"])
-  geompy.UnionList( group_faces_air_left, [face_air_left_1, face_air_left_2] )
-  geompy.addToStudyInFather(Structure, group_faces_air_left, 'group_faces_air_left' )
+  geompy.UnionList( group_faces_air_left, [face_air_left_1, face_air_left_2, face_pml_inlet_left, face_pml_outlet_left] )
+  geompy.addToStudyInFather(Structure, group_faces_air_left, 'group_faces_left' )
 
-  face_air_right_1 = geompy.GetFaceNearPoint(group_faces_air, geompy.MakeVertex(4.76355, -0.108263, 57.761))
-  face_air_right_2 = geompy.GetFaceNearPoint(group_faces_air, geompy.MakeVertex(4.76355, -0.108263, 4.717))
-  face_air_right_3 = geompy.GetFaceNearPoint(group_faces_air, geompy.MakeVertex(4.76355, -0.108263, 4.717))
-  face_air_right_4 = geompy.GetFaceNearPoint(group_faces_air, geompy.MakeVertex(4.76355, -0.108263, 4.717))
+  face_pml_inlet_right = geompy.GetFaceNearPoint(group_faces_pml_inlet,   geompy.MakeVertex(4.76355, -0.108263, 1.2865))
+  face_air_right_1 = geompy.GetFaceNearPoint(group_faces_air,             geompy.MakeVertex(4.76355, -0.108263, 57.761))
+  face_air_right_2 = geompy.GetFaceNearPoint(group_faces_air,             geompy.MakeVertex(4.76355, -0.108263, 4.717))
+  face_pml_outlet_right = geompy.GetFaceNearPoint(group_faces_pml_outlet, geompy.MakeVertex(4.76355, -0.108263, 101.2865))
 
   group_faces_air_right = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"])
-  geompy.UnionList( group_faces_air_right, [face_air_right_1, face_air_right_2] )
-  geompy.addToStudyInFather(Structure, group_faces_air_right, 'group_faces_air_right' )
+  geompy.UnionList( group_faces_air_right, [face_air_right_1, face_air_right_2, face_pml_inlet_right, face_pml_outlet_right] )
+  geompy.addToStudyInFather(Structure, group_faces_air_right, 'group_faces_right' )
 
-  face_air_back_1 = geompy.GetFaceNearPoint(group_faces_air, geompy.MakeVertex(2.381775, 18.404625, 57.761))
-  face_air_back_2 = geompy.GetFaceNearPoint(group_faces_air, geompy.MakeVertex(2.381775, 18.404625, 4.717))
-  face_air_back_3 = geompy.GetFaceNearPoint(group_faces_air, geompy.MakeVertex(2.381775, 18.404625, 4.717))
-  face_air_back_4 = geompy.GetFaceNearPoint(group_faces_air, geompy.MakeVertex(2.381775, 18.404625, 4.717))
+  face_pml_inlet_back = geompy.GetFaceNearPoint(group_faces_pml_inlet,    geompy.MakeVertex(2.381775, 18.404625, 1.2865))
+  face_air_back_1 = geompy.GetFaceNearPoint(group_faces_air,              geompy.MakeVertex(2.381775, 18.404625, 57.761))
+  face_air_back_2 = geompy.GetFaceNearPoint(group_faces_air,              geompy.MakeVertex(2.381775, 18.404625, 4.717))
+  face_pml_outlet_back = geompy.GetFaceNearPoint(group_faces_pml_outlet,  geompy.MakeVertex(2.381775, 18.404625, 101.2865))
 
   group_faces_air_back = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"])
-  geompy.UnionList( group_faces_air_back, [face_air_back_1, face_air_back_2] )
-  geompy.addToStudyInFather(Structure, group_faces_air_back, 'group_faces_air_back' )
+  geompy.UnionList( group_faces_air_back, [face_air_back_1, face_air_back_2, face_pml_inlet_back, face_pml_outlet_back] )
+  geompy.addToStudyInFather(Structure, group_faces_air_back, 'group_faces_back' )
 
-  face_air_front_1 = geompy.GetFaceNearPoint(group_faces_air, geompy.MakeVertex(2.381775, -18.404625, 57.761))
-  face_air_front_2 = geompy.GetFaceNearPoint(group_faces_air, geompy.MakeVertex(2.381775, -18.404625, 4.717))
-  face_air_front_3 = geompy.GetFaceNearPoint(group_faces_air, geompy.MakeVertex(2.381775, -18.404625, 4.717))
-  face_air_front_4 = geompy.GetFaceNearPoint(group_faces_air, geompy.MakeVertex(2.381775, -18.404625, 4.717))
+  face_pml_inlet_front = geompy.GetFaceNearPoint(group_faces_pml_inlet,   geompy.MakeVertex(2.381775, -18.404625, 1.2865))
+  face_air_front_1 = geompy.GetFaceNearPoint(group_faces_air,             geompy.MakeVertex(2.381775, -18.404625, 57.761))
+  face_air_front_2 = geompy.GetFaceNearPoint(group_faces_air,             geompy.MakeVertex(2.381775, -18.404625, 4.717))
+  face_pml_outlet_front = geompy.GetFaceNearPoint(group_faces_pml_outlet, geompy.MakeVertex(2.381775, -18.404625, 101.2865))
 
   group_faces_air_front = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"])
-  geompy.UnionList( group_faces_air_front, [face_air_front_1, face_air_front_2] )
-  geompy.addToStudyInFather(Structure, group_faces_air_front, 'group_faces_air_front' )
+  geompy.UnionList( group_faces_air_front, [face_air_front_1, face_air_front_2, face_pml_inlet_front, face_pml_outlet_front] )
+  geompy.addToStudyInFather(Structure, group_faces_air_front, 'group_faces_front' )
 
 
 
@@ -396,21 +400,21 @@ def process_geometry(data, mesh):
   # compute the meshes
   # Mesh_3D.Compute()
 
-# Geometry computation time: 4.64 sec
-# Mesh computation time: 265.22 sec
+  # Geometry computation time: 4.64 sec
+  # Mesh computation time: 265.22 sec
 
+  ####################################################################
 
   # # Add meshing groups
+  
   pml_bottom_mesh = Structure_1.GroupOnGeom(solid_pml_inlet,'pml_inlet',SMESH.VOLUME)
   brick_mesh = Structure_1.GroupOnGeom(solid_lens,'lens',SMESH.VOLUME)
   air_mesh = Structure_1.GroupOnGeom(solid_air,'air',SMESH.VOLUME)
   pml_top_mesh = Structure_1.GroupOnGeom(solid_pml_outlet,'pml_outlet',SMESH.VOLUME)
   
-
-
   # air_faces_mesh = Structure_1.GroupOnGeom(Group_Air_Faces,'air_faces', SMESH.FACE)
-  inlet_face_mesh = Structure_1.GroupOnGeom(group_faces_PML_inlet,'inlet', SMESH.FACE)
-  outlet_faces_mesh = Structure_1.GroupOnGeom(group_faces_PML_outlet,'outlet', SMESH.FACE)
+  inlet_face_mesh = Structure_1.GroupOnGeom(group_faces_inlet,'inlet', SMESH.FACE)
+  outlet_faces_mesh = Structure_1.GroupOnGeom(group_faces_outlet,'outlet', SMESH.FACE)
   faces_air_cut_mesh = Structure_1.GroupOnGeom( group_faces_air_cut, 'air', SMESH.FACE)
   brick_faces_mesh = Structure_1.GroupOnGeom(group_faces_air_lens, 'lens', SMESH.FACE)
   faces_lens_cut_mesh = Structure_1.GroupOnGeom( group_faces_lens_cut, 'lens_shell', SMESH.FACE)
