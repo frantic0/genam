@@ -9,17 +9,14 @@ import salome
 import numpy as np
 import time, os
 
-# os.chdir(r"C:/Users/francisco/Documents/dev/acoustic-brick")
-# sys.path.insert(0, r'C:/Users/francisco/Documents/dev/acoustic-brick')
 
-os.chdir(r"C:/Users/francisco/Documents/dev/pipeline/ammgdop")
-sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline/ammgdop')
 
 from utility_functions import * 
 
 salome.salome_init()
 import salome_notebook
 notebook = salome_notebook.NoteBook()
+sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline/ammgdop')
 
 ###
 ### GEOM component
@@ -86,22 +83,7 @@ barSpa = {  'b1': 0.216,
             'b15': 0.152 
           }
 
-filletRad = { 'b1': 0.062, 
-              'b2': 0.092, 
-              'b3': 0.1,
-              'b4': 0.1, 
-              'b5': 0.1, 
-              'b6': 0.1, 
-              'b7': 0.1, 
-              'b8': 0.1, 
-              'b9': 0.1, 
-              'b10': 0.1, 
-              'b11': 0.1, 
-              'b12': 0.1, 
-              'b13': 0.1, 
-              'b14': 0.1, 
-              'b15': 0.1 
-          }
+
           
 outerRad = 0.866
 # outerRad = 0.66

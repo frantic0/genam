@@ -1,4 +1,3 @@
-from pickle import TRUE
 import sys
 import salome
 import numpy as np
@@ -6,17 +5,13 @@ import numpy as np
 import time, os
 import random
 
-# os.chdir(r"C:/Users/Francisco/Documents/dev/pipeline")
-# sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline')
-os.chdir(r"C:/Users/francisco/Documents/dev/pipeline/ammgdop")
-sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline/ammgdop')
-
 from utility_functions import * 
 from parametric_shape import * 
 
 salome.salome_init()
 import salome_notebook
 notebook = salome_notebook.NoteBook()
+sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline/ammgdop')
 
 ###
 ### GEOM component
@@ -115,44 +110,44 @@ def process_geometry(data, mesh):
   bricks_faces = []
 
   for m in range( 0, lens_grid_n ):
-  # for n in range( 0, lens_grid_n ):
+    for n in range( 0, lens_grid_n ):
 
-    # brickID = random.randint(1, 15)                                   # generate random brickID
-    brickID = [*range(1,9),*range(10,16)][random.randint(0, 13)]        # generate random brickID, but exclude index 9, shape is buggy 
+      # brickID = random.randint(1, 15)                                   # generate random brickID
+      brickID = [*range(1,9),*range(10,16)][random.randint(0, 13)]        # generate random brickID, but exclude index 9, shape is buggy 
 
-    Sketch_1 = parameterize_2D_inner_shape( waveLenght,
-                                            data['length'][brickID-1] * waveLenght,
-                                            data['distance'][brickID-1] * waveLenght )
+      Sketch_1 = parameterize_2D_inner_shape( waveLenght,
+                                              data['length'][brickID-1] * waveLenght,
+                                              data['distance'][brickID-1] * waveLenght )
 
-    # geompy.addToStudy( Sketch_1, 'Sketch' )
-    rotation = [(x, 90)]
-    # translation = ( waveLenght/40, waveLenght/40 + waveLenght/2, 6.861)
-    translation_x = waveLenght/40 + column * ( waveLenght/40 + waveLenght/2 )     
-    translation_y = waveLenght/40 + row * (waveLenght/40 + waveLenght/2 )     
-    
-    translation = ( translation_shift[0] + translation_x, translation_shift[1] + translation_y + waveLenght/2 , 6.861 )
-    
-    brick_inner = sketch_to_volume( geompy, Sketch_1, waveLenght/2, rotation, translation)
-    
-    
-    # print(*bricks_faces, sep='\n')
-    bricks.append(brick_inner)
+      # geompy.addToStudy( Sketch_1, 'Sketch' )
+      rotation = [(x, 90)]
+      # translation = ( waveLenght/40, waveLenght/40 + waveLenght/2, 6.861)
+      translation_x = waveLenght/40 + column * ( waveLenght/40 + waveLenght/2 )     
+      translation_y = waveLenght/40 + row * (waveLenght/40 + waveLenght/2 )     
+      
+      translation = ( translation_shift[0] + translation_x, translation_shift[1] + translation_y + waveLenght/2 , 6.861 )
+      
+      brick_inner = sketch_to_volume( geompy, Sketch_1, waveLenght/2, rotation, translation)
+      
+         
+      # print(*bricks_faces, sep='\n')
+      bricks.append(brick_inner)
 
-    brick_faces = geompy.ExtractShapes(brick_inner, geompy.ShapeType["FACE"], True)  # generates 1946 faces instead of 54
-    bricks_faces.append(brick_faces) 
+      brick_faces = geompy.ExtractShapes(brick_inner, geompy.ShapeType["FACE"], True)  # generates 1946 faces instead of 54
+      bricks_faces.append(brick_faces) 
 
-    for num, f in enumerate(brick_faces): # add faces to study
-      counter += 1
-      name = 'face_{}'.format(counter)
-      f.SetName(name)
-      # print('face_{}: {}'.format(name, f.GetEntry()))
-      bricks_faces.append(f) 
+      for num, f in enumerate(brick_faces): # add faces to study
+        counter += 1
+        name = 'face_{}'.format(counter)
+        f.SetName(name)
+        # print('face_{}: {}'.format(name, f.GetEntry()))
+        bricks_faces.append(f) 
 
 
-    # print('Brick {} - type:{} #faces:{}'.format(m+1, brickID, len(bricks_faces[m]) ) )
-    # print( *brick_faces, sep='\n')
-    # column += 1
-  # column = 0
+      # print('Brick {} - type:{} #faces:{}'.format(m+1, brickID, len(bricks_faces[m]) ) )
+      # print( *brick_faces, sep='\n')
+      column += 1
+    column = 0
     row += 1
 
 
