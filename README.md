@@ -16,10 +16,10 @@ This is the list of software required to run the Python scripts in the next sect
   * [matplotlib](https://www.python.org/)
 
 
-### Pythons scripts
+### Models 
 
 * [parametric_brick.py](https://github.com/frantic0/ammgdop/blob/main/parametric_brick.py) –
-* [assemble_lens.py](https://github.com/frantic0/ammgdop/blob/main/assemble_lens.py) –
+* [lens.py](https://github.com/frantic0/ammgdop/blob/main/assemble_lens.py) –
 * [export_structures.py](https://github.com/frantic0/ammgdop/blob/main/export_structures.py) – 
 * [process_geometry.py](https://github.com/frantic0/ammgdop/blob/main/process_geometry.py) –
 * [run_elmer_solver.py](https://github.com/frantic0/ammgdop/blob/main/run_elmer_solver.py) – 
