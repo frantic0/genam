@@ -296,10 +296,10 @@ def process_geometry(data, mesh):
   geompy.UnionList( group_faces_air_left, [face_air_left_1, face_air_left_2, face_pml_inlet_left, face_pml_outlet_left] )
   geompy.addToStudyInFather(Structure, group_faces_air_left, 'group_faces_left' )
 
-  face_pml_inlet_right = geompy.GetFaceNearPoint(group_faces_pml_inlet,   geompy.MakeVertex(4.76355, -0.108263, 1.2865))
-  face_air_right_1 = geompy.GetFaceNearPoint(group_faces_air,             geompy.MakeVertex(4.76355, -0.108263, 57.761))
-  face_air_right_2 = geompy.GetFaceNearPoint(group_faces_air,             geompy.MakeVertex(4.76355, -0.108263, 4.717))
-  face_pml_outlet_right = geompy.GetFaceNearPoint(group_faces_pml_outlet, geompy.MakeVertex(4.76355, -0.108263, 101.2865))
+  face_pml_inlet_right = geompy.GetFaceNearPoint(group_faces_pml_inlet,   geompy.MakeVertex(36.592725, -0.108263, 1.2865))
+  face_air_right_1 = geompy.GetFaceNearPoint(group_faces_air,             geompy.MakeVertex(36.592725, -0.108263, 57.761))
+  face_air_right_2 = geompy.GetFaceNearPoint(group_faces_air,             geompy.MakeVertex(36.592725, -0.108263, 4.717))
+  face_pml_outlet_right = geompy.GetFaceNearPoint(group_faces_pml_outlet, geompy.MakeVertex(36.592725, -0.108263, 101.2865))
 
   group_faces_air_right = geompy.CreateGroup(Structure, geompy.ShapeType["FACE"])
   geompy.UnionList( group_faces_air_right, [face_air_right_1, face_air_right_2, face_pml_inlet_right, face_pml_outlet_right] )

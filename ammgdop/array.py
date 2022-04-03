@@ -330,39 +330,9 @@ def process_geometry(data, mesh):
   geompy.addToStudyInFather(Structure, group_faces_air_front, 'group_faces_front' )
 
 
-
-
-  # id_face31 = geompy.addToStudy(face_air_left_1, "face_air_left_1")
-  # id_face31 = geompy.addToStudy(face_air_left_2, "face_air_left_2")
-
-
-  # geompy.GetShapesNearPoint(geompy.MakeVertex(0, 0, 0))
-
-  # geompy.GetFaceNearPoint(Block2, p_15_10_1)
-  
-  # face_normal = geompy.GetFaceByNormale(group_faces_air_cut, geompy.MakeVectorDXDYDZ(1, 0, 0) )
-  # face_normal = geompy.GetFaceByNormale(solid_air, geompy.MakeVectorDXDYDZ(1, 0, 0) )
-  # print(face_normal)
-
-
-
   # def flatten(t):
   #   return [item for sublist in t for item in sublist]
-    
-  
-  
-  #################################
-  # Add autogroups to study
-  # geompy.addToStudyInFather(Structure, Auto_group_for_right, 'Auto_group_for_right')
-  # geompy.addToStudyInFather(Structure, Auto_group_for_air, 'Auto_group_for_air')
-  # geompy.addToStudyInFather(Structure, Auto_group_for_left, 'Auto_group_for_left')
-  # geompy.addToStudyInFather(Structure, Auto_group_for_back, 'Auto_group_for_back')
-  # geompy.addTo  'Auto_group_for_top_bottom_walls')
-  # geompy.addToStudyInFather(Structure, Auto_group_for_lens_faces, 'Auto_group_for_lens_faces')
-  # geompy.addToStudyInFather(Structure, Auto_group_for_front, 'Auto_group_for_front')
-
-  
-
+   
 
   end = time.time()
   print("Geometry computation time: {:.2f} sec".format(end - start))
