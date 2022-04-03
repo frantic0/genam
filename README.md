@@ -1,4 +1,4 @@
-# Acoustic Metamaterial Generative Design and Optimisation Pipeline
+# Generative Acoustic Metamaterial - Design and Optimisation Pipeline
 
 
 
