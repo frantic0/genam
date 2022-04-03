@@ -1,12 +1,12 @@
-# Acoustic Metamaterial Generative Design and Optimisation Pipeline
+# Generative Acoustic Metamaterial Pipeline
 
-
+Genamm is a generative design and optimisation pipeline for acoustic metamaterials.
 
 ### Dependencies 
 
 This is the list of software required to run the Python scripts in the next section. 
 
-* [Salome 9.7.0](https://salome-platform.org/) – Integration platform for numerical simulation
+* [Salome 9.8.0](https://salome-platform.org/) – Integration platform for numerical simulation
 * [ElmerFEM](http://www.csc.fi/elmer) – Multiphysical simulation
 * [Paraview](https://www.paraview.org/) – Data analysis and visualization 
 * [Python 3.9](https://www.python.org/) and libraries for post-processing and analysis:
@@ -16,10 +16,10 @@ This is the list of software required to run the Python scripts in the next sect
   * [matplotlib](https://www.python.org/)
 
 
-### Pythons scripts
+### Models 
 
 * [parametric_brick.py](https://github.com/frantic0/ammgdop/blob/main/parametric_brick.py) –
-* [assemble_lens.py](https://github.com/frantic0/ammgdop/blob/main/assemble_lens.py) –
+* [lens.py](https://github.com/frantic0/ammgdop/blob/main/assemble_lens.py) –
 * [export_structures.py](https://github.com/frantic0/ammgdop/blob/main/export_structures.py) – 
 * [process_geometry.py](https://github.com/frantic0/ammgdop/blob/main/process_geometry.py) –
 * [run_elmer_solver.py](https://github.com/frantic0/ammgdop/blob/main/run_elmer_solver.py) – 
