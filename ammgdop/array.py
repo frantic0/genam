@@ -225,7 +225,7 @@ def process_geometry(data, mesh):
 
   #################################
 
-  faces = geompy.ExtractShapes(Structure, geompy.ShapeType["FACE"], True)
+  # faces = geompy.ExtractShapes(Structure, geompy.ShapeType["FACE"], True)
  
   shared_faces_pml_inlet_air = geompy.GetSharedShapesMulti( [ solid_pml_inlet, solid_air ],  geompy.ShapeType['FACE'], False) 
   shared_faces_pml_outlet_air = geompy.GetSharedShapesMulti( [ solid_pml_outlet, solid_air ],  geompy.ShapeType['FACE'], False) 

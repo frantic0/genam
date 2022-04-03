@@ -5,14 +5,15 @@ import numpy as np
 import time, os
 import random
 
-from utility_functions import * 
-from parametric_shape import * 
 
 salome.salome_init()
 import salome_notebook
 notebook = salome_notebook.NoteBook()
 sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline/ammgdop')
 
+from utility_functions import * 
+
+from parametric_shape import * 
 ###
 ### GEOM component
 ###
@@ -68,24 +69,24 @@ def process_geometry(data, mesh):
 
 
 
-  pml_bottom = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( array_side, lens_side, pml_bottom_height),
+  pml_bottom = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( lens_side, lens_side, pml_bottom_height),
                                         0, y_translation_shift,
                                         0 )
   # geompy.addToStudy( pml_bottom, 'pml_bottom' )
 
-  air_inlet = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( array_side, lens_side, air_bottom_height),
+  air_inlet = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( lens_side, lens_side, air_bottom_height),
                                       0, y_translation_shift,
                                       pml_bottom_height )
   # geompy.addToStudy( air_inlet, 'air_inlet' )
   
-  lens_outer = geompy.MakeTranslation(  geompy.MakeBoxDXDYDZ( array_side, lens_side, waveLenght ),
+  lens_outer = geompy.MakeTranslation(  geompy.MakeBoxDXDYDZ( lens_side, lens_side, waveLenght ),
                                         0, y_translation_shift,
                                         pml_bottom_height + air_bottom_height )
   # geompy.addToStudy( lens_outer, 'lens_outer' )
 
   air_height = probing_distance - (pml_bottom_height + air_bottom_height + waveLenght)
 
-  air_outlet = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( array_side, lens_side, air_height ),
+  air_outlet = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( lens_side, lens_side, air_height ),
                                         0, y_translation_shift, 
                                         pml_bottom_height + air_bottom_height + waveLenght )
 
@@ -147,9 +148,8 @@ def process_geometry(data, mesh):
       # print('Brick {} - type:{} #faces:{}'.format(m+1, brickID, len(bricks_faces[m]) ) )
       # print( *brick_faces, sep='\n')
       column += 1
-    column = 0
     row += 1
-
+    column = 0
 
 
 
@@ -195,10 +195,9 @@ def process_geometry(data, mesh):
   Structure = geompy.MakePartition([pml_bottom, pml_top, lens, air], [], [], [], geompy.ShapeType["SOLID"], 0, [], 0)
   geompy.addToStudy( Structure, 'Structure' )
   
-  # solids = [Solid_1, Solid_2, Solid_3, Solid_4] = geompy.ExtractShapes(Structure, geompy.ShapeType["SOLID"], True)
-  solids = [Solid_1, Solid_2, Solid_3, Solid_4] = geompy.SubShapeAllSortedCentres(Structure, geompy.ShapeType["SOLID"])
-  # solids = geompy.SubShapeAllSortedCentres(Structure, geompy.ShapeType["SOLID"])
-
+  # solids = [Solid_1, Solid_2, Solid_3, Solid_4] = geompy.SubShapeAllSortedCentres(Structure, geompy.ShapeType["SOLID"])
+  solids = geompy.SubShapeAllSortedCentres(Structure, geompy.ShapeType["SOLID"])
+  print(solids)
   # TODO: Extract unit test from this code
   # print( geompy.PointCoordinates(geompy.MakeCDG(Solid_1))[2] )
   # print( geompy.PointCoordinates(geompy.MakeCDG(Solid_2))[2] )
@@ -325,40 +324,9 @@ def process_geometry(data, mesh):
   geompy.addToStudyInFather(Structure, group_faces_air_front, 'group_faces_front' )
 
 
-
-
-  # id_face31 = geompy.addToStudy(face_air_left_1, "face_air_left_1")
-  # id_face31 = geompy.addToStudy(face_air_left_2, "face_air_left_2")
-
-
-  # geompy.GetShapesNearPoint(geompy.MakeVertex(0, 0, 0))
-
-  # geompy.GetFaceNearPoint(Block2, p_15_10_1)
-  
-  # face_normal = geompy.GetFaceByNormale(group_faces_air_cut, geompy.MakeVectorDXDYDZ(1, 0, 0) )
-  # face_normal = geompy.GetFaceByNormale(solid_air, geompy.MakeVectorDXDYDZ(1, 0, 0) )
-  # print(face_normal)
-
-
-
   # def flatten(t):
   #   return [item for sublist in t for item in sublist]
     
-  
-  
-  #################################
-  # Add autogroups to study
-  # geompy.addToStudyInFather(Structure, Auto_group_for_right, 'Auto_group_for_right')
-  # geompy.addToStudyInFather(Structure, Auto_group_for_air, 'Auto_group_for_air')
-  # geompy.addToStudyInFather(Structure, Auto_group_for_left, 'Auto_group_for_left')
-  # geompy.addToStudyInFather(Structure, Auto_group_for_back, 'Auto_group_for_back')
-  # geompy.addTo  'Auto_group_for_top_bottom_walls')
-  # geompy.addToStudyInFather(Structure, Auto_group_for_lens_faces, 'Auto_group_for_lens_faces')
-  # geompy.addToStudyInFather(Structure, Auto_group_for_front, 'Auto_group_for_front')
-
-  
-
-
   end = time.time()
   print("Geometry computation time: {:.2f} sec".format(end - start))
   
@@ -488,7 +456,7 @@ mesh = lambda i:  (
 
 
 
-process_geometry( data, mesh(3) )
+process_geometry( data, mesh(0)  )
 # Structure = process_geometry(data)
 
 # # First export mesh in .unv format
