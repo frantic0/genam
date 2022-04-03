@@ -1,6 +1,6 @@
 # Generative Acoustic Metamaterial Pipeline
 
-
+Genamm is a generative design and optimisation pipeline for acoustic metamaterials.
 
 ### Dependencies 
 
