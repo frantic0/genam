@@ -6,7 +6,7 @@
 
 This is the list of software required to run the Python scripts in the next section. 
 
-* [Salome 9..0](https://salome-platform.org/) – Integration platform for numerical simulation
+* [Salome 9.8.0](https://salome-platform.org/) – Integration platform for numerical simulation
 * [ElmerFEM](http://www.csc.fi/elmer) – Multiphysical simulation
 * [Paraview](https://www.paraview.org/) – Data analysis and visualization 
 * [Python 3.9](https://www.python.org/) and libraries for post-processing and analysis:
