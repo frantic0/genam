@@ -1,6 +1,6 @@
 # Generative Acoustic Metamaterial
 
-Genamm is a pipeline for generative design and optimisation of acoustic metamaterials.
+__genam__ is a pipeline for generative design and optimisation of acoustic metamaterials.
 
 ### Dependencies 
 
@@ -44,9 +44,9 @@ python '..\..\..\..\..\SALOME-9.8.0\salome' shell -p 2819 .\process_geometry.py 
 
 You can also use salome in batch mode
 
-'''
+```
 ..\..\..\..\..\..\SALOME-9.8.0\salome -t -w1 .\process_geometry.py args:15,40000,41000,250 .\run_elmer_solver.py args:15 .\process_geometry.py args:14,40000,41000,250 .\run_elmer_solver.py args:15 .\process_geometry.py args:13,40000,41000,250 .\run_elmer_solver.py args:13 .\process_geometry.py args:12,40000,41000,250 .\run_elmer_solver.py args:12 .\process_geometry.py args:11,40000,41000,250 .\run_elmer_solver.py args:11 .\process_geometry.py args:10,40000,41000,250 .\run_elmer_solver.py args:10 .\process_geometry.py args:9,40000,41000,250 .\run_elmer_solver.py args:9 .\process_geometry.py args:8,40000,41000,250 .\run_elmer_solver.py args:8 .\process_geometry.py args:7,40000,41000,250 .\run_elmer_solver.py args:7 .\process_geometry.py args:6,40000,41000,250 .\run_elmer_solver.py args:6 .\process_geometry.py args:5,40000,41000,250 .\run_elmer_solver.py args:5 .\process_geometry.py args:4,40000,41000,250 .\run_elmer_solver.py args:4 .\process_geometry.py args:3,40000,41000,250 .\run_elmer_solver.py args:3 .\process_geometry.py args:2,40000,41000,250 .\run_elmer_solver.py args:2 .\process_geometry.py args:1,40000,41000,250 .\run_elmer_solver.py args:1
-''''
+```
 
 
 Generate .unv and Elmer .sif template for all labyrinthine bricks
