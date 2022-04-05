@@ -1,6 +1,6 @@
 # Generative Acoustic Metamaterial
 
-__genam__ is a framework and pipeline for the generative design and optimisation of acoustic metamaterials.
+__genam__ is a python package and framework for the generative design and optimisation of acoustic metamaterials.
 
 ### Dependencies 
 
