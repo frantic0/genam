@@ -5,3 +5,5 @@ import ammgdop.export_solver_input_file as sif
 # s = sif.sif_exporter()
 
 # g = geo.newpath
+
+import genam.lens as lens

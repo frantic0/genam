@@ -6,17 +6,15 @@ import numpy as np
 import time, os
 import random
 
-# os.chdir(r"C:/Users/Francisco/Documents/dev/pipeline")
-# sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline')
-os.chdir(r"C:/Users/francisco/Documents/dev/pipeline/ammgdop")
-sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline/ammgdop')
 
-from utility_functions import * 
-from parametric_shape import * 
 
 salome.salome_init()
 import salome_notebook
 notebook = salome_notebook.NoteBook()
+sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline/ammgdop')
+
+from utility_functions import * 
+from parametric_shape import * 
 
 ###
 ### GEOM component
