@@ -1,3 +1,4 @@
+import configparser
 import sys
 import salome
 import numpy as np
@@ -60,7 +61,6 @@ class Lens:
     self.smesh = smeshBuilder.New()
     self.mesh = {}
 
-
     self.start = 0
     self.end = 0
 
@@ -99,27 +99,29 @@ class Lens:
   
     counter = 0
 
-
-
     pml_bottom = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( lens_side, lens_side, pml_bottom_height),
-                                          0, y_translation_shift,
+                                          0, 
+                                          y_translation_shift,
                                           0 )
     # geompy.addToStudy( pml_bottom, 'pml_bottom' )
 
     air_inlet = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( lens_side, lens_side, air_bottom_height),
-                                        0, y_translation_shift,
+                                        0, 
+                                        y_translation_shift,
                                         pml_bottom_height )
     # geompy.addToStudy( air_inlet, 'air_inlet' )
     
     lens_outer = geompy.MakeTranslation(  geompy.MakeBoxDXDYDZ( lens_side, lens_side, waveLenght ),
-                                          0, y_translation_shift,
+                                          0, 
+                                          y_translation_shift,
                                           pml_bottom_height + air_bottom_height )
     # geompy.addToStudy( lens_outer, 'lens_outer' )
 
     air_height = probing_distance - (pml_bottom_height + air_bottom_height + waveLenght)
 
     air_outlet = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( lens_side, lens_side, air_height ),
-                                          0, y_translation_shift, 
+                                          0, 
+                                          y_translation_shift, 
                                           pml_bottom_height + air_bottom_height + waveLenght )
 
     pml_top = geompy.MakeTranslation( pml_bottom,
@@ -502,25 +504,15 @@ mesh_config_selector = lambda i:  (
   mesh_configs['fineness'][i],
 ) 
 
-quantized_matrix_2_2 = np.array([ 
-                                  [ 1, 2 ],
-                                  [ 3, 4 ] 
-                                ])
 
-quantized_matrix_4_4 = np.array([ 
-                                  [  4,  6,  6,  4 ], #0
-                                  [  6,  7,  7,  6 ], #1
-                                  [  6,  7,  7,  6 ], #2
-                                  [  4,  6,  6,  4 ]  #3
-                                ])
 
 
 quantized_matrix_8_8_11_bricks = np.array([ 
                                   [  4,  7, 10, 13, 13, 10,  7,  4 ], #0
                                   [  5, 10, 13,  3,  3, 13, 10,  5 ], #1
                                   [ 10, 13,  4,  6,  6,  4, 13, 10 ], #2
-                                  [ 13,  3,  6,  7,  7,  6,  3, 13 ], #3
-                                  [ 13,  3,  6,  7,  7,  6,  3, 13 ], #4
+                                  [ 15,  3,  6,  7,  7,  6,  3, 15 ], #3
+                                  [ 15,  3,  6,  7,  7,  6,  3, 15 ], #4
                                   [ 10, 13,  4,  6,  6,  4, 13, 10 ], #5
                                   [  5, 10, 13,  3,  3, 13, 10,  5 ], #6
                                   [  4,  7, 10, 13, 13, 10,  7,  4 ], #7
@@ -546,7 +538,6 @@ quantized_matrix_16_16_3_bit = np.array([
                                   [  8, 12, 15,  1,  3,  5,  6,  6,  6,  6,  5,  3,  1, 15, 12,  8 ], #5                                 
                                   [  9, 13,  1,  4,  5,  6,  7,  7,  7,  7,  6,  5,  4,  1, 13,  9 ], #6
                                   [ 10, 13,  0,  3,  5,  6,  7,  8,  8,  7,  6,  5,  3,  0, 13, 10 ], #7 
-
                                 ])
 
 
@@ -569,21 +560,41 @@ quantized_matrix_16_16_4_bit = np.array([
                                   [ 13,  0,  3,  5,  7,  8,  9, 10, 10,  9,  8,  7,  5,  3,  0, 13 ], #15
                                 ])
 
+quantized_matrix_2_2 = np.array([ 
+                                  [ 1, 2 ],
+                                  [ 3, 4 ] 
+                                ])
+
+quantized_matrix_4_4 = np.array([ 
+                                  [  4,  6,  6,  4 ], #0
+                                  [  6,  7,  7,  6 ], #1
+                                  [  6,  7,  7,  6 ], #2
+                                  [  4,  6,  6,  4 ]  #3
+                                ])
 
 flaps_configs = { 
-  'length':   [.062, .092, .112, .132, .152, .162, .171, .191, .221, .241, .251, .271, .281, .301, .321],
-  'distance': [.216, .212, .207, .189, .161, .166, .171, .134, .257, .234, .230, .207, .203, .175, .152],  
-  'radius':   [.062, .092, .1,   .1,   .1,   .1,   .1,   .1,   .1,   .1,   .1,   .1,   .1,   .1,   .1] 
+  'length':   [0, .062, .092, .112, .132, .152, .162, .171, .191, .221, .241, .251, .271, .281, .301, .321],
+  'distance': [0, .216, .212, .207, .189, .161, .166, .171, .134, .257, .234, .230, .207, .203, .175, .152],  
+  'radius':   [0, .062, .092, .1,   .1,   .1,   .1,   .1,   .1,   .1,   .1,   .1,   .1,   .1,   .1,   .1] 
 }
 
-unit_cell_selector = lambda i: (
-  flaps_configs['length'][i],
-  flaps_configs['distance'][i],
-  flaps_configs['radius'][i]
-)
+unit_cell_select_list = lambda i: np.array([
+                                flaps_configs['length'][i], 
+                                flaps_configs['distance'][i], 
+                                flaps_configs['radius'][i] 
+                              ])
 
 
-lens =  Lens( quantized_matrix_8_8_3_bit, 
+def lens_configurator( quantized_matrix ):
+
+  configs = np.array([ unit_cell_select_list(i) for i in quantized_matrix.ravel()])
+
+  configs_to_stack = configs.reshape(quantized_matrix.shape[0], quantized_matrix.shape[1], len(flaps_configs) )  
+
+  return np.dstack( (quantized_matrix, configs_to_stack ) )
+
+
+lens =  Lens( quantized_matrix_8_8_11_bricks, 
               mesh_config_selector(3),
               mesh_config_selector(3).shape[0],
               8,
