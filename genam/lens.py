@@ -161,9 +161,11 @@ class Lens:
         
         translation = ( translation_shift[0] + translation_x, translation_shift[1] + translation_y + self.wavelenght/2 , 6.861 )
         
-        brick_inner = sketch_to_volume( geompy, Sketch_1, self.wavelenght /2, rotation, translation)
-        
-          
+        try:
+          brick_inner = sketch_to_volume( geompy, Sketch_1, self.wavelenght /2, rotation, translation)
+        except: 
+          print("{} {} {}".format(Sketch_1, m, n))
+
         # print(*bricks_faces, sep='\n')
         bricks.append(brick_inner)
 
@@ -636,8 +638,8 @@ def lens_configurator( quantized_matrix ):
 # lens_config = lens_configurator( quantized_matrix_1_8_11_bricks )
 # lens_config = lens_configurator( quantized_matrix_8_1_11_bricks )
 # lens_config = lens_configurator( quantized_matrix_2_2 )
-lens_config = lens_configurator( quantized_matrix_4_4 )
-# lens_config = lens_configurator( quantized_matrix_16_16_4_bit )
+# lens_config = lens_configurator( quantized_matrix_4_4 )
+lens_config = lens_configurator( quantized_matrix_16_16_4_bit )
 
 lens =  Lens( lens_config, mesh_config_selector(3) )
 

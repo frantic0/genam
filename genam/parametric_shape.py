@@ -132,6 +132,15 @@ def draw_hardcoded_brick():
 def parameterize_2D_inner_shape( waveLength, barLength, barSpacing ):
   """
   Draws a labyrynthine brick  
+
+    Inputs
+  
+    sketch: 2d sketch of the object
+    thickness: thickness of volume in z axis
+    rotation: provide a list of tuples with (axis, angle) as a tuple i.e. (x, 90), in the order you want to rotate in x axis
+  
+  Returns
+     
   """
 
   try:
@@ -179,11 +188,8 @@ def parameterize_2D_inner_shape( waveLength, barLength, barSpacing ):
     sk.addSegmentAbsolute( OR, S0 + Bh + S1 + OR + IR) # Horizontal Segment Top
 
     sk.addArcRadiusAbsolute( 0.0000000, S0 + S1 + 2 * Bh, -OR, 0.0000000) # outerRadius 4
-    
 
     sk.addSegmentAbsolute( 0.0000000, waveLength ) # top left corner
-
-
 
     sk.addSegmentAbsolute( waveLength/2, waveLength) # top right corner
 
@@ -236,7 +242,7 @@ def parameterize_2D_inner_shape( waveLength, barLength, barSpacing ):
 
     print("Error drawing 2Dsketch: {} {} {}".format( waveLength, barLength, barSpacing ) )
 
-    return NULL
+    return None
 
 
 
