@@ -4,6 +4,7 @@
 ### This file is generated automatically by SALOME v9.3.0 with dump python functionality
 ###
 
+from asyncio.windows_events import NULL
 import sys
 import salome
 import numpy as np
@@ -129,102 +130,113 @@ def draw_hardcoded_brick():
 
 
 def parameterize_2D_inner_shape( waveLength, barLength, barSpacing ):
+  """
+  Draws a labyrynthine brick  
+  """
 
-  ### Make brick sketch
-  sk = geompy.Sketcher2D()
+  try:
 
-  # Bar height - constant 
-  OR = waveLength/10         # outer radius height - 
-  IR = waveLength/20         # inner radius height - l0/20
-  Bh = 2 * OR + IR  # bar height 
+    ### Make brick sketch
+    sk = geompy.Sketcher2D()
 
-  S0 = waveLength - ( waveLength/2 + 3*barSpacing/2 + Bh/2 ) 
+    # Bar height - constant 
+    OR = waveLength/10         # outer radius height - 
+    IR = waveLength/20         # inner radius height - l0/20
+    Bh = 2 * OR + IR  # bar height 
 
-  S1 = 2 * barSpacing - Bh
+    S0 = waveLength - ( waveLength/2 + 3*barSpacing/2 + Bh/2 ) 
 
-  barTip = waveLength/40
+    S1 = 2 * barSpacing - Bh
 
-  sk.addPoint(0., S0) # begin from bottom left
+    barTip = waveLength/40
+
+    sk.addPoint(0., S0) # begin from bottom left
 
 
-  # FLAP 1
+    # FLAP 1
 
-  sk.addArcRadiusAbsolute( OR, S0 + OR, -OR, 0.0000000) # outerRadius 1
+    sk.addArcRadiusAbsolute( OR, S0 + OR, -OR, 0.0000000) # outerRadius 1
 
-  sk.addSegmentAbsolute( OR + barLength, S0 + OR) # Horizontal Segment Bottom
+    sk.addSegmentAbsolute( OR + barLength, S0 + OR) # Horizontal Segment Bottom
+    
+    sk.addArcAbsolute( OR + barLength, S0 + OR + IR) # innerRadius 1
+
+    sk.addSegmentAbsolute( OR, S0 + OR + IR) # Horizontal Segment Top
+    
+    sk.addArcRadiusAbsolute( 0.0000000, S0 + Bh, -OR, 0.0000000) # outerRadius 2
+
+    sk.addSegmentAbsolute( 0.0000000, S0 + Bh + S1) # In-between flaps vertical segment LEFT
+
+
+    # FLAP 2
+
+    sk.addArcRadiusAbsolute( OR, S0 + Bh + S1 + OR, -OR, 0.0000000) # outerRadius 3
+    
+    sk.addSegmentAbsolute( OR + barLength, S0 + Bh + S1 + OR) # Horizontal Segment Bottom
+    
+    sk.addArcAbsolute( OR + barLength, S0 + Bh + S1 + OR + IR) # innerRadius 2
+
+    sk.addSegmentAbsolute( OR, S0 + Bh + S1 + OR + IR) # Horizontal Segment Top
+
+    sk.addArcRadiusAbsolute( 0.0000000, S0 + S1 + 2 * Bh, -OR, 0.0000000) # outerRadius 4
+    
+
+    sk.addSegmentAbsolute( 0.0000000, waveLength ) # top left corner
+
+
+
+    sk.addSegmentAbsolute( waveLength/2, waveLength) # top right corner
+
+
+    if(S0!=0):
+      sk.addSegmentAbsolute( waveLength/2, waveLength - S0)
+
+    # FLAP 3  
+    
+    sk.addArcRadiusAbsolute( waveLength/2 - OR, waveLength - S0 - OR, -OR, 0.0000000) # outerRadius 5   ----
+
+    sk.addSegmentAbsolute( waveLength/2 - OR - barLength, waveLength - S0 - OR) # Horizontal Segment Top    ----
+    
+    sk.addArcAbsolute( waveLength/2 - OR - barLength, waveLength - S0 - OR - IR) # innerRadius 3            ----
+
+    sk.addSegmentAbsolute( waveLength/2 - OR, waveLength - S0 - OR - IR) # Horizontal Segment Top       ----
+    
+    sk.addArcRadiusAbsolute( waveLength/2, waveLength - S0 - Bh, -OR, 0.0000000) # outerRadius 6       ----
   
-  sk.addArcAbsolute( OR + barLength, S0 + OR + IR) # innerRadius 1
 
-  sk.addSegmentAbsolute( OR, S0 + OR + IR) # Horizontal Segment Top
+
+    sk.addSegmentAbsolute( waveLength/2, waveLength - S0 - Bh - S1)  # In-between flaps vertical segment RIGHT 
+
+    # FLAP 4
+
+    sk.addArcRadiusAbsolute( waveLength/2 - OR, waveLength - S0 - Bh - S1 - OR, -OR, 0.0000000) # outerRadius 7   ----
+
+    sk.addSegmentAbsolute( waveLength/2 - OR - barLength, waveLength - S0 - Bh - S1 - OR) # Horizontal Segment Top    ----
+    
+    sk.addArcAbsolute( waveLength/2 - OR - barLength, waveLength - S0 - Bh - S1 - OR - IR) # innerRadius 4            ----
+
+    sk.addSegmentAbsolute( waveLength/2 - OR, waveLength - S0 - Bh - S1 - OR - IR) # Horizontal Segment Bottom    ----
+    
+    sk.addArcRadiusAbsolute( waveLength/2, waveLength - S0 - Bh - S1 - Bh, -OR, 0.0000000) # outerRadius 8
+
+    sk.addSegmentAbsolute( waveLength/2, 0.0000000) # bottom segment
+
+    sk.addSegmentAbsolute(0.0000000, 0.0000000)
+    
+    if(S0!=0):
+      sk.addSegmentAbsolute(0.0000000, S0) 
+
+    wire = geompy.MakeMarker(0, 0, 0, 
+                            1, 0, 0, 
+                            0, 1, 0)
+
+    return sk.wire(wire)
   
-  sk.addArcRadiusAbsolute( 0.0000000, S0 + Bh, -OR, 0.0000000) # outerRadius 2
+  except:
 
-  sk.addSegmentAbsolute( 0.0000000, S0 + Bh + S1) # In-between flaps vertical segment LEFT
+    print("Error drawing 2Dsketch: {} {} {}".format( waveLength, barLength, barSpacing ) )
 
-
-  # FLAP 2
-
-  sk.addArcRadiusAbsolute( OR, S0 + Bh + S1 + OR, -OR, 0.0000000) # outerRadius 3
-  
-  sk.addSegmentAbsolute( OR + barLength, S0 + Bh + S1 + OR) # Horizontal Segment Bottom
-  
-  sk.addArcAbsolute( OR + barLength, S0 + Bh + S1 + OR + IR) # innerRadius 2
-
-  sk.addSegmentAbsolute( OR, S0 + Bh + S1 + OR + IR) # Horizontal Segment Top
-
-  sk.addArcRadiusAbsolute( 0.0000000, S0 + S1 + 2 * Bh, -OR, 0.0000000) # outerRadius 4
-  
-
-  sk.addSegmentAbsolute( 0.0000000, waveLength ) # top left corner
-
-
-
-  sk.addSegmentAbsolute( waveLength/2, waveLength) # top right corner
-
-
-  if(S0!=0):
-    sk.addSegmentAbsolute( waveLength/2, waveLength - S0)
-
-  # FLAP 3  
-  
-  sk.addArcRadiusAbsolute( waveLength/2 - OR, waveLength - S0 - OR, -OR, 0.0000000) # outerRadius 5   ----
-
-  sk.addSegmentAbsolute( waveLength/2 - OR - barLength, waveLength - S0 - OR) # Horizontal Segment Top    ----
-  
-  sk.addArcAbsolute( waveLength/2 - OR - barLength, waveLength - S0 - OR - IR) # innerRadius 3            ----
-
-  sk.addSegmentAbsolute( waveLength/2 - OR, waveLength - S0 - OR - IR) # Horizontal Segment Top       ----
-  
-  sk.addArcRadiusAbsolute( waveLength/2, waveLength - S0 - Bh, -OR, 0.0000000) # outerRadius 6       ----
- 
-
-
-  sk.addSegmentAbsolute( waveLength/2, waveLength - S0 - Bh - S1)  # In-between flaps vertical segment RIGHT 
-
-  # FLAP 4
-
-  sk.addArcRadiusAbsolute( waveLength/2 - OR, waveLength - S0 - Bh - S1 - OR, -OR, 0.0000000) # outerRadius 7   ----
-
-  sk.addSegmentAbsolute( waveLength/2 - OR - barLength, waveLength - S0 - Bh - S1 - OR) # Horizontal Segment Top    ----
-  
-  sk.addArcAbsolute( waveLength/2 - OR - barLength, waveLength - S0 - Bh - S1 - OR - IR) # innerRadius 4            ----
-
-  sk.addSegmentAbsolute( waveLength/2 - OR, waveLength - S0 - Bh - S1 - OR - IR) # Horizontal Segment Bottom    ----
-  
-  sk.addArcRadiusAbsolute( waveLength/2, waveLength - S0 - Bh - S1 - Bh, -OR, 0.0000000) # outerRadius 8
-
-  sk.addSegmentAbsolute( waveLength/2, 0.0000000) # bottom segment
-
-  sk.addSegmentAbsolute(0.0000000, 0.0000000)
-  
-  if(S0!=0):
-    sk.addSegmentAbsolute(0.0000000, S0) 
-
-  wire = geompy.MakeMarker(0, 0, 0, 
-                           1, 0, 0, 
-                           0, 1, 0)
-
-  return sk.wire(wire)
+    return NULL
 
 
 

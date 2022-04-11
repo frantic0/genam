@@ -79,9 +79,10 @@ class Lens:
 
     probing_distance = 100
 
-    lens_side = self.wavelenght/40 + self.m * ( self.wavelenght/2 + self.wavelenght/40 )
+    lens_side_x = self.wavelenght/40 + self.n * ( self.wavelenght/2 + self.wavelenght/40 )
+    lens_side_y = self.wavelenght/40 + self.m * ( self.wavelenght/2 + self.wavelenght/40 )
 
-    array_side = 2* self.wavelenght/40 + self.wavelenght/2
+    array_side = 2 * self.wavelenght/40 + self.wavelenght/2
 
     boxSide = self.wavelenght/2 + 2 * self.wavelenght/40
     
@@ -93,19 +94,19 @@ class Lens:
   
     counter = 0
 
-    pml_bottom = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( lens_side, lens_side, pml_bottom_height),
+    pml_bottom = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( lens_side_x, lens_side_y, pml_bottom_height),
                                           0, 
                                           y_translation_shift,
                                           0 )
     # geompy.addToStudy( pml_bottom, 'pml_bottom' )
 
-    air_inlet = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( lens_side, lens_side, air_bottom_height),
+    air_inlet = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( lens_side_x, lens_side_y, air_bottom_height),
                                         0, 
                                         y_translation_shift,
                                         pml_bottom_height )
     # geompy.addToStudy( air_inlet, 'air_inlet' )
     
-    lens_outer = geompy.MakeTranslation(  geompy.MakeBoxDXDYDZ( lens_side, lens_side, self.wavelenght ),
+    lens_outer = geompy.MakeTranslation(  geompy.MakeBoxDXDYDZ( lens_side_x, lens_side_y, self.wavelenght ),
                                           0, 
                                           y_translation_shift,
                                           pml_bottom_height + air_bottom_height )
@@ -113,7 +114,7 @@ class Lens:
 
     air_height = probing_distance - (pml_bottom_height + air_bottom_height + self.wavelenght)
 
-    air_outlet = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( lens_side, lens_side, air_height ),
+    air_outlet = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( lens_side_x, lens_side_y, air_height ),
                                           0, 
                                           y_translation_shift, 
                                           pml_bottom_height + air_bottom_height + self.wavelenght )
@@ -519,6 +520,26 @@ quantized_matrix_8_8_11_bricks = np.array([
                                   [  4,  7, 10, 13, 13, 10,  7,  4 ], #7
                                 ])
 
+
+quantized_matrix_8_1_11_bricks = np.array([
+                                  [ 15,  3,  6,  7,  7,  6,  3, 15 ], #3 line - Y axis
+                                ])
+
+quantized_matrix_1_8_11_bricks = np.array([
+                                  [ 15 ],
+                                  [  3 ],
+                                  [  6 ],
+                                  [  7 ],
+                                  [  7 ],
+                                  [  6 ],
+                                  [  3 ],
+                                  [ 15 ], 
+                                ])
+
+
+
+
+
 quantized_matrix_16_16_11_brick = np.array([
                                   [ 13,  0,  3,  5,  7,  8,  9, 10, 14,  9,  8,  7,  5,  3,  0, 13 ], #0
                                   [  0,  3,  6,  8, 10, 12, 13, 13, 14, 13, 12, 10,  8,  6,  3,  0 ], #1 
@@ -561,6 +582,25 @@ quantized_matrix_16_16_4_bit = np.array([
                                   [ 13,  0,  3,  5,  7,  8,  9, 10, 10,  9,  8,  7,  5,  3,  0, 13 ], #15
                                 ])
 
+quantized_matrix_16_16_4_bit_9_out = np.array([
+                                  [ 13,  0,  3,  5,  7,  8, 10, 10, 10, 10,  8,  7,  5,  3,  0, 13 ], #0
+                                  [  0,  3,  6,  8, 10, 12, 13, 13, 13, 13, 12, 10,  8,  6,  3,  0 ], #1 
+                                  [  3,  6, 10, 11, 13, 15,  0,  0,  0,  0, 15, 13, 11, 10,  6,  3 ], #2 
+                                  [  5,  8, 11, 14,  0,  1,  2,  3,  3,  2,  1,  0, 14, 11,  8,  5 ], #3 
+                                  [  7, 10, 13,  0,  2,  3,  4,  5,  5,  4,  3,  2,  0, 13, 10,  7 ], #4 
+                                  [  8, 12, 15,  1,  3,  5,  6,  6,  6,  6,  5,  3,  1, 15, 12,  8 ], #5                                 
+                                  [ 10, 13,  1,  4,  5,  6,  7,  7,  7,  7,  6,  5,  4,  1, 13, 10 ], #6
+                                  [ 10, 13,  0,  3,  5,  6,  7,  8,  8,  7,  6,  5,  3,  0, 13, 10 ], #7 
+                                  [ 10, 13,  0,  3,  5,  6,  7,  8,  8,  7,  6,  5,  3,  0, 13, 10 ], #8
+                                  [ 10, 13,  1,  4,  5,  6,  7,  7,  7,  7,  6,  5,  4,  1, 13, 10 ], #10
+                                  [  8, 12, 15,  1,  3,  5,  6,  6,  6,  6,  5,  3,  1, 15, 12,  8 ], #10
+                                  [  7, 10, 13,  0,  2,  3,  4,  5,  5,  4,  3,  2,  0, 13, 10,  7 ], #11                                   
+                                  [  5,  8, 11, 14,  0,  1,  2,  3,  3,  2,  1,  0, 14, 11,  8,  5 ], #12
+                                  [  3,  6, 10, 11, 13, 15,  0,  0,  0,  0, 15, 13, 11, 10,  6,  3 ], #13 
+                                  [  0,  3,  6,  8, 10, 12, 13, 13, 13, 13, 12, 10,  8,  6,  3,  0 ], #14
+                                  [ 13,  0,  3,  5,  7,  8, 10, 10, 10, 10,  8,  7,  5,  3,  0, 13 ], #15
+                                ])
+
 quantized_matrix_2_2 = np.array([ 
                                   [ 1, 2 ],
                                   [ 3, 4 ] 
@@ -592,9 +632,11 @@ def lens_configurator( quantized_matrix ):
   return np.dstack( ( quantized_matrix, configs_to_stack ) )
 
 
-lens_config = lens_configurator( quantized_matrix_8_8_11_bricks )
+# lens_config = lens_configurator( quantized_matrix_8_8_11_bricks )
+# lens_config = lens_configurator( quantized_matrix_1_8_11_bricks )
+# lens_config = lens_configurator( quantized_matrix_8_1_11_bricks )
 # lens_config = lens_configurator( quantized_matrix_2_2 )
-# lens_config = lens_configurator( quantized_matrix_4_4 )
+lens_config = lens_configurator( quantized_matrix_4_4 )
 # lens_config = lens_configurator( quantized_matrix_16_16_4_bit )
 
 lens =  Lens( lens_config, mesh_config_selector(3) )
