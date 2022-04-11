@@ -11,7 +11,7 @@ salome.salome_init()
 import salome_notebook
 notebook = salome_notebook.NoteBook()
 
-sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline/ammgdop')
+sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline/genam')
 
 from utility_functions import * 
 from parametric_shape import * 
@@ -35,8 +35,6 @@ class Lens:
   def __init__(self,
                unit_cells_config,
                mesh_config,
-               m = 4,
-               n = 4,
                probing_distance = 100,
                nearfield_limit = 8.661,
                wavelenght = 8.661
@@ -47,8 +45,8 @@ class Lens:
     self.unit_cells_config = unit_cells_config
     self.mesh_config = mesh_config
 
-    self.m = m
-    self.n = n 
+    self.m = len(unit_cells_config)
+    self.n = len(unit_cells_config[0])
 
     self.nearfield_limit = nearfield_limit
     self.probing_distance = probing_distance
@@ -81,21 +79,17 @@ class Lens:
 
     probing_distance = 100
 
-    lens_grid_n = 8 
-    
-    waveLenght = 8.661
+    lens_side = self.wavelenght/40 + self.m * ( self.wavelenght/2 + self.wavelenght/40 )
 
-    lens_side = waveLenght/40 + lens_grid_n * (waveLenght/2 + waveLenght/40)
+    array_side = 2* self.wavelenght/40 + self.wavelenght/2
 
-    array_side = 2* waveLenght/40 + waveLenght/2
-
-    boxSide = waveLenght/2 + 2 * waveLenght/40
+    boxSide = self.wavelenght/2 + 2 * self.wavelenght/40
     
     pml_bottom_height = 2.573
   
     air_bottom_height = 4.288
   
-    y_translation_shift = -(waveLenght/40 + 4*(waveLenght/2 + waveLenght/40))
+    y_translation_shift = - ( self.wavelenght/40 + 4 * ( self.wavelenght/2 + self.wavelenght/40 ))
   
     counter = 0
 
@@ -111,18 +105,18 @@ class Lens:
                                         pml_bottom_height )
     # geompy.addToStudy( air_inlet, 'air_inlet' )
     
-    lens_outer = geompy.MakeTranslation(  geompy.MakeBoxDXDYDZ( lens_side, lens_side, waveLenght ),
+    lens_outer = geompy.MakeTranslation(  geompy.MakeBoxDXDYDZ( lens_side, lens_side, self.wavelenght ),
                                           0, 
                                           y_translation_shift,
                                           pml_bottom_height + air_bottom_height )
     # geompy.addToStudy( lens_outer, 'lens_outer' )
 
-    air_height = probing_distance - (pml_bottom_height + air_bottom_height + waveLenght)
+    air_height = probing_distance - (pml_bottom_height + air_bottom_height + self.wavelenght)
 
     air_outlet = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( lens_side, lens_side, air_height ),
                                           0, 
                                           y_translation_shift, 
-                                          pml_bottom_height + air_bottom_height + waveLenght )
+                                          pml_bottom_height + air_bottom_height + self.wavelenght )
 
     pml_top = geompy.MakeTranslation( pml_bottom,
                                       0, 0,
@@ -144,25 +138,29 @@ class Lens:
     bricks = list()
     bricks_faces = []
 
-    for m in range( 0, lens_grid_n ):
-      for n in range( 0, lens_grid_n ):
+    for m in range( 0, self.m ):
+      for n in range( 0, self.n ):
 
         # brickID = random.randint(1, 15)                                   # generate random brickID
-        brickID = [*range(1,9),*range(10,16)][random.randint(0, 13)]        # generate random brickID, but exclude index 9, shape is buggy 
+        # brickID = [*range(1,9),*range(10,16)][random.randint(0, 13)]        # generate random brickID, but exclude index 9, shape is buggy 
 
-        Sketch_1 = parameterize_2D_inner_shape( waveLenght,
-                                                self.unit_cells_config['length'][brickID-1] * waveLenght,
-                                                self.unit_cells_config['distance'][brickID-1] * waveLenght )
+        # Sketch_1 = parameterize_2D_inner_shape( waveLenght,
+        #                                         self.unit_cells_config['length'][brickID-1] * waveLenght,
+        #                                         self.unit_cells_config['distance'][brickID-1] * waveLenght )
+
+        Sketch_1 = parameterize_2D_inner_shape( self.wavelenght,
+                                                self.unit_cells_config[m][n][1] * self.wavelenght,
+                                                self.unit_cells_config[m][n][2] * self.wavelenght )
 
         # geompy.addToStudy( Sketch_1, 'Sketch' )
         rotation = [(x, 90)]
         # translation = ( waveLenght/40, waveLenght/40 + waveLenght/2, 6.861)
-        translation_x = waveLenght/40 + column * ( waveLenght/40 + waveLenght/2 )     
-        translation_y = waveLenght/40 + row * (waveLenght/40 + waveLenght/2 )     
+        translation_x = self.wavelenght/40 + column * ( self.wavelenght/40 + self.wavelenght/2 )     
+        translation_y = self.wavelenght/40 + row * (self.wavelenght/40 + self.wavelenght/2 )     
         
-        translation = ( translation_shift[0] + translation_x, translation_shift[1] + translation_y + waveLenght/2 , 6.861 )
+        translation = ( translation_shift[0] + translation_x, translation_shift[1] + translation_y + self.wavelenght/2 , 6.861 )
         
-        brick_inner = sketch_to_volume( geompy, Sketch_1, waveLenght/2, rotation, translation)
+        brick_inner = sketch_to_volume( geompy, Sketch_1, self.wavelenght /2, rotation, translation)
         
           
         # print(*bricks_faces, sep='\n')
@@ -244,7 +242,12 @@ class Lens:
     # solids.sort( key=lambda s: geompy.PointCoordinates(geompy.MakeCDG(s))[2] ) # alternative methods, similar performance
 
     # expand ordered list and assign to objects for futher processing
-    self.solids = [ solid_pml_inlet, solid_lens, solid_air, solid_pml_outlet ] = solids_sorted
+    [ solid_pml_inlet, solid_lens, solid_air, solid_pml_outlet ] = solids_sorted
+
+    self.groups['solid_pml_inlet'] = solid_pml_inlet
+    self.groups['solid_lens'] = solid_lens
+    self.groups['solid_air'] = solid_air
+    self.groups['solid_pml_outlet'] = solid_pml_outlet
 
     # print( "sorted" ) # DEBUG
     # print( geompy.PointCoordinates(geompy.MakeCDG(solid_pml_inlet))[2] )
@@ -268,17 +271,17 @@ class Lens:
 
     group_faces_air_lens = geompy.CreateGroup( self.geometry, geompy.ShapeType["FACE"] )
     geompy.UnionList(group_faces_air_lens, shared_faces_lens_solid_air )
+    self.groups['group_faces_air_lens'] = group_faces_air_lens
     geompy.addToStudyInFather( self.geometry, group_faces_air_lens, 'group_faces_air_lens' )
-    self.groups['group_faces_air_lens', group_faces_air_lens]
 
     group_faces_inlet = geompy.CreateGroup( self.geometry, geompy.ShapeType["FACE"])
     geompy.UnionList(group_faces_inlet, shared_faces_pml_inlet_air )
-    self.groups['group_faces_inlet', group_faces_inlet]
+    self.groups['group_faces_inlet'] = group_faces_inlet
     geompy.addToStudyInFather( self.geometry, group_faces_inlet, 'group_faces_inlet' )
     
     group_faces_outlet = geompy.CreateGroup( self.geometry, geompy.ShapeType["FACE"])
     geompy.UnionList(group_faces_outlet, shared_faces_pml_outlet_air )
-    self.groups['group_faces_outlet', group_faces_outlet]
+    self.groups['group_faces_outlet'] = group_faces_outlet
     geompy.addToStudyInFather( self.geometry, group_faces_outlet, 'group_faces_outlet' )
 
     subshapes_air = geompy.SubShapeAll(solid_air, geompy.ShapeType["FACE"])
@@ -289,14 +292,14 @@ class Lens:
 
     group_faces_air = geompy.CreateGroup( self.geometry, geompy.ShapeType["FACE"])
     geompy.UnionList( group_faces_air, subshapes_air )
-    self.groups['group_faces_air', group_faces_air]
+    self.groups['group_faces_air'] = group_faces_air
     geompy.addToStudyInFather( self.geometry, group_faces_air, 'group_faces_air' )
       
     # group_faces_air_cut = geompy.CutGroups( group_faces_air, group_faces_air_lens )
     group_faces_air_cut = geompy.CutListOfGroups( [ group_faces_air ],
                                                   [ group_faces_air_lens, group_faces_inlet, group_faces_outlet] )
 
-    self.groups['group_faces_air_cut', group_faces_air_cut]
+    self.groups['group_faces_air_cut'] = group_faces_air_cut
     geompy.addToStudyInFather( self.geometry, group_faces_air_cut, 'group_faces_air_cut' )
 
     subshapes_lens = geompy.SubShapeAll( solid_lens, geompy.ShapeType["FACE"] )
@@ -304,7 +307,7 @@ class Lens:
     geompy.UnionList( group_faces_lens, subshapes_lens )
     
     group_faces_lens_cut = geompy.CutListOfGroups(  [ group_faces_lens ], [ group_faces_air_lens ] )
-    self.groups['group_faces_lens_cut', group_faces_lens_cut]
+    self.groups['group_faces_lens_cut'] = group_faces_lens_cut
     geompy.addToStudyInFather( self.geometry, group_faces_lens_cut, 'group_faces_lens_cut' )
 
 
@@ -319,12 +322,12 @@ class Lens:
 
     group_faces_pml_inlet = geompy.CreateGroup( self.geometry, geompy.ShapeType["FACE"])
     geompy.UnionList( group_faces_pml_inlet, subshapes_pml_inlet )
-    self.groups['group_faces_pml_inlet', group_faces_pml_inlet]
+    self.groups['group_faces_pml_inlet'] = group_faces_pml_inlet
     geompy.addToStudyInFather( self.geometry, group_faces_pml_inlet, 'group_faces_pml_inlet' )
 
     group_faces_pml_outlet = geompy.CreateGroup( self.geometry, geompy.ShapeType["FACE"])
     geompy.UnionList( group_faces_pml_outlet, subshapes_pml_outlet )
-    self.groups['group_faces_pml_outlet', group_faces_pml_outlet]
+    self.groups['group_faces_pml_outlet'] = group_faces_pml_outlet
     geompy.addToStudyInFather( self.geometry, group_faces_pml_outlet, 'group_faces_pml_outlet' )
 
 
@@ -335,7 +338,7 @@ class Lens:
 
     group_faces_air_left = geompy.CreateGroup( self.geometry, geompy.ShapeType["FACE"])
     geompy.UnionList( group_faces_air_left, [face_air_left_1, face_air_left_2, face_pml_inlet_left, face_pml_outlet_left] )
-    self.groups['group_faces_left', group_faces_air_left]
+    self.groups['group_faces_left'] = group_faces_air_left
     geompy.addToStudyInFather( self.geometry, group_faces_air_left, 'group_faces_left' )
 
     face_pml_inlet_right = geompy.GetFaceNearPoint(group_faces_pml_inlet,   geompy.MakeVertex(36.592725, -0.108263, 1.2865))
@@ -345,7 +348,7 @@ class Lens:
 
     group_faces_air_right = geompy.CreateGroup( self.geometry, geompy.ShapeType["FACE"])
     geompy.UnionList( group_faces_air_right, [face_air_right_1, face_air_right_2, face_pml_inlet_right, face_pml_outlet_right] )
-    self.groups['group_faces_right', group_faces_air_right]
+    self.groups['group_faces_right'] = group_faces_air_right 
     geompy.addToStudyInFather( self.geometry, group_faces_air_right, 'group_faces_right' )
 
     face_pml_inlet_back = geompy.GetFaceNearPoint(group_faces_pml_inlet,    geompy.MakeVertex(2.381775, 18.404625, 1.2865))
@@ -355,7 +358,7 @@ class Lens:
 
     group_faces_air_back = geompy.CreateGroup( self.geometry, geompy.ShapeType["FACE"])
     geompy.UnionList( group_faces_air_back, [face_air_back_1, face_air_back_2, face_pml_inlet_back, face_pml_outlet_back] )
-    self.groups['group_faces_back', group_faces_air_back]
+    self.groups['group_faces_back'] = group_faces_air_back
     geompy.addToStudyInFather( self.geometry, group_faces_air_back, 'group_faces_back' )
 
     face_pml_inlet_front = geompy.GetFaceNearPoint(group_faces_pml_inlet,   geompy.MakeVertex(2.381775, -18.404625, 1.2865))
@@ -365,7 +368,7 @@ class Lens:
 
     group_faces_air_front = geompy.CreateGroup( self.geometry, geompy.ShapeType["FACE"])
     geompy.UnionList( group_faces_air_front, [face_air_front_1, face_air_front_2, face_pml_inlet_front, face_pml_outlet_front] )
-    self.groups['group_faces_front', group_faces_air_front]
+    self.groups['group_faces_front'] = group_faces_air_front
     geompy.addToStudyInFather( self.geometry, group_faces_air_front, 'group_faces_front' )
 
     return time.time()
@@ -439,10 +442,10 @@ class Lens:
     brick_faces_mesh = self.mesh.GroupOnGeom( self.groups['group_faces_air_lens'], 'lens', SMESH.FACE)
     faces_lens_cut_mesh = self.mesh.GroupOnGeom( self.groups['group_faces_lens_cut'], 'lens_shell', SMESH.FACE)
 
-    mesh_air_front = self.mesh.GroupOnGeom( self.groups['group_faces_air_front'], 'front', SMESH.FACE)
-    mesh_air_back = self.mesh.GroupOnGeom( self.groups['group_faces_air_back'], 'back', SMESH.FACE)
-    mesh_air_right = self.mesh.GroupOnGeom( self.groups['group_faces_air_right'], 'right', SMESH.FACE)
-    mesh_air_left = self.mesh.GroupOnGeom( self.groups['group_faces_air_left'], 'left', SMESH.FACE)
+    mesh_air_front = self.mesh.GroupOnGeom( self.groups['group_faces_front'], 'front', SMESH.FACE)
+    mesh_air_back = self.mesh.GroupOnGeom( self.groups['group_faces_back'], 'back', SMESH.FACE)
+    mesh_air_right = self.mesh.GroupOnGeom( self.groups['group_faces_right'], 'right', SMESH.FACE)
+    mesh_air_left = self.mesh.GroupOnGeom( self.groups['group_faces_left'], 'left', SMESH.FACE)
 
     isDone = self.mesh.Compute()  
 
@@ -503,8 +506,6 @@ mesh_config_selector = lambda i:  (
   mesh_configs['secondOrder'][i],
   mesh_configs['fineness'][i],
 ) 
-
-
 
 
 quantized_matrix_8_8_11_bricks = np.array([ 
@@ -586,31 +587,17 @@ unit_cell_select_list = lambda i: np.array([
 
 
 def lens_configurator( quantized_matrix ):
-
-  configs = np.array([ unit_cell_select_list(i) for i in quantized_matrix.ravel()])
-
+  configs = np.array([ unit_cell_select_list(i) for i in quantized_matrix.ravel() ])
   configs_to_stack = configs.reshape(quantized_matrix.shape[0], quantized_matrix.shape[1], len(flaps_configs) )  
+  return np.dstack( ( quantized_matrix, configs_to_stack ) )
 
-  return np.dstack( (quantized_matrix, configs_to_stack ) )
 
+lens_config = lens_configurator( quantized_matrix_8_8_11_bricks )
+# lens_config = lens_configurator( quantized_matrix_2_2 )
+# lens_config = lens_configurator( quantized_matrix_4_4 )
+# lens_config = lens_configurator( quantized_matrix_16_16_4_bit )
 
-lens =  Lens( quantized_matrix_8_8_11_bricks, 
-              mesh_config_selector(3),
-              mesh_config_selector(3).shape[0],
-              8,
-              8, 
-              
-            )
-
-lens =  Lens( 
-              mesh_config_selector(3),
-              mesh_config_selector(3).shape[0],
-              8,
-              8, 
-              
-            )
-
-lens.configure()
+lens =  Lens( lens_config, mesh_config_selector(3) )
 
 start = time.time()
 
