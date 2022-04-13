@@ -32,19 +32,20 @@ from salome.GMSHPlugin import GMSHPluginBuilder
 
 class Lens:
   
-  def __init__(self,
-               unit_cells_config,
-               mesh_config,
-               probing_distance = 100,
-               nearfield_limit = 8.661,
-               wavelenght = 8.661
-               ):
+  def __init__( self,
+                unit_cells_config,
+                mesh_config,
+                probing_distance = 100,
+                nearfield_limit = 8.661,
+                wavelenght = 8.661
+                ):
 
     self.wavelenght = wavelenght
 
     self.unit_cells_config = unit_cells_config
     self.mesh_config = mesh_config
 
+    # TODO: Make sure this is consistent with the input matrix expectations
     self.m = len(unit_cells_config)
     self.n = len(unit_cells_config[0])
 
@@ -79,10 +80,11 @@ class Lens:
 
     probing_distance = 100
 
+
+    # TODO: we want to make 'm' and 'n' consistent with the input grid size. 
+    # Check self.m and self.n initialisation
     lens_side_x = self.wavelenght/40 + self.n * ( self.wavelenght/2 + self.wavelenght/40 )
     lens_side_y = self.wavelenght/40 + self.m * ( self.wavelenght/2 + self.wavelenght/40 )
-
-    array_side = 2 * self.wavelenght/40 + self.wavelenght/2
 
     boxSide = self.wavelenght/2 + 2 * self.wavelenght/40
     
@@ -90,7 +92,8 @@ class Lens:
   
     air_bottom_height = 4.288
   
-    y_translation_shift = - ( self.wavelenght/40 + 4 * ( self.wavelenght/2 + self.wavelenght/40 ))
+    y_translation_shift = - ( self.wavelenght/40 + self.m * ( self.wavelenght/2 + self.wavelenght/40 ))
+    x_translation_shift = - ( self.wavelenght/40 + self.n * ( self.wavelenght/2 + self.wavelenght/40 ))
   
     counter = 0
 
@@ -127,8 +130,8 @@ class Lens:
     row = 0
     column = 0
 
-
     translation = ( 0, 0, 0 )
+
     translation_shift = ( 0, y_translation_shift , 0 )
     
 
@@ -151,14 +154,9 @@ class Lens:
 
         brick_inner = []
 
-        translation_x = self.wavelenght/40 + column * ( self.wavelenght/40 + self.wavelenght/2 )     
-        translation_y = self.wavelenght/40 + row * (self.wavelenght/40 + self.wavelenght/2 )     
-          
-        translation = ( translation_shift[0] + translation_x,
-                        translation_shift[1] + translation_y + self.wavelenght/2, 
-                        6.861 )
-
-
+        translation_x = self.wavelenght/40 + column * ( self.wavelenght/2 + self.wavelenght/40 )     
+        translation_y = self.wavelenght/40 + row    * ( self.wavelenght/2 + self.wavelenght/40 )     
+  
         if self.unit_cells_config[m][n][0] == 0:
 
           # brick_inner = geompy.MakeTranslation(
@@ -173,11 +171,9 @@ class Lens:
                             geompy.MakeBoxDXDYDZ( boxSide - 2 * self.wavelenght/40, 
                                                   boxSide - 2 * self.wavelenght/40, 
                                                   self.wavelenght ),
-                            translation[0],
-                            translation[1],
-                            translation[2] )    
-
-
+                            translation_shift[0] + translation_x,
+                            translation_shift[1] + translation_y,
+                            6.881 )    
 
         else: 
 
@@ -189,12 +185,12 @@ class Lens:
           rotation = [(x, 90)]
           
           # translation = ( waveLenght/40, waveLenght/40 + waveLenght/2, 6.861)
-          # translation_x = self.wavelenght/40 + column * ( self.wavelenght/40 + self.wavelenght/2 )     
-          # translation_y = self.wavelenght/40 + row * (self.wavelenght/40 + self.wavelenght/2 )     
+          translation_x = self.wavelenght/40 + column * ( self.wavelenght/40 + self.wavelenght/2 )     
+          translation_y = self.wavelenght/40 + row * (self.wavelenght/40 + self.wavelenght/2 )     
           
-          # translation = ( translation_shift[0] + translation_x,
-          #                 translation_shift[1] + translation_y + self.wavelenght/2, 
-          #                 6.861 )
+          translation = ( translation_shift[0] + translation_x,
+                          translation_shift[1] + translation_y + self.wavelenght/2, 
+                          6.861 )
           
           try:
             brick_inner = sketch_to_volume( geompy, Sketch_1, self.wavelenght /2, rotation, translation)
@@ -224,7 +220,7 @@ class Lens:
 
 
 
-    print('#brickFaces: {}'.format( len(bricks_faces) ) )
+    # print('#brickFaces: {}'.format( len(bricks_faces) ) )
     # print(bricks)
     # print(*bricks_faces, sep='\n')
 
@@ -558,6 +554,19 @@ quantized_matrix_8_8_11_bricks = np.array([
                                 ])
 
 
+
+quantized_matrix_8_8 = np.array([ 
+                                  [  4,  7, 10, 13, 13, 10,  7,  4 ], #0
+                                  [  5,  9, 13,  3,  3, 13,  9,  5 ], #1
+                                  [ 10, 13,  0,  6,  6,  0, 13, 10 ], #2
+                                  [ 15,  3,  6,  7,  7,  6,  3, 15 ], #3
+                                  [ 15,  3,  6,  7,  7,  6,  3, 15 ], #4
+                                  [ 10, 13,  0,  6,  6,  0, 13, 10 ], #5
+                                  [  5,  9, 13,  3,  3, 13,  9,  5 ], #6
+                                  [  4,  7, 10, 13, 13, 10,  7,  4 ], #7
+                                ])
+
+
 quantized_matrix_8_1_11_bricks = np.array([
                                   [ 15,  3,  6,  7,  7,  6,  3, 15 ], #3 line - Y axis
                                 ])
@@ -576,9 +585,28 @@ quantized_matrix_1_8_11_bricks = np.array([
 
 
 quantized_matrix_16_1_11_brick = np.array([
-                                  [ 10, 13,  0,  3,  5,  6,  7,  8,  8,  7,  6,  5,  3,  0, 13, 10 ], #7 
+                                  [ 10 ],
+                                  [ 13 ],
+                                  [  0 ],
+                                  [  3 ],
+                                  [  5 ],
+                                  [  6 ],
+                                  [  7 ],
+                                  [  8 ],
+                                  [  8 ],
+                                  [  7 ],
+                                  [  6 ],
+                                  [  5 ],
+                                  [  3 ], 
+                                  [  0 ],
+                                  [ 13 ],
+                                  [ 10 ],  
                                 ])
 
+
+quantized_matrix_1_16_11_brick = np.array([
+                                  [ 10, 13,  0,  3,  5,  6,  7,  8,  8,  7,  6,  5,  3,  0, 13, 10 ], #7 
+                                ])
 
 
 quantized_matrix_16_16_11_brick = np.array([
@@ -685,7 +713,10 @@ def lens_configurator( quantized_matrix ):
 # lens_config = lens_configurator( quantized_matrix_8_1_11_bricks )
 # lens_config = lens_configurator( quantized_matrix_2_2 )
 # lens_config = lens_configurator( quantized_matrix_4_4 )
-lens_config = lens_configurator( quantized_matrix_16_1_11_brick )
+lens_config = lens_configurator( quantized_matrix_8_8 )
+# lens_config = lens_configurator( quantized_matrix_16_1_11_brick )
+# lens_config = lens_configurator( quantized_matrix_1_16_11_brick )
+# lens_config = lens_configurator( quantized_matrix_16_16_4_bit_9_out )
 # lens_config = lens_configurator( quantized_matrix_16_16_4_bit )
 
 lens =  Lens( lens_config, mesh_config_selector(3) )

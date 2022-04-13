@@ -6,8 +6,6 @@
 
 from asyncio.windows_events import NULL
 import sys
-
-from matplotlib.pyplot import bar
 import salome
 import numpy as np
 import time, os
@@ -145,8 +143,6 @@ def parameterize_2D_inner_shape( waveLength, barLength, barSpacing ):
 
     a sketcher2D wire (set of edges)  
   """
-
-  if(barLength != 0 and barSpacing != 0)
 
   try:
 
