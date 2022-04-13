@@ -6,6 +6,8 @@
 
 from asyncio.windows_events import NULL
 import sys
+
+from matplotlib.pyplot import bar
 import salome
 import numpy as np
 import time, os
@@ -140,8 +142,11 @@ def parameterize_2D_inner_shape( waveLength, barLength, barSpacing ):
     rotation: provide a list of tuples with (axis, angle) as a tuple i.e. (x, 90), in the order you want to rotate in x axis
   
   Returns
-     
+
+    a sketcher2D wire (set of edges)  
   """
+
+  if(barLength != 0 and barSpacing != 0)
 
   try:
 

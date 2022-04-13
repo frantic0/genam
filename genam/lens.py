@@ -137,7 +137,7 @@ class Lens:
     # GENERATE RANDOM ARRAY of 8 BRICKS and ADD to FATHER
     
     bricks = list()
-    bricks_faces = []
+    # bricks_faces = []
 
     for m in range( 0, self.m ):
       for n in range( 0, self.n ):
@@ -149,35 +149,70 @@ class Lens:
         #                                         self.unit_cells_config['length'][brickID-1] * waveLenght,
         #                                         self.unit_cells_config['distance'][brickID-1] * waveLenght )
 
-        Sketch_1 = parameterize_2D_inner_shape( self.wavelenght,
-                                                self.unit_cells_config[m][n][1] * self.wavelenght,
-                                                self.unit_cells_config[m][n][2] * self.wavelenght )
+        brick_inner = []
 
-        # geompy.addToStudy( Sketch_1, 'Sketch' )
-        rotation = [(x, 90)]
-        # translation = ( waveLenght/40, waveLenght/40 + waveLenght/2, 6.861)
         translation_x = self.wavelenght/40 + column * ( self.wavelenght/40 + self.wavelenght/2 )     
         translation_y = self.wavelenght/40 + row * (self.wavelenght/40 + self.wavelenght/2 )     
-        
-        translation = ( translation_shift[0] + translation_x, translation_shift[1] + translation_y + self.wavelenght/2 , 6.861 )
-        
-        try:
-          brick_inner = sketch_to_volume( geompy, Sketch_1, self.wavelenght /2, rotation, translation)
-        except: 
-          print("{} {} {}".format(Sketch_1, m, n))
+          
+        translation = ( translation_shift[0] + translation_x,
+                        translation_shift[1] + translation_y + self.wavelenght/2, 
+                        6.861 )
+
+
+        if self.unit_cells_config[m][n][0] == 0:
+
+          # brick_inner = geompy.MakeTranslation(
+          #                   geompy.MakeBoxDXDYDZ( boxSide - 2 * self.wavelenght/40, 
+          #                                         boxSide - 2 * self.wavelenght/40, 
+          #                                         self.wavelenght ),
+          #                   self.wavelenght/40, 
+          #                   self.wavelenght/40,
+          #                   pml_bottom_height + air_bottom_height )    
+
+          brick_inner = geompy.MakeTranslation(
+                            geompy.MakeBoxDXDYDZ( boxSide - 2 * self.wavelenght/40, 
+                                                  boxSide - 2 * self.wavelenght/40, 
+                                                  self.wavelenght ),
+                            translation[0],
+                            translation[1],
+                            translation[2] )    
+
+
+
+        else: 
+
+          Sketch_1 = parameterize_2D_inner_shape( self.wavelenght,
+                                                  self.unit_cells_config[m][n][1] * self.wavelenght,
+                                                  self.unit_cells_config[m][n][2] * self.wavelenght )
+
+          # geompy.addToStudy( Sketch_1, 'Sketch' )
+          rotation = [(x, 90)]
+          
+          # translation = ( waveLenght/40, waveLenght/40 + waveLenght/2, 6.861)
+          # translation_x = self.wavelenght/40 + column * ( self.wavelenght/40 + self.wavelenght/2 )     
+          # translation_y = self.wavelenght/40 + row * (self.wavelenght/40 + self.wavelenght/2 )     
+          
+          # translation = ( translation_shift[0] + translation_x,
+          #                 translation_shift[1] + translation_y + self.wavelenght/2, 
+          #                 6.861 )
+          
+          try:
+            brick_inner = sketch_to_volume( geompy, Sketch_1, self.wavelenght /2, rotation, translation)
+          except: 
+            print("{} {} {}".format(Sketch_1, m, n))
 
         # print(*bricks_faces, sep='\n')
         bricks.append(brick_inner)
 
-        brick_faces = geompy.ExtractShapes(brick_inner, geompy.ShapeType["FACE"], True)  # generates 1946 faces instead of 54
-        bricks_faces.append(brick_faces) 
+        # brick_faces = geompy.ExtractShapes(brick_inner, geompy.ShapeType["FACE"], True)  # generates 1946 faces instead of 54
+        # bricks_faces.append(brick_faces) 
 
-        for num, f in enumerate(brick_faces): # add faces to study
-          counter += 1
-          name = 'face_{}'.format(counter)
-          f.SetName(name)
-          # print('face_{}: {}'.format(name, f.GetEntry()))
-          bricks_faces.append(f) 
+        # for num, f in enumerate(brick_faces): # add faces to study
+        #   counter += 1
+        #   name = 'face_{}'.format(counter)
+        #   f.SetName(name)
+        #   # print('face_{}: {}'.format(name, f.GetEntry()))
+        #   bricks_faces.append(f) 
 
 
         # print('Brick {} - type:{} #faces:{}'.format(m+1, brickID, len(bricks_faces[m]) ) )
@@ -540,6 +575,10 @@ quantized_matrix_1_8_11_bricks = np.array([
 
 
 
+quantized_matrix_16_1_11_brick = np.array([
+                                  [ 10, 13,  0,  3,  5,  6,  7,  8,  8,  7,  6,  5,  3,  0, 13, 10 ], #7 
+                                ])
+
 
 
 quantized_matrix_16_16_11_brick = np.array([
@@ -603,6 +642,10 @@ quantized_matrix_16_16_4_bit_9_out = np.array([
                                   [ 13,  0,  3,  5,  7,  8, 10, 10, 10, 10,  8,  7,  5,  3,  0, 13 ], #15
                                 ])
 
+
+
+
+
 quantized_matrix_2_2 = np.array([ 
                                   [ 1, 2 ],
                                   [ 3, 4 ] 
@@ -634,12 +677,16 @@ def lens_configurator( quantized_matrix ):
   return np.dstack( ( quantized_matrix, configs_to_stack ) )
 
 
+
+
+
 # lens_config = lens_configurator( quantized_matrix_8_8_11_bricks )
 # lens_config = lens_configurator( quantized_matrix_1_8_11_bricks )
 # lens_config = lens_configurator( quantized_matrix_8_1_11_bricks )
 # lens_config = lens_configurator( quantized_matrix_2_2 )
 # lens_config = lens_configurator( quantized_matrix_4_4 )
-lens_config = lens_configurator( quantized_matrix_16_16_4_bit )
+lens_config = lens_configurator( quantized_matrix_16_1_11_brick )
+# lens_config = lens_configurator( quantized_matrix_16_16_4_bit )
 
 lens =  Lens( lens_config, mesh_config_selector(3) )
 
@@ -651,7 +698,7 @@ print("Geometry computation time: {:.2f} sec".format(end - start))
 
 start = time.time()
 
-end = lens.process_mesh()
+# end = lens.process_mesh()
 
 print("Mesh computation time: {:.2f} sec".format(end - start))
 
