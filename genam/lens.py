@@ -321,8 +321,10 @@ class Lens:
 
 
         
-    face_pml_inlet_right = geompy.GetFaceNearPoint(group_faces_pml_inlet,   geompy.MakeVertex(36.592725, -0.108263, 1.2865))
+    # face_pml_inlet_right = geompy.GetFaceNearPoint(group_faces_pml_inlet,   geompy.MakeVertex(36.592725, -0.108263, 1.2865))
 
+
+    
 
 
     subshapes_air = geompy.SubShapeAll(solid_air, geompy.ShapeType["FACE"])
@@ -361,6 +363,8 @@ class Lens:
     subshapes_pml_inlet = geompy.SubShapeAll(solid_pml_inlet, geompy.ShapeType["FACE"])
     subshapes_pml_outlet = geompy.SubShapeAll(solid_pml_outlet, geompy.ShapeType["FACE"])
 
+    
+
     group_faces_pml_inlet = geompy.CreateGroup( self.geometry, geompy.ShapeType["FACE"])
     geompy.UnionList( group_faces_pml_inlet, subshapes_pml_inlet )
     self.groups['group_faces_pml_inlet'] = group_faces_pml_inlet
@@ -370,6 +374,7 @@ class Lens:
     geompy.UnionList( group_faces_pml_outlet, subshapes_pml_outlet )
     self.groups['group_faces_pml_outlet'] = group_faces_pml_outlet
     geompy.addToStudyInFather( self.geometry, group_faces_pml_outlet, 'group_faces_pml_outlet' )
+
 
 
     face_pml_inlet_left = geompy.GetFaceNearPoint(group_faces_pml_inlet,    geompy.MakeVertex(0, -0.108263, 1.2865))
@@ -411,6 +416,36 @@ class Lens:
     geompy.UnionList( group_faces_air_front, [face_air_front_1, face_air_front_2, face_pml_inlet_front, face_pml_outlet_front] )
     self.groups['group_faces_front'] = group_faces_air_front
     geompy.addToStudyInFather( self.geometry, group_faces_air_front, 'group_faces_front' )
+
+
+    group_faces_top_bottom_walls = geompy.CreateGroup( self.geometry, geompy.ShapeType["FACE"])
+    
+    # shared_faces_pml_inlet = geompy.UnionList( group_faces_inlet, [ face_pml_inlet_left, face_pml_inlet_back, face_pml_inlet_right, face_pml_inlet_front ] )
+    # shared_faces_pml_outlet = geompy.UnionList( group_faces_outlet, [ face_pml_outlet_left, face_pml_outlet_back, face_pml_outlet_right, face_pml_outlet_front ] )
+
+    # face_pml_inlet_outer = geompy.CutListOfGroups(  [ subshapes_pml_inlet ], 
+                                                    # [ group_faces_inlet, face_pml_inlet_left, face_pml_inlet_back, face_pml_inlet_right, face_pml_inlet_front ] )
+    # face_pml_inlet_outer = geompy.CutGroups( subshapes_pml_inlet, [ group_faces_inlet, face_pml_inlet_left, face_pml_inlet_back, face_pml_inlet_right, face_pml_inlet_front ] )
+    # face_pml_inlet_outer = geompy.CutGroups( group_faces_pml_inlet, 
+                                            #  [ group_faces_inlet, face_pml_inlet_left, face_pml_inlet_back, face_pml_inlet_right, face_pml_inlet_front ] )
+    # shared_faces_pml_inlet_air
+    shared_faces_pml_inlet = geompy.CreateGroup( self.geometry, geompy.ShapeType["FACE"])
+    geompy.UnionList( shared_faces_pml_inlet, [face_pml_inlet_left, face_pml_inlet_back, face_pml_inlet_right, face_pml_inlet_front ] )
+    
+
+    # shared_faces_pml_outlet_air
+    shared_faces_pml_outlet = geompy.CreateGroup( self.geometry, geompy.ShapeType["FACE"])
+    geompy.UnionList( shared_faces_pml_outlet, [face_pml_outlet_left, face_pml_outlet_back, face_pml_outlet_right, face_pml_outlet_front ] )
+    
+
+    # face_pml_outlet_outer = geompy.CutListOfGroups( group_faces_pml_outlet, 
+                                                    # [ group_faces_outlet, face_pml_outlet_left, face_pml_outlet_back, face_pml_outlet_right, face_pml_outlet_front ] )
+    # face_pml_outlet_outer = geompy.CutGroups( group_faces_pml_outlet, [ group_faces_outlet, face_pml_outlet_left, face_pml_outlet_back, face_pml_outlet_right, face_pml_outlet_front ] )
+
+    geompy.UnionList( group_faces_top_bottom_walls, [ shared_faces_pml_outlet, shared_faces_pml_inlet ] )
+    self.groups['group_faces_top_bottom_walls'] = group_faces_top_bottom_walls
+    geompy.addToStudyInFather( self.geometry, group_faces_top_bottom_walls, 'group_faces_top_bottom_walls' )
+ 
 
     return time.time()
   
@@ -622,28 +657,6 @@ quantized_matrix_16_16 = np.array([
                                   [ 13,  0,  3,  5,  7,  8,  9, 10, 10,  9,  8,  7,  5,  3,  0, 13 ], #15
                                 ])
 
-quantized_matrix_16_16_4_bit_9_out = np.array([
-                                  [ 13,  0,  3,  5,  7,  8, 10, 10, 10, 10,  8,  7,  5,  3,  0, 13 ], #0
-                                  [  0,  3,  6,  8, 10, 12, 13, 13, 13, 13, 12, 10,  8,  6,  3,  0 ], #1 
-                                  [  3,  6, 10, 11, 13, 15,  0,  0,  0,  0, 15, 13, 11, 10,  6,  3 ], #2 
-                                  [  5,  8, 11, 14,  0,  1,  2,  3,  3,  2,  1,  0, 14, 11,  8,  5 ], #3 
-                                  [  7, 10, 13,  0,  2,  3,  4,  5,  5,  4,  3,  2,  0, 13, 10,  7 ], #4 
-                                  [  8, 12, 15,  1,  3,  5,  6,  6,  6,  6,  5,  3,  1, 15, 12,  8 ], #5                                 
-                                  [ 10, 13,  1,  4,  5,  6,  7,  7,  7,  7,  6,  5,  4,  1, 13, 10 ], #6
-                                  [ 10, 13,  0,  3,  5,  6,  7,  8,  8,  7,  6,  5,  3,  0, 13, 10 ], #7 
-                                  [ 10, 13,  0,  3,  5,  6,  7,  8,  8,  7,  6,  5,  3,  0, 13, 10 ], #8
-                                  [ 10, 13,  1,  4,  5,  6,  7,  7,  7,  7,  6,  5,  4,  1, 13, 10 ], #10
-                                  [  8, 12, 15,  1,  3,  5,  6,  6,  6,  6,  5,  3,  1, 15, 12,  8 ], #10
-                                  [  7, 10, 13,  0,  2,  3,  4,  5,  5,  4,  3,  2,  0, 13, 10,  7 ], #11                                   
-                                  [  5,  8, 11, 14,  0,  1,  2,  3,  3,  2,  1,  0, 14, 11,  8,  5 ], #12
-                                  [  3,  6, 10, 11, 13, 15,  0,  0,  0,  0, 15, 13, 11, 10,  6,  3 ], #13 
-                                  [  0,  3,  6,  8, 10, 12, 13, 13, 13, 13, 12, 10,  8,  6,  3,  0 ], #14
-                                  [ 13,  0,  3,  5,  7,  8, 10, 10, 10, 10,  8,  7,  5,  3,  0, 13 ], #15
-                                ])
-
-
-
-
 
 quantized_matrix_2_2 = np.array([ 
                                   [ 1, 2 ],
@@ -671,8 +684,11 @@ unit_cell_select_list = lambda i: np.array([
 
 
 def lens_configurator( quantized_matrix ):
+  # create configs matrix with shape (m,n,3)
   configs = np.array([ unit_cell_select_list(i) for i in quantized_matrix.ravel() ])
+  # reshape configs matrix into shape (m,n,3)
   configs_to_stack = configs.reshape(quantized_matrix.shape[0], quantized_matrix.shape[1], len(flaps_configs) )  
+  # stack configs to quantised matrix to get [ [ [ phase_id, length, distance, radius ] ] ]
   return np.dstack( ( quantized_matrix, configs_to_stack ) )
 
 
