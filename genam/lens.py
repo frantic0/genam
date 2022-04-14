@@ -303,6 +303,7 @@ class Lens:
     # geompy.addToStudy(face_bottom, 'face_bottom')
 
 
+    
     group_faces_air_lens = geompy.CreateGroup( self.geometry, geompy.ShapeType["FACE"] )
     geompy.UnionList(group_faces_air_lens, shared_faces_lens_solid_air )
     self.groups['group_faces_air_lens'] = group_faces_air_lens
@@ -317,6 +318,12 @@ class Lens:
     geompy.UnionList(group_faces_outlet, shared_faces_pml_outlet_air )
     self.groups['group_faces_outlet'] = group_faces_outlet
     geompy.addToStudyInFather( self.geometry, group_faces_outlet, 'group_faces_outlet' )
+
+
+        
+    face_pml_inlet_right = geompy.GetFaceNearPoint(group_faces_pml_inlet,   geompy.MakeVertex(36.592725, -0.108263, 1.2865))
+
+
 
     subshapes_air = geompy.SubShapeAll(solid_air, geompy.ShapeType["FACE"])
     # air_subshapes = geompy.SubShapeAll(air, geompy.ShapeType["FACE"])
@@ -411,58 +418,51 @@ class Lens:
   #   return [item for sublist in t for item in sublist]
 
 
+  def __set_mesh_strategy__(  self, 
+                              algo = smeshBuilder.NETGEN_1D2D3D ) :
+
+    if algo == smeshBuilder.NETGEN_1D2D3D :
+
+      NETGEN_1D_2D_3D = self.mesh.Tetrahedron( algo = smeshBuilder.NETGEN_1D2D3D )
+      NETGEN_3D_Parameters_1 = NETGEN_1D_2D_3D.Parameters()
+      NETGEN_3D_Parameters_1.SetMaxSize( self.mesh_config[0] )
+      NETGEN_3D_Parameters_1.SetMinSize( self.mesh_config[1] )
+      NETGEN_3D_Parameters_1.SetSecondOrder( self.mesh_config[2] )
+      NETGEN_3D_Parameters_1.SetOptimize( 1 )
+      NETGEN_3D_Parameters_1.SetFineness( self.mesh_config[3] )
+      NETGEN_3D_Parameters_1.SetChordalError( -1 )
+      NETGEN_3D_Parameters_1.SetChordalErrorEnabled( 0 )
+      NETGEN_3D_Parameters_1.SetUseSurfaceCurvature( 1 )
+      NETGEN_3D_Parameters_1.SetFuseEdges( 1 )
+      NETGEN_3D_Parameters_1.SetQuadAllowed( 0 )
+      NETGEN_3D_Parameters_1.SetCheckChartBoundary( 72 )
+
+    else : 
+
+      # create a Gmsh 3D algorithm for solids
+      Algo_3D = self.mesh.Tetrahedron( algo = smeshBuilder.GMSH )
+      # define hypotheses
+      Param_3D = Algo_3D.Parameters()
+      # define algorithms
+      Param_3D.Set2DAlgo( 0 )
+      Param_3D.SetIs2d( 0 )
+      # Set Algorithm3D - 10: HXT
+      Param_3D.Set3DAlgo( 10 )
+      Param_3D.SetMinSize( 0.1 )
+      Param_3D.SetMaxSize( 0.8 )
+      Param_3D.SetOrder( 2 )
+      # Set output format - 2: unv
+      Param_3D.SetFormat( 2 )
 
 
-
-
-
-
-  def process_mesh(self):
-
-    # start = time.time()
-    
-
+  def process_mesh( self,
+                    algo = smeshBuilder.NETGEN_1D2D3D ) :
+                    
     self.mesh = self.smesh.Mesh(self.geometry)
     
-    NETGEN_1D_2D_3D = self.mesh.Tetrahedron( algo=smeshBuilder.NETGEN_1D2D3D )
-    NETGEN_3D_Parameters_1 = NETGEN_1D_2D_3D.Parameters()
-    NETGEN_3D_Parameters_1.SetMaxSize( self.mesh_config[0] )
-    NETGEN_3D_Parameters_1.SetMinSize( self.mesh_config[1] )
-    NETGEN_3D_Parameters_1.SetSecondOrder( self.mesh_config[2] )
-    NETGEN_3D_Parameters_1.SetOptimize( 1 )
-    NETGEN_3D_Parameters_1.SetFineness( self.mesh_config[3] )
-    NETGEN_3D_Parameters_1.SetChordalError( -1 )
-    NETGEN_3D_Parameters_1.SetChordalErrorEnabled( 0 )
-    NETGEN_3D_Parameters_1.SetUseSurfaceCurvature( 1 )
-    NETGEN_3D_Parameters_1.SetFuseEdges( 1 )
-    NETGEN_3D_Parameters_1.SetQuadAllowed( 0 )
-    NETGEN_3D_Parameters_1.SetCheckChartBoundary( 72 )
-
-    # # Create a 3D mesh on the box with GMSH_3D algorithm
-    # Structure_1 = smesh.Mesh(Structure, "GMSH_3D_Mesh")
-    # # create a Gmsh 3D algorithm for solids
-    # Algo_3D = Structure_1.Tetrahedron(algo=smeshBuilder.GMSH)
-    # # define hypotheses
-    # Param_3D = Algo_3D.Parameters()
-    # # define algorithms
-    # Param_3D.Set2DAlgo( 0 )
-    # Param_3D.SetIs2d( 0 )
-    # # Set Algorithm3D - 10: HXT
-    # Param_3D.Set3DAlgo( 10 )
-    # Param_3D.SetMinSize( 0.1 )
-    # Param_3D.SetMaxSize( 0.8 )
-    # Param_3D.SetOrder( 2 )
-    # Set output format - 2: unv
-    # Param_3D.SetFormat( 2 )
-    # compute the meshes
-    # Mesh_3D.Compute()
-
-    # Geometry computation time: 4.64 sec
-    # Mesh computation time: 265.22 sec
-
-    ####################################################################
-
-    # # Add meshing groups
+    self.__set_mesh_strategy__( algo )
+    
+    # Add meshing groups
     
     pml_bottom_mesh = self.mesh.GroupOnGeom( self.groups['solid_pml_inlet'], 'pml_inlet', SMESH.VOLUME)
     brick_mesh = self.mesh.GroupOnGeom( self.groups['solid_lens'], 'lens', SMESH.VOLUME)
@@ -491,35 +491,6 @@ class Lens:
 
     # Mesh computation time
     return time.time()
-
-    # # Rename bodies for Elmer
-    # # smesh.SetName(solids_mesh[0], 'pml_bot')
-    # # smesh.SetName(solids_mesh[1], 'brick')
-    # # smesh.SetName(solids_mesh[2], 'air')
-    # # smesh.SetName(solids_mesh[3], 'pml_top')
-    # # Rename faces for Elmer
-    # # smesh.SetName(left, 'left')
-    # # smesh.SetName(back, 'back')
-    # # smesh.SetName(front, 'front')2222
-    # # smesh.SetName(NETGEN_2D3D_1.GetAlgorithm(), 'NETGEN_2D3D_1')
-    # # smesh.SetName(right, 'right')
-    # # smesh.SetName(brick_front, 'brick_front')
-    # # smesh.SetName(brick_back, 'brick_back')
-    # # smesh.SetName(brick_right, 'brick_right')
-    # # smesh.SetName(NETGEN_Parameters, 'NETGEN_Parameters')
-    # # smesh.SetName(Structure_1.GetMesh(), 'Structure')
-    # # smesh.SetName(brick_left, 'brick_left')
-    # # smesh.SetName(brick_faces, 'brick_faces')
-    # # smesh.SetName(outlet, 'outlet')
-    # # smesh.SetName(inlet, 'inlet')
-    # # smesh.SetName(top_bottom_walls, 'top_bottom_walls')
-    # start = time.time()
-    # return Structure_1
-
-
-
-  
-
 
 # lens_configurator = lambda m: [
 #   [ unit_cell_selector(m[]) ]
@@ -632,7 +603,7 @@ quantized_matrix_16_16_3_bit = np.array([
                                 ])
 
 
-quantized_matrix_16_16_4_bit = np.array([
+quantized_matrix_16_16 = np.array([
                                   [ 13,  0,  3,  5,  7,  8,  9, 10, 10,  9,  8,  7,  5,  3,  0, 13 ], #0
                                   [  0,  3,  6,  8, 10, 12, 13, 13, 13, 13, 12, 10,  8,  6,  3,  0 ], #1 
                                   [  3,  6,  9, 11, 13, 15,  0,  0,  0,  0, 15, 13, 11,  9,  6,  3 ], #2 
@@ -705,19 +676,18 @@ def lens_configurator( quantized_matrix ):
   return np.dstack( ( quantized_matrix, configs_to_stack ) )
 
 
+# lens_config = lens_configurator( quantized_matrix_2_2 )
+# lens_config = lens_configurator( quantized_matrix_4_4 )
 
-
-
+lens_config = lens_configurator( quantized_matrix_8_8 )
 # lens_config = lens_configurator( quantized_matrix_8_8_11_bricks )
 # lens_config = lens_configurator( quantized_matrix_1_8_11_bricks )
 # lens_config = lens_configurator( quantized_matrix_8_1_11_bricks )
-# lens_config = lens_configurator( quantized_matrix_2_2 )
-# lens_config = lens_configurator( quantized_matrix_4_4 )
-lens_config = lens_configurator( quantized_matrix_8_8 )
+
+# lens_config = lens_configurator( quantized_matrix_16_16 )
 # lens_config = lens_configurator( quantized_matrix_16_1_11_brick )
 # lens_config = lens_configurator( quantized_matrix_1_16_11_brick )
 # lens_config = lens_configurator( quantized_matrix_16_16_4_bit_9_out )
-# lens_config = lens_configurator( quantized_matrix_16_16_4_bit )
 
 lens =  Lens( lens_config, mesh_config_selector(3) )
 
