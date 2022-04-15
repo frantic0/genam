@@ -428,7 +428,8 @@ class Lens:
     geompy.addToStudyInFather( self.geometry, group_faces_air_front, 'group_faces_front' )
 
     
-    # Set group_faces_top_bottom_walls
+    # Group top and bottom walls faces
+
     group_faces_top_bottom_walls = geompy.CreateGroup( self.geometry, geompy.ShapeType["FACE"])
 
     shared_faces_pml_inlet = geompy.CreateGroup( self.geometry, geompy.ShapeType["FACE"])
@@ -443,7 +444,6 @@ class Lens:
 
     geompy.UnionList( group_faces_top_bottom_walls, [ face_pml_inlet_outer, face_pml_outlet_outer ] )
     self.groups['group_faces_top_bottom_walls'] = group_faces_top_bottom_walls
-
     geompy.addToStudyInFather( self.geometry, group_faces_top_bottom_walls, 'group_faces_top_bottom_walls' )
  
 
@@ -510,6 +510,9 @@ class Lens:
     # faces_air_cut_mesh = Structure_1.GroupOnGeom( group_faces_air_cut, 'air', SMESH.FACE)
     brick_faces_mesh = self.mesh.GroupOnGeom( self.groups['group_faces_air_lens'], 'lens', SMESH.FACE)
     faces_lens_cut_mesh = self.mesh.GroupOnGeom( self.groups['group_faces_lens_cut'], 'lens_shell', SMESH.FACE)
+    
+    mesh_top_bottom = self.mesh.GroupOnGeom( self.groups['group_faces_top_bottom_walls'], 'top_bottom', SMESH.FACE)
+
 
     mesh_air_front = self.mesh.GroupOnGeom( self.groups['group_faces_front'], 'front', SMESH.FACE)
     mesh_air_back = self.mesh.GroupOnGeom( self.groups['group_faces_back'], 'back', SMESH.FACE)
@@ -715,7 +718,7 @@ print("Geometry computation time: {:.2f} sec".format(end - start))
 
 start = time.time()
 
-# end = lens.process_mesh()
+end = lens.process_mesh()
 
 print("Mesh computation time: {:.2f} sec".format(end - start))
 
