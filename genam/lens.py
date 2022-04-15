@@ -92,25 +92,26 @@ class Lens:
   
     air_bottom_height = 4.288
   
-    y_translation_shift = - ( self.wavelenght/40 + self.m * ( self.wavelenght/2 + self.wavelenght/40 ))
-    x_translation_shift = - ( self.wavelenght/40 + self.n * ( self.wavelenght/2 + self.wavelenght/40 ))
+    # y_translation_shift = - ( self.wavelenght/40 + self.m * ( self.wavelenght/2 + self.wavelenght/40 ))
+    y_translation_shift =  -( self.wavelenght/40 + self.m * ( self.wavelenght/2 + self.wavelenght/40 )) / 2 
+    x_translation_shift =  -( self.wavelenght/40 + self.n * ( self.wavelenght/2 + self.wavelenght/40 )) / 2
   
     counter = 0
 
     pml_bottom = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( lens_side_x, lens_side_y, pml_bottom_height),
-                                          0, 
+                                          x_translation_shift, 
                                           y_translation_shift,
                                           0 )
     # geompy.addToStudy( pml_bottom, 'pml_bottom' )
 
     air_inlet = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( lens_side_x, lens_side_y, air_bottom_height),
-                                        0, 
+                                        x_translation_shift, 
                                         y_translation_shift,
                                         pml_bottom_height )
     # geompy.addToStudy( air_inlet, 'air_inlet' )
     
     lens_outer = geompy.MakeTranslation(  geompy.MakeBoxDXDYDZ( lens_side_x, lens_side_y, self.wavelenght ),
-                                          0, 
+                                          x_translation_shift, 
                                           y_translation_shift,
                                           pml_bottom_height + air_bottom_height )
     # geompy.addToStudy( lens_outer, 'lens_outer' )
@@ -118,7 +119,7 @@ class Lens:
     air_height = probing_distance - (pml_bottom_height + air_bottom_height + self.wavelenght)
 
     air_outlet = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( lens_side_x, lens_side_y, air_height ),
-                                          0, 
+                                          x_translation_shift, 
                                           y_translation_shift, 
                                           pml_bottom_height + air_bottom_height + self.wavelenght )
 
@@ -132,7 +133,7 @@ class Lens:
 
     translation = ( 0, 0, 0 )
 
-    translation_shift = ( 0, y_translation_shift , 0 )
+    translation_shift = ( x_translation_shift, y_translation_shift , 0 )
     
 
     #################################
@@ -188,6 +189,7 @@ class Lens:
           translation_x = self.wavelenght/40 + column * ( self.wavelenght/40 + self.wavelenght/2 )     
           translation_y = self.wavelenght/40 + row * (self.wavelenght/40 + self.wavelenght/2 )     
           
+          # TODO : replace hardcoded constant but ratio
           translation = ( translation_shift[0] + translation_x,
                           translation_shift[1] + translation_y + self.wavelenght/2, 
                           6.861 )
@@ -377,11 +379,13 @@ class Lens:
 
 
 
+    # 8 x 8
     # face_pml_inlet_left = geompy.GetFaceNearPoint(group_faces_pml_inlet,    geompy.MakeVertex(0, -0.108263, 1.2865))
     # face_air_left_1 = geompy.GetFaceNearPoint(group_faces_air,              geompy.MakeVertex(0, -0.108263, 57.761))
     # face_air_left_2 = geompy.GetFaceNearPoint(group_faces_air,              geompy.MakeVertex(0, -0.108263, 4.717))
     # face_pml_outlet_left = geompy.GetFaceNearPoint(group_faces_pml_outlet,  geompy.MakeVertex(0, -0.108263, 101.2865))
 
+    # 16 x 16
     face_pml_inlet_left = geompy.GetFaceNearPoint(group_faces_pml_inlet,    geompy.MakeVertex(0, -36.484462, 1.2865))
     face_air_left_1 = geompy.GetFaceNearPoint(group_faces_air,              geompy.MakeVertex(0, -36.484462, 57.761))
     face_air_left_2 = geompy.GetFaceNearPoint(group_faces_air,              geompy.MakeVertex(0, -36.484462, 4.717))
@@ -392,11 +396,13 @@ class Lens:
     self.groups['group_faces_left'] = group_faces_air_left
     geompy.addToStudyInFather( self.geometry, group_faces_air_left, 'group_faces_left' )
 
+    # 8 x 8
     # face_pml_inlet_right = geompy.GetFaceNearPoint(group_faces_pml_inlet,   geompy.MakeVertex(36.592725, -0.108263, 1.2865))
     # face_air_right_1 = geompy.GetFaceNearPoint(group_faces_air,             geompy.MakeVertex(36.592725, -0.108263, 57.761))
     # face_air_right_2 = geompy.GetFaceNearPoint(group_faces_air,             geompy.MakeVertex(36.592725, -0.108263, 4.717))
     # face_pml_outlet_right = geompy.GetFaceNearPoint(group_faces_pml_outlet, geompy.MakeVertex(36.592725, -0.108263, 101.2865))
 
+    # 16 x 16
     face_pml_inlet_right = geompy.GetFaceNearPoint(group_faces_pml_inlet,   geompy.MakeVertex(76.968925, -36.484462, 1.2865))
     face_air_right_1 = geompy.GetFaceNearPoint(group_faces_air,             geompy.MakeVertex(76.968925, -36.484462, 57.761))
     face_air_right_2 = geompy.GetFaceNearPoint(group_faces_air,             geompy.MakeVertex(76.968925, -36.484462, 4.717))
@@ -407,11 +413,13 @@ class Lens:
     self.groups['group_faces_right'] = group_faces_air_right 
     geompy.addToStudyInFather( self.geometry, group_faces_air_right, 'group_faces_right' )
 
+    # 8 x 8
     # face_pml_inlet_back = geompy.GetFaceNearPoint(group_faces_pml_inlet,    geompy.MakeVertex(2.381775, 18.404625, 1.2865))
     # face_air_back_1 = geompy.GetFaceNearPoint(group_faces_air,              geompy.MakeVertex(2.381775, 18.404625, 57.761))
     # face_air_back_2 = geompy.GetFaceNearPoint(group_faces_air,              geompy.MakeVertex(2.381775, 18.404625, 4.717))
     # face_pml_outlet_back = geompy.GetFaceNearPoint(group_faces_pml_outlet,  geompy.MakeVertex(2.381775, 18.404625, 101.2865))
 
+    # 16 x 16
     face_pml_inlet_back = geompy.GetFaceNearPoint(group_faces_pml_inlet,    geompy.MakeVertex(36.484462, 0, 1.2865))
     face_air_back_1 = geompy.GetFaceNearPoint(group_faces_air,              geompy.MakeVertex(36.484462, 0, 57.761))
     face_air_back_2 = geompy.GetFaceNearPoint(group_faces_air,              geompy.MakeVertex(36.484462, 0, 4.717))
@@ -735,7 +743,7 @@ print("Geometry computation time: {:.2f} sec".format(end - start))
 
 start = time.time()
 
-end = lens.process_mesh()
+# end = lens.process_mesh()
 
 print("Mesh computation time: {:.2f} sec".format(end - start))
 
