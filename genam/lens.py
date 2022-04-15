@@ -377,30 +377,45 @@ class Lens:
 
 
 
-    face_pml_inlet_left = geompy.GetFaceNearPoint(group_faces_pml_inlet,    geompy.MakeVertex(0, -0.108263, 1.2865))
-    face_air_left_1 = geompy.GetFaceNearPoint(group_faces_air,              geompy.MakeVertex(0, -0.108263, 57.761))
-    face_air_left_2 = geompy.GetFaceNearPoint(group_faces_air,              geompy.MakeVertex(0, -0.108263, 4.717))
-    face_pml_outlet_left = geompy.GetFaceNearPoint(group_faces_pml_outlet,  geompy.MakeVertex(0, -0.108263, 101.2865))
+    # face_pml_inlet_left = geompy.GetFaceNearPoint(group_faces_pml_inlet,    geompy.MakeVertex(0, -0.108263, 1.2865))
+    # face_air_left_1 = geompy.GetFaceNearPoint(group_faces_air,              geompy.MakeVertex(0, -0.108263, 57.761))
+    # face_air_left_2 = geompy.GetFaceNearPoint(group_faces_air,              geompy.MakeVertex(0, -0.108263, 4.717))
+    # face_pml_outlet_left = geompy.GetFaceNearPoint(group_faces_pml_outlet,  geompy.MakeVertex(0, -0.108263, 101.2865))
+
+    face_pml_inlet_left = geompy.GetFaceNearPoint(group_faces_pml_inlet,    geompy.MakeVertex(0, -36.484462, 1.2865))
+    face_air_left_1 = geompy.GetFaceNearPoint(group_faces_air,              geompy.MakeVertex(0, -36.484462, 57.761))
+    face_air_left_2 = geompy.GetFaceNearPoint(group_faces_air,              geompy.MakeVertex(0, -36.484462, 4.717))
+    face_pml_outlet_left = geompy.GetFaceNearPoint(group_faces_pml_outlet,  geompy.MakeVertex(0, -36.484462, 101.2865))
 
     group_faces_air_left = geompy.CreateGroup( self.geometry, geompy.ShapeType["FACE"])
     geompy.UnionList( group_faces_air_left, [face_air_left_1, face_air_left_2, face_pml_inlet_left, face_pml_outlet_left] )
     self.groups['group_faces_left'] = group_faces_air_left
     geompy.addToStudyInFather( self.geometry, group_faces_air_left, 'group_faces_left' )
 
-    face_pml_inlet_right = geompy.GetFaceNearPoint(group_faces_pml_inlet,   geompy.MakeVertex(36.592725, -0.108263, 1.2865))
-    face_air_right_1 = geompy.GetFaceNearPoint(group_faces_air,             geompy.MakeVertex(36.592725, -0.108263, 57.761))
-    face_air_right_2 = geompy.GetFaceNearPoint(group_faces_air,             geompy.MakeVertex(36.592725, -0.108263, 4.717))
-    face_pml_outlet_right = geompy.GetFaceNearPoint(group_faces_pml_outlet, geompy.MakeVertex(36.592725, -0.108263, 101.2865))
+    # face_pml_inlet_right = geompy.GetFaceNearPoint(group_faces_pml_inlet,   geompy.MakeVertex(36.592725, -0.108263, 1.2865))
+    # face_air_right_1 = geompy.GetFaceNearPoint(group_faces_air,             geompy.MakeVertex(36.592725, -0.108263, 57.761))
+    # face_air_right_2 = geompy.GetFaceNearPoint(group_faces_air,             geompy.MakeVertex(36.592725, -0.108263, 4.717))
+    # face_pml_outlet_right = geompy.GetFaceNearPoint(group_faces_pml_outlet, geompy.MakeVertex(36.592725, -0.108263, 101.2865))
+
+    face_pml_inlet_right = geompy.GetFaceNearPoint(group_faces_pml_inlet,   geompy.MakeVertex(76.968925, -36.484462, 1.2865))
+    face_air_right_1 = geompy.GetFaceNearPoint(group_faces_air,             geompy.MakeVertex(76.968925, -36.484462, 57.761))
+    face_air_right_2 = geompy.GetFaceNearPoint(group_faces_air,             geompy.MakeVertex(76.968925, -36.484462, 4.717))
+    face_pml_outlet_right = geompy.GetFaceNearPoint(group_faces_pml_outlet, geompy.MakeVertex(76.968925, -36.484462, 101.2865))
 
     group_faces_air_right = geompy.CreateGroup( self.geometry, geompy.ShapeType["FACE"])
     geompy.UnionList( group_faces_air_right, [face_air_right_1, face_air_right_2, face_pml_inlet_right, face_pml_outlet_right] )
     self.groups['group_faces_right'] = group_faces_air_right 
     geompy.addToStudyInFather( self.geometry, group_faces_air_right, 'group_faces_right' )
 
-    face_pml_inlet_back = geompy.GetFaceNearPoint(group_faces_pml_inlet,    geompy.MakeVertex(2.381775, 18.404625, 1.2865))
-    face_air_back_1 = geompy.GetFaceNearPoint(group_faces_air,              geompy.MakeVertex(2.381775, 18.404625, 57.761))
-    face_air_back_2 = geompy.GetFaceNearPoint(group_faces_air,              geompy.MakeVertex(2.381775, 18.404625, 4.717))
-    face_pml_outlet_back = geompy.GetFaceNearPoint(group_faces_pml_outlet,  geompy.MakeVertex(2.381775, 18.404625, 101.2865))
+    # face_pml_inlet_back = geompy.GetFaceNearPoint(group_faces_pml_inlet,    geompy.MakeVertex(2.381775, 18.404625, 1.2865))
+    # face_air_back_1 = geompy.GetFaceNearPoint(group_faces_air,              geompy.MakeVertex(2.381775, 18.404625, 57.761))
+    # face_air_back_2 = geompy.GetFaceNearPoint(group_faces_air,              geompy.MakeVertex(2.381775, 18.404625, 4.717))
+    # face_pml_outlet_back = geompy.GetFaceNearPoint(group_faces_pml_outlet,  geompy.MakeVertex(2.381775, 18.404625, 101.2865))
+
+    face_pml_inlet_back = geompy.GetFaceNearPoint(group_faces_pml_inlet,    geompy.MakeVertex(36.484462, 0, 1.2865))
+    face_air_back_1 = geompy.GetFaceNearPoint(group_faces_air,              geompy.MakeVertex(36.484462, 0, 57.761))
+    face_air_back_2 = geompy.GetFaceNearPoint(group_faces_air,              geompy.MakeVertex(36.484462, 0, 4.717))
+    face_pml_outlet_back = geompy.GetFaceNearPoint(group_faces_pml_outlet,  geompy.MakeVertex(36.484462, 0, 101.2865))
 
     group_faces_air_back = geompy.CreateGroup( self.geometry, geompy.ShapeType["FACE"])
     geompy.UnionList( group_faces_air_back, [face_air_back_1, face_air_back_2, face_pml_inlet_back, face_pml_outlet_back] )
@@ -412,15 +427,17 @@ class Lens:
     # face_air_front_2 = geompy.GetFaceNearPoint(group_faces_air,             geompy.MakeVertex(2.381775, -18.404625, 4.717))
     # face_pml_outlet_front = geompy.GetFaceNearPoint(group_faces_pml_outlet, geompy.MakeVertex(2.381775, -18.404625, 101.2865))
 
-    face_pml_inlet_front = geompy.GetFaceNearPoint(group_faces_pml_inlet,   geompy.MakeVertex(18.296362, -36.592725, 1.2865))
-    face_air_front_1 = geompy.GetFaceNearPoint(group_faces_air,             geompy.MakeVertex(18.296362, -36.592725, 57.761))
-    face_air_front_2 = geompy.GetFaceNearPoint(group_faces_air,             geompy.MakeVertex(18.296362, -36.592725, 4.717))
-    face_pml_outlet_front = geompy.GetFaceNearPoint(group_faces_pml_outlet, geompy.MakeVertex(18.296362, -36.592725, 101.2865))
+    # 8 x 8 
+    # face_pml_inlet_front = geompy.GetFaceNearPoint(group_faces_pml_inlet,   geompy.MakeVertex(18.296362, -36.592725, 1.2865))
+    # face_air_front_1 = geompy.GetFaceNearPoint(group_faces_air,             geompy.MakeVertex(18.296362, -36.592725, 57.761))
+    # face_air_front_2 = geompy.GetFaceNearPoint(group_faces_air,             geompy.MakeVertex(18.296362, -36.592725, 4.717))
+    # face_pml_outlet_front = geompy.GetFaceNearPoint(group_faces_pml_outlet, geompy.MakeVertex(18.296362, -36.592725, 101.2865))
 
-    # face_pml_inlet_front = geompy.GetFaceNearPoint(group_faces_pml_inlet,   geompy.MakeVertex(36.484462, -72.968925, 1.2865))
-    # face_air_front_1 = geompy.GetFaceNearPoint(group_faces_air,             geompy.MakeVertex(36.484462, -72.968925, 57.761))
-    # face_air_front_2 = geompy.GetFaceNearPoint(group_faces_air,             geompy.MakeVertex(36.484462, -72.968925, 4.717))
-    # face_pml_outlet_front = geompy.GetFaceNearPoint(group_faces_pml_outlet, geompy.MakeVertex(36.484462, -72.968925, 101.2865))
+    # 16 x 16
+    face_pml_inlet_front = geompy.GetFaceNearPoint(group_faces_pml_inlet,   geompy.MakeVertex(36.484462, -72.968925, 1.2865))
+    face_air_front_1 = geompy.GetFaceNearPoint(group_faces_air,             geompy.MakeVertex(36.484462, -72.968925, 57.761))
+    face_air_front_2 = geompy.GetFaceNearPoint(group_faces_air,             geompy.MakeVertex(36.484462, -72.968925, 4.717))
+    face_pml_outlet_front = geompy.GetFaceNearPoint(group_faces_pml_outlet, geompy.MakeVertex(36.484462, -72.968925, 101.2865))
 
     group_faces_air_front = geompy.CreateGroup( self.geometry, geompy.ShapeType["FACE"])
     geompy.UnionList( group_faces_air_front, [face_air_front_1, face_air_front_2, face_pml_inlet_front, face_pml_outlet_front] )
