@@ -1,6 +1,10 @@
 # Generative Acoustic Metamaterial
 
+<<<<<<< HEAD
 Genamm is a pipeline for generative design and optimisation of acoustic metamaterials.
+=======
+__GenAM__ is a python package and framework for the generative design and optimisation of acoustic metamaterials.
+>>>>>>> 6c5e992b7e66a8036694c03bf103d08a352d4974
 
 ### Dependencies 
 
