@@ -174,7 +174,7 @@ class Lens:
                                                   self.wavelenght ),
                             translation_shift[0] + translation_x,
                             translation_shift[1] + translation_y,
-                            6.881 )    
+                            self.wavelenght )    
 
         else: 
 
@@ -192,7 +192,7 @@ class Lens:
           # TODO : replace hardcoded constant but ratio
           translation = ( translation_shift[0] + translation_x,
                           translation_shift[1] + translation_y + self.wavelenght/2, 
-                          6.861 )
+                          self.wavelenght )
           
           try:
             brick_inner = sketch_to_volume( geompy, Sketch_1, self.wavelenght /2, rotation, translation)
@@ -617,16 +617,12 @@ quantized_matrix_16_16_11_brick = np.array([
                                   [ 10, 13,  0,  3,  5,  6,  7,  8,  8,  7,  6,  5,  3,  0, 13, 10 ], #7 
                                 ])
 
-quantized_matrix_16_16_3_bit = np.array([
-                                  [ 13,  0,  3,  5,  7,  8,  9, 10, 14,  9,  8,  7,  5,  3,  0, 13 ], #0
-                                  [  0,  3,  6,  8, 10, 12, 13, 13, 14, 13, 12, 10,  8,  6,  3,  0 ], #1 
-                                  [  3,  6,  9, 11, 13, 15,  0,  0,  0,  0, 15, 13, 11,  9,  6,  3 ], #2 
-                                  [  5,  8, 11, 14,  0,  1,  2,  3,  3,  2,  1,  0, 14, 11,  8,  5 ], #3 
-                                  [  7, 10, 13,  0,  2,  3,  4,  5,  5,  4,  3,  2,  0, 13, 10,  7 ], #4 
-                                  [  8, 12, 15,  1,  3,  5,  6,  6,  6,  6,  5,  3,  1, 15, 12,  8 ], #5                                 
-                                  [  9, 13,  1,  4,  5,  6,  7,  7,  7,  7,  6,  5,  4,  1, 13,  9 ], #6
+quantized_matrix_16_2 = np.array([
+                                  [ 10, 13,  0,  3,  5,  6,  7,  8,  8,  7,  6,  5,  3,  0, 13, 10 ], #7 
                                   [ 10, 13,  0,  3,  5,  6,  7,  8,  8,  7,  6,  5,  3,  0, 13, 10 ], #7 
                                 ])
+
+
 
 
 quantized_matrix_16_16 = np.array([
@@ -684,7 +680,7 @@ def lens_configurator( quantized_matrix ):
 
 
 # lens_config = lens_configurator( quantized_matrix_2_2 )
-lens_config = lens_configurator( quantized_matrix_4_4 )
+# lens_config = lens_configurator( quantized_matrix_4_4 )
 
 # lens_config = lens_configurator( quantized_matrix_8_8 )
 # lens_config = lens_configurator( quantized_matrix_8_8_11_bricks )
@@ -694,7 +690,8 @@ lens_config = lens_configurator( quantized_matrix_4_4 )
 # lens_config = lens_configurator( quantized_matrix_16_16 )
 # lens_config = lens_configurator( quantized_matrix_16_1_11_brick )
 # lens_config = lens_configurator( quantized_matrix_1_16_11_brick )
-# lens_config = lens_configurator( quantized_matrix_16_16_4_bit_9_out )
+
+lens_config = lens_configurator( quantized_matrix_16_2 )
 
 lens =  Lens( lens_config, mesh_config_selector(3) )
 
@@ -710,7 +707,9 @@ end = lens.process_mesh()
 
 print("Mesh computation time: {:.2f} sec".format(end - start))
 
+start = time.time()
 
+# end = lens.export_mesh( r'C:/Users/Francisco/Documents/acoustic-brick/Lens.unv')
 
 
 # Structure = process_geometry(data)
