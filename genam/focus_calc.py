@@ -13,25 +13,10 @@ def calculate_focus_lens_phase_distribution(m, n, focal_length = 0.1):
     wavelength = c/f # m
     k = 2*np.pi/wavelength # wave number (rads/m)
 
-    plane_length = lambda x : wavelength * x / 4 
-
-    dx = wavelength / 2 # [m]
-
-    aperture_size = ( int( 2* plane_length(m) /dx ), int( 2* plane_length(n) /dx ) ) # aperture size (number of unit cells) 
-    print(aperture_size)
-
-    x_vec = np.arange( -( aperture_size[0]/2 - 0.5 ) * dx, 
-                        ( aperture_size[0]/2 + 0.5 ) * dx, 
-                        dx 
-                    )
-    
-    y_vec = np.arange( 
-                        -( aperture_size[1]/2 - 0.5 ) * dx, 
-                         ( aperture_size[1]/2 + 0.5 ) * dx, 
-                         dx 
-                    )
-
-    xx, yy = np.meshgrid(x_vec, y_vec)
+    xx, yy = np.meshgrid(
+                        np.arange( -( m/2 - 0.5 ) * wavelength/2, ( m/2 + 0.5 ) * wavelength/2, wavelength/2 ),
+                        np.arange( -( n/2 - 0.5 ) * wavelength/2, ( n/2 + 0.5 ) * wavelength/2, wavelength/2 )
+                        )
     print(xx)
     print(yy)
     
@@ -46,7 +31,7 @@ def calculate_focus_lens_phase_distribution(m, n, focal_length = 0.1):
 
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(7,7))
 
-im = ax.imshow( calculate_focus_lens_phase_distribution(8, 2, 0.1) )
+im = ax.imshow( calculate_focus_lens_phase_distribution(16, 2, 0.1) )
 
 plt.colorbar(im)
 plt.show()
