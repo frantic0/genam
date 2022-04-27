@@ -11,7 +11,7 @@ salome.salome_init()
 import salome_notebook
 notebook = salome_notebook.NoteBook()
 
-sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline/genam')
+sys.path.insert(0, r'C:/Users/francisco/Documents/dev/genamm/genam')
 
 from utility_functions import * 
 from parametric_shape import * 
@@ -174,7 +174,7 @@ class Lens:
                                                   self.wavelenght ),
                             translation_shift[0] + translation_x,
                             translation_shift[1] + translation_y,
-                            6.881 )    
+                            6.861 )    
 
         else: 
 
@@ -601,7 +601,7 @@ quantized_matrix_16_1_11_brick = np.array([
                                 ])
 
 
-quantized_matrix_1_16_11_brick = np.array([
+quantized_matrix_1_16 = np.array([
                                   [ 10, 13,  0,  3,  5,  6,  7,  8,  8,  7,  6,  5,  3,  0, 13, 10 ], #7 
                                 ])
 
@@ -679,12 +679,12 @@ def lens_configurator( quantized_matrix ):
   configs = np.array([ unit_cell_select_list(i) for i in quantized_matrix.ravel() ])
   # reshape configs matrix into shape (m,n,3)
   configs_to_stack = configs.reshape(quantized_matrix.shape[0], quantized_matrix.shape[1], len(flaps_configs) )  
-  # stack configs to quantised matrix to get [ [ [ phase_id, length, distance, radius ] ] ]
+  # stack configs to quantised matrix to get [ [ [ phase_id, flap length, flap distance, radius ] ] ]
   return np.dstack( ( quantized_matrix, configs_to_stack ) )
 
 
 # lens_config = lens_configurator( quantized_matrix_2_2 )
-lens_config = lens_configurator( quantized_matrix_4_4 )
+# lens_config = lens_configurator( quantized_matrix_4_4 )
 
 # lens_config = lens_configurator( quantized_matrix_8_8 )
 # lens_config = lens_configurator( quantized_matrix_8_8_11_bricks )
@@ -693,6 +693,7 @@ lens_config = lens_configurator( quantized_matrix_4_4 )
 
 # lens_config = lens_configurator( quantized_matrix_16_16 )
 # lens_config = lens_configurator( quantized_matrix_16_1_11_brick )
+lens_config = lens_configurator( quantized_matrix_1_16 )
 # lens_config = lens_configurator( quantized_matrix_1_16_11_brick )
 # lens_config = lens_configurator( quantized_matrix_16_16_4_bit_9_out )
 
