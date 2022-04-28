@@ -539,6 +539,19 @@ mesh_config_selector = lambda i:  (
 ) 
 
 
+
+
+quantized_matrix_6_6 = np.array([ 
+                                  [ 10, 13,  3,  3, 13, 10 ], #1
+                                  [ 13,  4,  6,  6,  4, 13 ], #2
+                                  [  3,  6,  7,  7,  6,  3 ], #3
+                                  [  3,  6,  7,  7,  6,  3 ], #4
+                                  [ 13,  4,  6,  6,  4, 13 ], #5
+                                  [ 10, 13,  3,  3, 13, 10 ], #6
+                                ])
+
+
+
 quantized_matrix_8_8_11_bricks = np.array([ 
                                   [  4,  7, 10, 13, 13, 10,  7,  4 ], #0
                                   [  5, 10, 13,  3,  3, 13, 10,  5 ], #1
@@ -549,6 +562,9 @@ quantized_matrix_8_8_11_bricks = np.array([
                                   [  5, 10, 13,  3,  3, 13, 10,  5 ], #6
                                   [  4,  7, 10, 13, 13, 10,  7,  4 ], #7
                                 ])
+
+
+
 
 
 
@@ -703,6 +719,8 @@ def lens_configurator( quantized_matrix ):
 
 # lens_config = lens_configurator( quantized_matrix_2_2 )
 # lens_config = lens_configurator( quantized_matrix_4_4 )
+
+# lens_config = lens_configurator( quantized_matrix_6_6 )
 
 # lens_config = lens_configurator( quantized_matrix_8_8 )
 # lens_config = lens_configurator( quantized_matrix_8_8_11_bricks )
