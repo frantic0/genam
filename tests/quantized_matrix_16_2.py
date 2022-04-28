@@ -1,44 +1,32 @@
+
 import configparser
 import sys
-import salome
 import numpy as np
-# import pandas as pd
 import time, os
-import random
+import inspect
 
 
+### Salome GEOM and SMESH components
+import salome
 salome.salome_init()
 import salome_notebook
 notebook = salome_notebook.NoteBook()
 
-sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline/tests')
-# sys.path.insert(0, r'.')
+sys.path.insert(0, inspect.getfile(lambda: None))
+# sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline')
 print(sys.path)
-# sys.path.append('.')
-print (os.getcwd())
-
-# from utility_functions import * 
-# from parametric_shape import * 
-
-# import genam.utility_functions as util 
-
-###
-### Salome GEOM and SMESH components
-###
+# print (os.getcwd())
 
 import GEOM
 from salome.geom import geomBuilder
-import math
 import SALOMEDS
-
 import SMESH, SALOMEDS
 from salome.smesh import smeshBuilder
 from salome.GMSHPlugin import GMSHPluginBuilder
 
-
-
-# from genam.lens import Lens as l
-# from genam import mesh_configuration  
+### Genam Lens, mesh configurator
+from genam.lens import Lens, lens_configurator
+from genam.mesh_configuration import mesh_config_selector 
 
 quantized_matrix_16_2 = np.array([
                                   [ 10, 10 ],
@@ -59,9 +47,9 @@ quantized_matrix_16_2 = np.array([
                                   [ 10, 10 ],  
                                 ])
 
-# lens_config = l.lens_configurator( quantized_matrix_16_2 )
+lens_config = lens_configurator( quantized_matrix_16_2 )
 
-# lens =  l.Lens( lens_config, mesh_configuration.mesh_config_selector(3) )
+lens = Lens( lens_config, mesh_config_selector(3) )
 
 # start = time.time()
 
