@@ -11,7 +11,11 @@ salome.salome_init()
 import salome_notebook
 notebook = salome_notebook.NoteBook()
 
-sys.path.insert(0, r'C:/Users/francisco/Documents/dev/genamm/genam')
+sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline/genam')
+
+print(sys.path)
+# sys.path.append('.')
+print (os.getcwd())
 
 from utility_functions import * 
 from parametric_shape import * 
@@ -524,6 +528,7 @@ class Lens:
 # ]
 
 
+
 mesh_configs = {
   'maxSize':      [ 5,     3,    3,    3,    3,    1    ],
   'minSize':      [ 1,     0.8,  0.5,  0.3,  0.08,  0.1 ],
@@ -537,18 +542,6 @@ mesh_config_selector = lambda i:  (
   mesh_configs['secondOrder'][i],
   mesh_configs['fineness'][i],
 ) 
-
-
-
-
-quantized_matrix_6_6 = np.array([ 
-                                  [ 10, 13,  3,  3, 13, 10 ], #1
-                                  [ 13,  4,  6,  6,  4, 13 ], #2
-                                  [  3,  6,  7,  7,  6,  3 ], #3
-                                  [  3,  6,  7,  7,  6,  3 ], #4
-                                  [ 13,  4,  6,  6,  4, 13 ], #5
-                                  [ 10, 13,  3,  3, 13, 10 ], #6
-                                ])
 
 
 
@@ -584,7 +577,7 @@ quantized_matrix_8_1_11_bricks = np.array([
                                   [ 15,  3,  6,  7,  7,  6,  3, 15 ], #3 line - Y axis
                                 ])
 
-quantized_matrix_1_8_11_bricks = np.array([
+quantized_matrix_1_8 = np.array([
                                   [ 15 ],
                                   [  3 ],
                                   [  6 ],
@@ -617,24 +610,6 @@ quantized_matrix_16_1 = np.array([
                                 ])
 
 
-quantized_matrix_16_2 = np.array([
-                                  [ 10, 10 ],
-                                  [ 13, 13 ],
-                                  [  0,  0 ],
-                                  [  3,  3 ],
-                                  [  5,  5 ],
-                                  [  6,  6 ],
-                                  [  7,  7 ],
-                                  [  8,  8 ],
-                                  [  8,  8 ],
-                                  [  7,  7 ],
-                                  [  6,  6 ],
-                                  [  5,  5 ],
-                                  [  3,  3 ], 
-                                  [  0,  0 ],
-                                  [ 13, 13 ],
-                                  [ 10, 10 ],  
-                                ])
 
 
 
@@ -643,45 +618,10 @@ quantized_matrix_1_16 = np.array([
                                   [ 10, 13,  0,  3,  5,  6,  7,  8,  8,  7,  6,  5,  3,  0, 13, 10 ], #7 
                                 ])
 
-
-quantized_matrix_16_16_11_brick = np.array([
-                                  [ 13,  0,  3,  5,  7,  8,  9, 10, 14,  9,  8,  7,  5,  3,  0, 13 ], #0
-                                  [  0,  3,  6,  8, 10, 12, 13, 13, 14, 13, 12, 10,  8,  6,  3,  0 ], #1 
-                                  [  3,  6,  9, 11, 13, 15,  0,  0,  0,  0, 15, 13, 11,  9,  6,  3 ], #2 
-                                  [  5,  8, 11, 14,  0,  1,  2,  3,  3,  2,  1,  0, 14, 11,  8,  5 ], #3 
-                                  [  7, 10, 13,  0,  2,  3,  4,  5,  5,  4,  3,  2,  0, 13, 10,  7 ], #4 
-                                  [  8, 12, 15,  1,  3,  5,  6,  6,  6,  6,  5,  3,  1, 15, 12,  8 ], #5                                 
-                                  [  9, 13,  1,  4,  5,  6,  7,  7,  7,  7,  6,  5,  4,  1, 13,  9 ], #6
-                                  [ 10, 13,  0,  3,  5,  6,  7,  8,  8,  7,  6,  5,  3,  0, 13, 10 ], #7 
-                                ])
-
-quantized_matrix_16_2 = np.array([
+quantized_matrix_2_16 = np.array([
                                   [ 10, 13,  0,  3,  5,  6,  7,  8,  8,  7,  6,  5,  3,  0, 13, 10 ], #7 
                                   [ 10, 13,  0,  3,  5,  6,  7,  8,  8,  7,  6,  5,  3,  0, 13, 10 ], #7 
                                 ])
-
-
-
-
-quantized_matrix_16_16 = np.array([
-                                  [ 13,  0,  3,  5,  7,  8,  9, 10, 10,  9,  8,  7,  5,  3,  0, 13 ], #0
-                                  [  0,  3,  6,  8, 10, 12, 13, 13, 13, 13, 12, 10,  8,  6,  3,  0 ], #1 
-                                  [  3,  6,  9, 11, 13, 15,  0,  0,  0,  0, 15, 13, 11,  9,  6,  3 ], #2 
-                                  [  5,  8, 11, 14,  0,  1,  2,  3,  3,  2,  1,  0, 14, 11,  8,  5 ], #3 
-                                  [  7, 10, 13,  0,  2,  3,  4,  5,  5,  4,  3,  2,  0, 13, 10,  7 ], #4 
-                                  [  8, 12, 15,  1,  3,  5,  6,  6,  6,  6,  5,  3,  1, 15, 12,  8 ], #5                                 
-                                  [  9, 13,  1,  4,  5,  6,  7,  7,  7,  7,  6,  5,  4,  1, 13,  9 ], #6
-                                  [ 10, 13,  0,  3,  5,  6,  7,  8,  8,  7,  6,  5,  3,  0, 13, 10 ], #7 
-                                  [ 10, 13,  0,  3,  5,  6,  7,  8,  8,  7,  6,  5,  3,  0, 13, 10 ], #8
-                                  [  9, 13,  1,  4,  5,  6,  7,  7,  7,  7,  6,  5,  4,  1, 13,  9 ], #9
-                                  [  8, 12, 15,  1,  3,  5,  6,  6,  6,  6,  5,  3,  1, 15, 12,  8 ], #10
-                                  [  7, 10, 13,  0,  2,  3,  4,  5,  5,  4,  3,  2,  0, 13, 10,  7 ], #11                                   
-                                  [  5,  8, 11, 14,  0,  1,  2,  3,  3,  2,  1,  0, 14, 11,  8,  5 ], #12
-                                  [  3,  6,  9, 11, 13, 15,  0,  0,  0,  0, 15, 13, 11,  9,  6,  3 ], #13 
-                                  [  0,  3,  6,  8, 10, 12, 13, 13, 13, 13, 12, 10,  8,  6,  3,  0 ], #14
-                                  [ 13,  0,  3,  5,  7,  8,  9, 10, 10,  9,  8,  7,  5,  3,  0, 13 ], #15
-                                ])
-
 
 quantized_matrix_2_2 = np.array([ 
                                   [ 1, 2 ],
@@ -732,23 +672,23 @@ def lens_configurator( quantized_matrix ):
 # lens_config = lens_configurator( quantized_matrix_1_16 )
 # lens_config = lens_configurator( quantized_matrix_1_16_11_brick )
 
-lens_config = lens_configurator( quantized_matrix_16_2 )
+# lens_config = lens_configurator( quantized_matrix_16_2 )
 
-lens =  Lens( lens_config, mesh_config_selector(3) )
+# lens =  Lens( lens_config, mesh_config_selector(3) )
 
-start = time.time()
+# start = time.time()
 
-end = lens.process_geometry()
+# end = lens.process_geometry()
 
-print("Geometry computation time: {:.2f} sec".format(end - start))
+# print("Geometry computation time: {:.2f} sec".format(end - start))
 
-start = time.time()
+# start = time.time()
 
-end = lens.process_mesh()
+# end = lens.process_mesh()
 
-print("Mesh computation time: {:.2f} sec".format(end - start))
+# print("Mesh computation time: {:.2f} sec".format(end - start))
 
-start = time.time()
+# start = time.time()
 
 # end = lens.export_mesh( r'C:/Users/Francisco/Documents/acoustic-brick/Lens.unv')
 
