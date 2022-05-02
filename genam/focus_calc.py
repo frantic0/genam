@@ -30,7 +30,7 @@ def calculate_focus_lens_phase_distribution(m, n, focal_length = 0.1):
 
 
 
-normalized_phases = calculate_focus_lens_phase_distribution(6, 6, 0.1)
+normalized_phases = calculate_focus_lens_phase_distribution(16, 2, 0.1)
 print(normalized_phases)
 
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(7,7))

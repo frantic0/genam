@@ -1,10 +1,3 @@
-#!/usr/bin/env python
-
-###
-### This file is generated automatically by SALOME v9.3.0 with dump python functionality
-###
-
-from asyncio.windows_events import NULL
 import sys
 import salome
 import numpy as np
@@ -17,8 +10,7 @@ from utility_functions import *
 salome.salome_init()
 import salome_notebook
 notebook = salome_notebook.NoteBook()
-sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline/ammgdop')
-
+ 
 ###
 ### GEOM component
 ###

@@ -1,21 +1,5 @@
-import configparser
-import sys
-import salome
 import numpy as np
-# import pandas as pd
-import time, os
-import random
-
-
-salome.salome_init()
-import salome_notebook
-notebook = salome_notebook.NoteBook()
-
-sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline/genam')
-
-print(sys.path)
-# sys.path.append('.')
-print (os.getcwd())
+import time
 
 from utility_functions import * 
 from parametric_shape import * 
@@ -24,9 +8,9 @@ from parametric_shape import *
 ### Salome GEOM and SMESH components
 ###
 
+import salome
 import GEOM
 from salome.geom import geomBuilder
-import math
 import SALOMEDS
 
 import SMESH, SALOMEDS
@@ -203,50 +187,23 @@ class Lens:
           except: 
             print("{} {} {}".format(Sketch_1, m, n))
 
-        # print(*bricks_faces, sep='\n')
         bricks.append(brick_inner)
 
-        # brick_faces = geompy.ExtractShapes(brick_inner, geompy.ShapeType["FACE"], True)  # generates 1946 faces instead of 54
-        # bricks_faces.append(brick_faces) 
-
-        # for num, f in enumerate(brick_faces): # add faces to study
-        #   counter += 1
-        #   name = 'face_{}'.format(counter)
-        #   f.SetName(name)
-        #   # print('face_{}: {}'.format(name, f.GetEntry()))
-        #   bricks_faces.append(f) 
-
-
-        # print('Brick {} - type:{} #faces:{}'.format(m+1, brickID, len(bricks_faces[m]) ) )
-        # print( *brick_faces, sep='\n')
         column += 1
       row += 1
       column = 0
 
 
-
-
-    # print('#brickFaces: {}'.format( len(bricks_faces) ) )
-    # print(bricks)
-    # print(*bricks_faces, sep='\n')
-
     #################################
+
     # Fuse the Lens_Outer (box that will contain all the brics ) with all the bricks  
+
     lens_fused = geompy.MakeFuseList( [ lens_outer ] + bricks, True, True)
     # geompy.addToStudy( lens_fused, 'Fused' )
-
 
     group_fused = geompy.CreateGroup( lens_fused, geompy.ShapeType["FACE"] )
 
     lens_fused_faces = geompy.SubShapeAll( group_fused, geompy.ShapeType["FACE"] )
-
-    # geompy.addToStudyInFather(lens_fused, f, 'face_{}'.format(counter) ) 
-
-    # lens_fused_faces = geompy.ExtractShapes(lens_fused, geompy.ShapeType["FACE"], True)
-
-    # for num, f in enumerate(lens_fused_faces): # add faces to study
-    #   counter += 1
-    #   geompy.addToStudyInFather(lens_fused, f, 'face_{}'.format(counter) ) 
 
     #################################
 
@@ -256,7 +213,7 @@ class Lens:
 
     lens_faces = []
     lens_faces =  geompy.ExtractShapes(lens, geompy.ShapeType["FACE"], True) # generates 1946 faces instead of 54
-    print( '#lensFaces: {}'.format(len(lens_faces)) ) 
+    # print( '#lensFaces: {}'.format(len(lens_faces)) ) 
     # print( *lens_faces, sep='\n') 
 
     
@@ -296,20 +253,11 @@ class Lens:
     # print( geompy.PointCoordinates(geompy.MakeCDG(solid_pml_outlet))[2] )
 
     #################################
-
-    # faces = geompy.ExtractShapes( self.geometry, geompy.ShapeType["FACE"], True)
   
     shared_faces_pml_inlet_air = geompy.GetSharedShapesMulti( [ solid_pml_inlet, solid_air ],  geompy.ShapeType['FACE'], False) 
     shared_faces_pml_outlet_air = geompy.GetSharedShapesMulti( [ solid_pml_outlet, solid_air ],  geompy.ShapeType['FACE'], False) 
     shared_faces_lens_solid_air = geompy.GetSharedShapesMulti( [ solid_lens, solid_air ],  geompy.ShapeType['FACE'], False) 
 
-    # face_top = geompy.GetOppositeFace( shared_faces_pml_inlet_air[0], solid_pml_inlet )	
-    # geompy.addToStudy(face_top, 'face_top')
-    # face_bottom = geompy.GetOppositeFace( shared_faces_pml_outlet_air[0], solid_pml_outlet )	
-    # geompy.addToStudy(face_bottom, 'face_bottom')
-
-
-    
     group_faces_air_lens = geompy.CreateGroup( self.geometry, geompy.ShapeType["FACE"] )
     geompy.UnionList(group_faces_air_lens, shared_faces_lens_solid_air )
     self.groups['group_faces_air_lens'] = group_faces_air_lens
@@ -325,13 +273,7 @@ class Lens:
     self.groups['group_faces_outlet'] = group_faces_outlet
     geompy.addToStudyInFather( self.geometry, group_faces_outlet, 'group_faces_outlet' )
 
-
-        
     # face_pml_inlet_right = geompy.GetFaceNearPoint(group_faces_pml_inlet,   geompy.MakeVertex(36.592725, -0.108263, 1.2865))
-
-
-    
-
 
     subshapes_air = geompy.SubShapeAll(solid_air, geompy.ShapeType["FACE"])
     # air_subshapes = geompy.SubShapeAll(air, geompy.ShapeType["FACE"])
@@ -358,8 +300,6 @@ class Lens:
     group_faces_lens_cut = geompy.CutListOfGroups(  [ group_faces_lens ], [ group_faces_air_lens ] )
     self.groups['group_faces_lens_cut'] = group_faces_lens_cut
     geompy.addToStudyInFather( self.geometry, group_faces_lens_cut, 'group_faces_lens_cut' )
-
-
 
     ##############################################
 
@@ -438,7 +378,6 @@ class Lens:
     self.groups['group_faces_top_bottom_walls'] = group_faces_top_bottom_walls
     geompy.addToStudyInFather( self.geometry, group_faces_top_bottom_walls, 'group_faces_top_bottom_walls' )
  
-
     return time.time()
   
   # def flatten(t):
@@ -522,13 +461,6 @@ class Lens:
     # Mesh computation time
     return time.time()
 
-# lens_configurator = lambda m: [
-#   [ unit_cell_selector(m[]) ]
-
-# ]
-
-
-
 mesh_configs = {
   'maxSize':      [ 5,     3,    3,    3,    3,    1    ],
   'minSize':      [ 1,     0.8,  0.5,  0.3,  0.08,  0.1 ],
@@ -545,94 +477,9 @@ mesh_config_selector = lambda i:  (
 
 
 
-quantized_matrix_8_8_11_bricks = np.array([ 
-                                  [  4,  7, 10, 13, 13, 10,  7,  4 ], #0
-                                  [  5, 10, 13,  3,  3, 13, 10,  5 ], #1
-                                  [ 10, 13,  4,  6,  6,  4, 13, 10 ], #2
-                                  [ 15,  3,  6,  7,  7,  6,  3, 15 ], #3
-                                  [ 15,  3,  6,  7,  7,  6,  3, 15 ], #4
-                                  [ 10, 13,  4,  6,  6,  4, 13, 10 ], #5
-                                  [  5, 10, 13,  3,  3, 13, 10,  5 ], #6
-                                  [  4,  7, 10, 13, 13, 10,  7,  4 ], #7
-                                ])
-
-
-
-
-
-
-quantized_matrix_8_8 = np.array([ 
-                                  [  4,  7, 10, 13, 13, 10,  7,  4 ], #0
-                                  [  5,  9, 13,  3,  3, 13,  9,  5 ], #1
-                                  [ 10, 13,  0,  6,  6,  0, 13, 10 ], #2
-                                  [ 15,  3,  6,  7,  7,  6,  3, 15 ], #3
-                                  [ 15,  3,  6,  7,  7,  6,  3, 15 ], #4
-                                  [ 10, 13,  0,  6,  6,  0, 13, 10 ], #5
-                                  [  5,  9, 13,  3,  3, 13,  9,  5 ], #6
-                                  [  4,  7, 10, 13, 13, 10,  7,  4 ], #7
-                                ])
-
 
 quantized_matrix_8_1_11_bricks = np.array([
                                   [ 15,  3,  6,  7,  7,  6,  3, 15 ], #3 line - Y axis
-                                ])
-
-quantized_matrix_1_8 = np.array([
-                                  [ 15 ],
-                                  [  3 ],
-                                  [  6 ],
-                                  [  7 ],
-                                  [  7 ],
-                                  [  6 ],
-                                  [  3 ],
-                                  [ 15 ], 
-                                ])
-
-
-
-quantized_matrix_16_1 = np.array([
-                                  [ 10 ],
-                                  [ 13 ],
-                                  [  0 ],
-                                  [  3 ],
-                                  [  5 ],
-                                  [  6 ],
-                                  [  7 ],
-                                  [  8 ],
-                                  [  8 ],
-                                  [  7 ],
-                                  [  6 ],
-                                  [  5 ],
-                                  [  3 ], 
-                                  [  0 ],
-                                  [ 13 ],
-                                  [ 10 ],  
-                                ])
-
-
-
-
-
-
-quantized_matrix_1_16 = np.array([
-                                  [ 10, 13,  0,  3,  5,  6,  7,  8,  8,  7,  6,  5,  3,  0, 13, 10 ], #7 
-                                ])
-
-quantized_matrix_2_16 = np.array([
-                                  [ 10, 13,  0,  3,  5,  6,  7,  8,  8,  7,  6,  5,  3,  0, 13, 10 ], #7 
-                                  [ 10, 13,  0,  3,  5,  6,  7,  8,  8,  7,  6,  5,  3,  0, 13, 10 ], #7 
-                                ])
-
-quantized_matrix_2_2 = np.array([ 
-                                  [ 1, 2 ],
-                                  [ 3, 4 ] 
-                                ])
-
-quantized_matrix_4_4 = np.array([ 
-                                  [  4,  6,  6,  4 ], #0
-                                  [  6,  7,  7,  6 ], #1
-                                  [  6,  7,  7,  6 ], #2
-                                  [  4,  6,  6,  4 ]  #3
                                 ])
 
 flaps_configs = { 
@@ -669,20 +516,20 @@ def lens_configurator( quantized_matrix ):
 
 # lens_config = lens_configurator( quantized_matrix_16_16 )
 # lens_config = lens_configurator( quantized_matrix_16_1_11_brick )
-# lens_config = lens_configurator( quantized_matrix_1_16 )
+lens_config = lens_configurator( quantized_matrix_1_16 )
 # lens_config = lens_configurator( quantized_matrix_1_16_11_brick )
 
 # lens_config = lens_configurator( quantized_matrix_16_2 )
 
 # lens =  Lens( lens_config, mesh_config_selector(3) )
 
-# start = time.time()
+# # start = time.time()
 
 # end = lens.process_geometry()
 
 # print("Geometry computation time: {:.2f} sec".format(end - start))
 
-# start = time.time()
+# # start = time.time()
 
 # end = lens.process_mesh()
 
