@@ -6,15 +6,17 @@ from pathlib import Path
 import salome
 salome.salome_init()
 
-# Set relative file paths for library and tests - TODO:  
+# Set file paths for library and tests  
+# TODO: find a way to remove this into dependant classes as platform-dependent relative paths 
 sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline')
 sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline/genam')
 sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline/tests')
 
-### Genam Lens, mesh configurator
+# Genam Lens, mesh configurator
 from genam.lens import Lens, lens_configurator
-from genam.mesh_configuration import mesh_config_selector 
+from genam.mesh_configuration import selector as mesh_config_selector
 from matrices.quantized_2_2 import quantized_matrix_2_2
+
 
 
 lens_config = lens_configurator( quantized_matrix_2_2 )
@@ -37,3 +39,4 @@ start = time.time()
 
 # end = lens.export_mesh( r'C:/Users/Francisco/Documents/acoustic-brick/Lens.unv')
 
+print("Mesh exported to Elmer format: {:.2f} sec".format( time.time() - start))

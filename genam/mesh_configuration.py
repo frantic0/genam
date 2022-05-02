@@ -7,7 +7,7 @@ mesh_configs = {
   'fineness':     [ 4,     4,    4,    4,    4,    4    ] 
 }
 
-mesh_config_selector = lambda i:  ( 
+selector = lambda i:  ( 
   mesh_configs['maxSize'][i],
   mesh_configs['minSize'][i],
   mesh_configs['secondOrder'][i],

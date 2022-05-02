@@ -20,13 +20,14 @@ from salome.GMSHPlugin import GMSHPluginBuilder
 
 class Lens:
   
-  def __init__( self,
+  def __init__( 
+                self,
                 unit_cells_config,
                 mesh_config,
                 probing_distance = 100,
                 nearfield_limit = 8.661,
                 wavelenght = 8.661
-                ):
+              ):
 
     self.wavelenght = wavelenght
 
@@ -452,92 +453,8 @@ class Lens:
 
     isDone = self.mesh.Compute()  
 
-    # print(Structure_1.GetGroups())
-
-    # Add groups in mesh.unv
-    # [pml_bottom, pml_top, brick, air, top_bottom_walls, inlet, outlet, lens_faces, brick_left, brick_front, brick_back, brick_right, left, front, back, right ] = Structure_1.GetGroups()
-    # [pml_bottom, pml_top, air, lens_faces ] = Structure_1.GetGroups()
-
-    # Mesh computation time
-    return time.time()
-
-mesh_configs = {
-  'maxSize':      [ 5,     3,    3,    3,    3,    1    ],
-  'minSize':      [ 1,     0.8,  0.5,  0.3,  0.08,  0.1 ],
-  'secondOrder':  [ True,  True, True, True, True, True ],
-  'fineness':     [ 4,     4,    4,    4,    4,    4    ] 
-}
-
-mesh_config_selector = lambda i:  ( 
-  mesh_configs['maxSize'][i],
-  mesh_configs['minSize'][i],
-  mesh_configs['secondOrder'][i],
-  mesh_configs['fineness'][i],
-) 
 
 
-
-
-quantized_matrix_8_1_11_bricks = np.array([
-                                  [ 15,  3,  6,  7,  7,  6,  3, 15 ], #3 line - Y axis
-                                ])
-
-flaps_configs = { 
-  'length':   [0, .062, .092, .112, .132, .152, .162, .171, .191, .221, .241, .251, .271, .281, .301, .321],
-  'distance': [0, .216, .212, .207, .189, .161, .166, .171, .134, .257, .234, .230, .207, .203, .175, .152],  
-  'radius':   [0, .062, .092, .1,   .1,   .1,   .1,   .1,   .1,   .1,   .1,   .1,   .1,   .1,   .1,   .1] 
-}
-
-unit_cell_select_list = lambda i: np.array([
-                                flaps_configs['length'][i], 
-                                flaps_configs['distance'][i], 
-                                flaps_configs['radius'][i] 
-                              ])
-
-
-def lens_configurator( quantized_matrix ):
-  # create configs matrix with shape (m,n,3)
-  configs = np.array([ unit_cell_select_list(i) for i in quantized_matrix.ravel() ])
-  # reshape configs matrix into shape (m,n,3)
-  configs_to_stack = configs.reshape(quantized_matrix.shape[0], quantized_matrix.shape[1], len(flaps_configs) )  
-  # stack configs to quantised matrix to get [ [ [ phase_id, flap length, flap distance, radius ] ] ]
-  return np.dstack( ( quantized_matrix, configs_to_stack ) )
-
-
-# lens_config = lens_configurator( quantized_matrix_2_2 )
-# lens_config = lens_configurator( quantized_matrix_4_4 )
-
-# lens_config = lens_configurator( quantized_matrix_6_6 )
-
-# lens_config = lens_configurator( quantized_matrix_8_8 )
-# lens_config = lens_configurator( quantized_matrix_8_8_11_bricks )
-# lens_config = lens_configurator( quantized_matrix_1_8_11_bricks )
-# lens_config = lens_configurator( quantized_matrix_8_1_11_bricks )
-
-# lens_config = lens_configurator( quantized_matrix_16_16 )
-# lens_config = lens_configurator( quantized_matrix_16_1_11_brick )
-lens_config = lens_configurator( quantized_matrix_1_16 )
-# lens_config = lens_configurator( quantized_matrix_1_16_11_brick )
-
-# lens_config = lens_configurator( quantized_matrix_16_2 )
-
-# lens =  Lens( lens_config, mesh_config_selector(3) )
-
-# # start = time.time()
-
-# end = lens.process_geometry()
-
-# print("Geometry computation time: {:.2f} sec".format(end - start))
-
-# # start = time.time()
-
-# end = lens.process_mesh()
-
-# print("Mesh computation time: {:.2f} sec".format(end - start))
-
-# start = time.time()
-
-# end = lens.export_mesh( r'C:/Users/Francisco/Documents/acoustic-brick/Lens.unv')
 
 
 # Structure = process_geometry(data)
