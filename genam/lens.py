@@ -1,6 +1,3 @@
-import numpy as np
-import time
-
 from utility_functions import * 
 from parametric_shape import * 
 
@@ -24,6 +21,7 @@ class Lens:
                 self,
                 unit_cells_config,
                 mesh_config,
+                name = 'lens',
                 probing_distance = 100,
                 nearfield_limit = 8.661,
                 wavelenght = 8.661
@@ -33,6 +31,7 @@ class Lens:
 
     self.unit_cells_config = unit_cells_config
     self.mesh_config = mesh_config
+    self.name = name
 
     # TODO: Make sure this is consistent with the input matrix expectations
     self.m = len(unit_cells_config)
@@ -379,7 +378,7 @@ class Lens:
     self.groups['group_faces_top_bottom_walls'] = group_faces_top_bottom_walls
     geompy.addToStudyInFather( self.geometry, group_faces_top_bottom_walls, 'group_faces_top_bottom_walls' )
  
-    return time.time()
+    return
   
   # def flatten(t):
   #   return [item for sublist in t for item in sublist]
@@ -454,20 +453,19 @@ class Lens:
     isDone = self.mesh.Compute()  
 
 
+  def export_mesh( self, 
+                    export_path ) : 
 
 
+    # Export mesh in .unv format
+    try:
+      self.mesh.ExportUNV( export_path )
+      pass
+    except:
+      print('ExportUNV() failed. Invalid file name?')
 
-# Structure = process_geometry(data)
-
-# # First export mesh in .unv format
-# try:
-#   Structure.ExportUNV( r'C:/Users/Francisco/Documents/acoustic-brick/Lens.unv' )
-#   pass
-# except:
-#   print('ExportUNV() failed. Invalid file name?')
-
-# # Export mesh to Elmer
-# export_elmer('Lens')
+    # Export mesh to Elmer
+    export_elmer(self.name)
 
 # end = time.time()
 # print("Salome to Elmer computation time: {:.2f} sec".format(end - start))

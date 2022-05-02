@@ -13,7 +13,8 @@ sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline/genam')
 sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline/tests')
 
 # Genam Lens, mesh configurator
-from genam.lens import Lens, lens_configurator
+from genam.lens import Lens
+from genam.lens_configuration import lens_configurator 
 from genam.mesh_configuration import selector as mesh_config_selector
 from matrices.quantized_2_2 import quantized_matrix_2_2
 

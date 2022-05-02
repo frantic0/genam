@@ -16,11 +16,10 @@ sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline/tests')
 from genam.lens import Lens
 from genam.lens_configuration import lens_configurator 
 from genam.mesh_configuration import selector as mesh_config_selector
-from matrices.quantized_16_1 import quantized_matrix_16_1
+from matrices.quantized_1_1 import quantized_matrix_1_1
 
 
-
-lens_config = lens_configurator( quantized_matrix_16_1 )
+lens_config = lens_configurator( quantized_matrix_1_1 )
 
 lens = Lens( lens_config, mesh_config_selector(3) )
 
@@ -28,16 +27,16 @@ start = time.time()
 
 lens.process_geometry()
 
-print("Geometry computation time: {:.2f} sec".format(time.time() - start))
+print("Geometry computation time: {:.2f} sec".format(time.time() - start) )
 
 start = time.time()
 
 lens.process_mesh()
 
-print("Mesh computation time: {:.2f} sec".format( time.time() - start))
+print("Mesh computation time: {:.2f} sec".format( time.time() - start) )
 
 start = time.time()
 
 # end = lens.export_mesh( r'C:/Users/Francisco/Documents/acoustic-brick/Lens.unv')
 
-print("Mesh exported to Elmer format: {:.2f} sec".format( time.time() - start))
+print("Mesh exported to Elmer format: {:.2f} sec".format( time.time() - start) )
