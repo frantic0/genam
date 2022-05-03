@@ -82,7 +82,6 @@ Generate .unv and Elmer .sif template first and then and Elmer solver for all la
 
 ```
 import sys
-import time
 from pathlib import Path
 
 ### Salome GEOM and SMESH components
@@ -110,30 +109,14 @@ lens_name = 'quantized_matrix_1_1'
 
 lens = Lens( lens_config, mesh_config_selector(3), name = lens_name  )
 
-start = time.time()
-
 lens.process_geometry() # Create the lens geometry 
 
-print("Geometry computation time: {:.2f} sec".format(time.time() - start) )
-
-start = time.time()
-
 lens.process_mesh() # Create lens mesh 
-
-print("Mesh computation time: {:.2f} sec".format( time.time() - start) )
-
-start = time.time()
 
 # define a path where all data will be stored (.unv mesh file, solver *.mesh files, sif. file )
 path = str(Path('C:/Users/francisco/Documents/acoustic-brick/').joinpath( lens_name + '.unv')) 
 
 lens.export_mesh( path ) # export .unv mesh file
-
-print("Mesh exported to Elmer format: {:.2f} sec".format( time.time() - start) )
-
-start = time.time()
-
-
 
 convert_mesh( path ) # run elmergrid convert .unv mesh file to elmer format *.mesh files in a directory 
 
@@ -142,7 +125,5 @@ copy_solver_templates(  path,
                         start_frequency = 40000, 
                         end_frequency = 41000, 
                         step = 1000 )
-
-print("Elmer template copied: {:.2f} sec".format( time.time() - start) )
 
 ```
