@@ -81,20 +81,68 @@ python ..\..\..\..\..\SALOME-9.8.0\salome shell -p 2821 .\process_geometry.py ar
 Generate .unv and Elmer .sif template first and then and Elmer solver for all labyrinthine bricks to generate a .vtu file
 
 ```
-python '..\..\..\..\..\SALOME-9.8.0\salome' shell -p 2819 
-.\process_geometry.py args:15,40000,41000,1000 .\run_elmer_solver.py args:15 
-.\process_geometry.py args:14,40000,41000,1000 .\run_elmer_solver.py args:14 
-.\process_geometry.py args:13,40000,41000,1000 .\run_elmer_solver.py args:13 
-.\process_geometry.py args:12,40000,41000,1000 .\run_elmer_solver.py args:12 
-.\process_geometry.py args:11,40000,41000,1000 .\run_elmer_solver.py args:11 
-.\process_geometry.py args:10,40000,41000,1000 .\run_elmer_solver.py args:10 
-.\process_geometry.py args:09,40000,41000,1000 .\run_elmer_solver.py args:09 
-.\process_geometry.py args:08,40000,41000,1000 .\run_elmer_solver.py args:08 
-.\process_geometry.py args:07,40000,41000,1000 .\run_elmer_solver.py args:07 
-.\process_geometry.py args:06,40000,41000,1000 .\run_elmer_solver.py args:06 
-.\process_geometry.py args:05,40000,41000,1000 .\run_elmer_solver.py args:05 
-.\process_geometry.py args:04,40000,41000,1000 .\run_elmer_solver.py args:04 
-.\process_geometry.py args:03,40000,41000,1000 .\run_elmer_solver.py args:03 
-.\process_geometry.py args:02,40000,41000,1000 .\run_elmer_solver.py args:02 
-.\process_geometry.py args:01,40000,41000,1000 .\run_elmer_solver.py args:01
+import sys
+import time
+from pathlib import Path
+
+### Salome GEOM and SMESH components
+import salome
+salome.salome_init()
+
+# Set file paths for library and tests  
+# TODO: find a way to remove this into dependant classes as platform-dependent relative paths 
+sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline')
+sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline/genam')
+sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline/tests')
+
+# Genam Lens, mesh configurator
+from genam.lens import Lens
+from genam.lens_configuration import lens_configurator 
+from genam.mesh_configuration import selector as mesh_config_selector
+from matrices.quantized_1_1 import quantized_matrix_1_1
+from genam.utility_functions import convert_mesh, copy_solver_templates
+
+lens_config = lens_configurator( quantized_matrix_1_1 )
+
+lens_name = 'quantized_matrix_1_1' 
+
+# Create lens with name, bricks ID and mesh configurations 
+
+lens = Lens( lens_config, mesh_config_selector(3), name = lens_name  )
+
+start = time.time()
+
+lens.process_geometry() # Create the lens geometry 
+
+print("Geometry computation time: {:.2f} sec".format(time.time() - start) )
+
+start = time.time()
+
+lens.process_mesh() # Create lens mesh 
+
+print("Mesh computation time: {:.2f} sec".format( time.time() - start) )
+
+start = time.time()
+
+# define a path where all data will be stored (.unv mesh file, solver *.mesh files, sif. file )
+path = str(Path('C:/Users/francisco/Documents/acoustic-brick/').joinpath( lens_name + '.unv')) 
+
+lens.export_mesh( path ) # export .unv mesh file
+
+print("Mesh exported to Elmer format: {:.2f} sec".format( time.time() - start) )
+
+start = time.time()
+
+
+
+convert_mesh( path ) # run elmergrid convert .unv mesh file to elmer format *.mesh files in a directory 
+
+# copy all the necessary templates to run elmer solver
+copy_solver_templates(  path, 
+                        start_frequency = 40000, 
+                        end_frequency = 41000, 
+                        step = 1000 )
+
+print("Elmer template copied: {:.2f} sec".format( time.time() - start) )
+
 ```
