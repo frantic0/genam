@@ -48,57 +48,49 @@ def sketch_to_volume(geom_builder, sketch_obj, thickness, rotation=None, transla
     return None
 
 
-def copy_elmer_templates( path, start_frequency=40000, end_frequency=41000, step=1000 ): 
+def copy_solver_templates(  path, 
+                            start_frequency=40000,  
+                            end_frequency=41000, 
+                            step=1000 ): 
 
-  src = r'C:/Users/francisco/Documents/dev/pipeline/solver/'  
-  # dst = r'C:/Users/francisco/Documents/dev/pipeline/data/' + dirname + '/'
+  # Get path to '../../solver/' 
+  solver_templates_path = str( Path( os.path.dirname(os.path.realpath(__file__)) ).parent.joinpath('solver') )
+  
+  # Get path to user-defined data directory
+  user_defined_path = os.path.splitext(path)[0]
 
-  # print('copy template to dest: ' + dst)
-
-  for fileName in os.listdir(src):
-    source = src + fileName
-    # destination = dst + fileName 
+  for fileName in os.listdir(solver_templates_path):
+    source = solver_templates_path + fileName
+    destination = user_defined_path + fileName 
     if os.path.isfile(source):
-      shutil.copy(source, path)
-      # print('copied', fileName)
+      shutil.copy(source, destination)
 
   # NOTE: Needs refactor - if optional arguments  
   for frequency in range(start_frequency, end_frequency + step, step):
-    export_parameterisable_solver_input_file( path,
-                                              frequency )
+    export_parameterisable_solver_input_file( user_defined_path, frequency )
 
 
 
-def export_elmer(filename):
+def convert_mesh(filename):
   """
-  Input
+    Input
+      filename: name of the .unv file exported by Salome
 
-    filename: name of the .unv file exported by Salome
-
-  Output
-
-    .unv to *.mesh (Elmer format)
-  
+    Output
+      .unv to *.mesh (Elmer format)
   """
-  print(filename)
-  # os.system(f'cmd /c "dir C:\Users\francisco\Documents\dev\pipeline\data\brick-15"')
-  # execute comand and terminate
-  # os.chdir(f"C:/Users/francisco/Documents/dev/pipeline/data/{dirname}")
-  os.system('cmd /c "ElmerGrid 8 2 {}.unv -autoclean"'.format(filename))  
+  os.system('cmd /c "ElmerGrid 8 2 {} -autoclean"'.format(filename))  
 
 
 
 def export_parameterisable_solver_input_file( path, frequency):
   """
-  Input
+    Input
 
-
-  Output
-
-    .unv to *.mesh (Elmer w)
-  
+    Output
+      .unv to *.mesh (Elmer w)
   """
-  print(path)
+  # print(path)
   # os.chdir(f"C:/Users/francisco/Documents/dev/pipeline/data/{dirname}")
   os.chdir(path)
  

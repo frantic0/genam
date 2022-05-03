@@ -453,31 +453,29 @@ class Lens:
 
     isDone = self.mesh.Compute()  
 
+  def export_mesh( self, path ) : 
+    """
 
-  def export_mesh( self, 
-                    path ) : 
+      Input
 
-    if not os.path.exists( path ):
+
+      Output
+
+        .unv to *.mesh (Elmer w)  
+    
+    """
+    path_dir = os.path.dirname(path)
+    if not os.path.exists( path_dir ):
       try:
-        os.makedirs( path )
+        os.makedirs( path_dir )
       except:
         print('ExportUNV() failed. Directory does not exist and could not create it')
 
-    # print(path)
-    os.chdir(path)
-    export_path = str(Path(path).joinpath(self.name + '.unv'))
-    # print(export_path)
-    # print(export_path.absolute())
-    # print(export_path.resolve())
-    # Export mesh in .unv format
-    # self.mesh.ExportUNV( export_path  )
-    # C:\Users\francisco\Documents\acoustic-brick\lens.unv
+    # os.chdir(path)
+
     try:
-      # self.mesh.ExportUNV( "C:/Users/francisco/Documents/acoustic-brick/lens.unv" )
-      self.mesh.ExportUNV( export_path )
+      # self.mesh.ExportUNV( str( Path(path).joinpath( self.name + '.unv' ) ) ) # ExportUNV requires string as input type, not path!
+      self.mesh.ExportUNV( path ) # ExportUNV requires string as input type, not path!
     except:
       print('ExportUNV() failed. Invalid file name?')
-
-    # Export mesh to Elmer
-    export_elmer(self.name)
 

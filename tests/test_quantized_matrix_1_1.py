@@ -17,11 +17,13 @@ from genam.lens import Lens
 from genam.lens_configuration import lens_configurator 
 from genam.mesh_configuration import selector as mesh_config_selector
 from matrices.quantized_1_1 import quantized_matrix_1_1
-from genam.utility_functions import copy_elmer_templates
+from genam.utility_functions import convert_mesh, copy_solver_templates
 
 lens_config = lens_configurator( quantized_matrix_1_1 )
 
-lens = Lens( lens_config, mesh_config_selector(3)  )
+lens_name = 'quantized_matrix_1_1' 
+
+lens = Lens( lens_config, mesh_config_selector(3), name = lens_name  )
 
 start = time.time()
 
@@ -37,18 +39,20 @@ print("Mesh computation time: {:.2f} sec".format( time.time() - start) )
 
 start = time.time()
 
-path = r'C:/Users/francisco/Documents/acoustic-brick'
+path = str(Path('C:/Users/francisco/Documents/acoustic-brick/').joinpath( lens_name + '.unv'))
 
-end = lens.export_mesh( path )
+lens.export_mesh( path )
 
 print("Mesh exported to Elmer format: {:.2f} sec".format( time.time() - start) )
 
 start = time.time()
 
-copy_elmer_templates( Path(path).joinpath('lens'), 
-                    start_frequency=40000, 
-                    end_frequency=41000, 
-                    step=1000 )
+convert_mesh( path )
+
+copy_solver_templates(  path, 
+                        start_frequency = 40000, 
+                        end_frequency = 41000, 
+                        step = 1000 )
 
 print("Elmer template copied: {:.2f} sec".format( time.time() - start) )
 

@@ -16,9 +16,19 @@ def padwidth(N, array):
     return ((int((N - array.shape[0]) / 2), int((N - array.shape[0]) / 2)),
             (int((N - array.shape[1]) / 2), int((N - array.shape[1]) / 2)))
 
-def ASM_fw(f, cell_spacing, target_plane_dist, res_fac, k):
+def ASM_fw(f, cell_spacing, target_plane_dist, k, res_fac = 1):
     ''' 
-    Forward angular spectrum method
+      Forward angular spectrum method
+
+      Inputs:
+        f - complex pressure (A.exp(i*phi))
+        cell_spacing - lambda/2
+        target_plane_dist - propagation distance
+        res_fac = always 1 TODO?
+        k - wave number
+
+
+
     '''
 
     f = np.kron(f, np.ones((res_fac, res_fac)))
@@ -62,7 +72,13 @@ def ASM_bw(f, cell_spacing, target_plane, k):
 def prop(phasemap, cell_spacing, target_dist, res_fac, k):
     '''
     Propagate a phasemap forward to a parallel plane at a given resolution. 
-    
+        Inputs:
+            f - complex pressure (A.exp(i*phi))
+            cell_spacing - lambda/2
+            target_plane_dist - propagation distance
+            res_fac = always 1 TODO?
+            k - wave number
+
     Returns a complex pressure field.
     '''
     
