@@ -54,6 +54,7 @@ class Lens:
     pass
 
 
+  # TODO: add try catch exceptions
   def process_geometry(self):
 
     origin = geompy.MakeVertex(0, 0, 0)
@@ -383,7 +384,7 @@ class Lens:
   # def flatten(t):
   #   return [item for sublist in t for item in sublist]
 
-
+  
   def __set_mesh_strategy__(  self, 
                               algo = smeshBuilder.NETGEN_1D2D3D ) :
 
@@ -420,7 +421,7 @@ class Lens:
       # Set output format - 2: unv
       Param_3D.SetFormat( 2 )
 
-
+  # TODO : validate inputs & add exceptions
   def process_mesh( self,
                     algo = smeshBuilder.NETGEN_1D2D3D ) :
                     
@@ -454,21 +455,29 @@ class Lens:
 
 
   def export_mesh( self, 
-                    export_path ) : 
+                    path ) : 
 
+    if not os.path.exists( path ):
+      try:
+        os.makedirs( path )
+      except:
+        print('ExportUNV() failed. Directory does not exist and could not create it')
 
+    # print(path)
+    os.chdir(path)
+    export_path = str(Path(path).joinpath(self.name + '.unv'))
+    # print(export_path)
+    # print(export_path.absolute())
+    # print(export_path.resolve())
     # Export mesh in .unv format
+    # self.mesh.ExportUNV( export_path  )
+    # C:\Users\francisco\Documents\acoustic-brick\lens.unv
     try:
+      # self.mesh.ExportUNV( "C:/Users/francisco/Documents/acoustic-brick/lens.unv" )
       self.mesh.ExportUNV( export_path )
-      pass
     except:
       print('ExportUNV() failed. Invalid file name?')
 
     # Export mesh to Elmer
     export_elmer(self.name)
 
-# end = time.time()
-# print("Salome to Elmer computation time: {:.2f} sec".format(end - start))
-
-# if salome.sg.hasDesktop():
-#   salome.sg.updateObjBrowser()

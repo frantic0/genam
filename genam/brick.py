@@ -1,19 +1,8 @@
-
-import configparser
-import sys
-import wave
-import salome
 import numpy as np
 # import pandas as pd
 import time, os
 import random
 
-
-salome.salome_init()
-import salome_notebook
-notebook = salome_notebook.NoteBook()
-
-sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline/genam')
 
 from utility_functions import * 
 from parametric_shape import * 
@@ -22,6 +11,7 @@ from parametric_shape import *
 ### Salome GEOM and SMESH components
 ###
 
+import salome
 import GEOM
 from salome.geom import geomBuilder
 import math
@@ -34,18 +24,18 @@ from salome.GMSHPlugin import GMSHPluginBuilder
 
 class Brick():
     
-    def __init__(self,
-                 wavelength,
-                 flaplength,
-                 flapspacing,
-                 translation ):
+    def __init__( self,
+                  wavelength,
+                  flaplength,
+                  flapspacing,
+                  translation ):
         
         self.wavelength = wavelength
         self.boxSide = self.wavelength/2 + 2 * self.wavelength/40
+        self.wavelength = wavelength
+        self.flaplength = flaplength
 
-
-        if self.unit_cells_config[m][n][0] == 0:
-
+        if self.flaplength == 0 or self.flapspacing == 0 :
           # brick_inner = geompy.MakeTranslation(
           #                   geompy.MakeBoxDXDYDZ( boxSide - 2 * self.wavelenght/40, 
           #                                         boxSide - 2 * self.wavelenght/40, 
@@ -61,8 +51,6 @@ class Brick():
                             translation[0],
                             translation[1],
                             translation[2] )    
-
-
 
         else: 
 

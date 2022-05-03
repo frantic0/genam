@@ -2,6 +2,7 @@ import sys
 import salome
 import numpy as np
 import time, os, shutil
+from pathlib import Path
 # import export_solver_input_file
 # from export_solver_input_file import export_parameterisable_solver_input_file
 
@@ -47,23 +48,24 @@ def sketch_to_volume(geom_builder, sketch_obj, thickness, rotation=None, transla
     return None
 
 
-def copy_elmer_templates( dirname, start_frequency=40000, end_frequency=41000, step=1000 ): 
+def copy_elmer_templates( path, start_frequency=40000, end_frequency=41000, step=1000 ): 
 
   src = r'C:/Users/francisco/Documents/dev/pipeline/solver/'  
-  dst = r'C:/Users/francisco/Documents/dev/pipeline/data/' + dirname + '/'
+  # dst = r'C:/Users/francisco/Documents/dev/pipeline/data/' + dirname + '/'
 
   # print('copy template to dest: ' + dst)
 
   for fileName in os.listdir(src):
     source = src + fileName
-    destination = dst + fileName 
+    # destination = dst + fileName 
     if os.path.isfile(source):
-      shutil.copy(source, destination)
-      print('copied', fileName)
+      shutil.copy(source, path)
+      # print('copied', fileName)
 
   # NOTE: Needs refactor - if optional arguments  
   for frequency in range(start_frequency, end_frequency + step, step):
-    export_parameterisable_solver_input_file( dirname, frequency )
+    export_parameterisable_solver_input_file( path,
+                                              frequency )
 
 
 
@@ -86,7 +88,7 @@ def export_elmer(filename):
 
 
 
-def export_parameterisable_solver_input_file( dirname, frequency):
+def export_parameterisable_solver_input_file( path, frequency):
   """
   Input
 
@@ -96,8 +98,9 @@ def export_parameterisable_solver_input_file( dirname, frequency):
     .unv to *.mesh (Elmer w)
   
   """
-  print(dirname)
-  os.chdir(f"C:/Users/francisco/Documents/dev/pipeline/data/{dirname}")
+  print(path)
+  # os.chdir(f"C:/Users/francisco/Documents/dev/pipeline/data/{dirname}")
+  os.chdir(path)
  
   sif = f'''
 Check Keywords "Warn"
