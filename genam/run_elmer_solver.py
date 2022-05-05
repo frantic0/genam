@@ -2,21 +2,20 @@
 import sys, os
 
 
-def run_elmer_solver(dirname):
+def run_elmer_solver(path):
 
-  print( f"Running elmer solver on directory 'brick-{dirname}'" )
+  user_defined_path = os.path.splitext(path)[0]
 
-  path = f"C:/Users/francisco/Documents/dev/pipeline/data/brick-{dirname}"
-  
-  os.chdir(path)
-
-  sif_files = [ f for f in os.listdir() if ( f.endswith(".sif") and "entities.sif" not in f ) ]
+  sif_files = [ f for f in os.listdir(user_defined_path) if ( f.endswith(".sif") and "entities.sif" not in f ) ]
 
   print( sif_files )
 
   # execute comand and terminate
   for fileName in sif_files:
-    os.system('cmd /c "ElmerSolver {}"'.format(fileName))  
+    if os.name == 'posix':
+      os.system('ElmerSolver {}'.format(fileName))  
+    elif os.name == 'nt':
+      os.system('cmd /c "ElmerSolver {}"'.format(fileName))  
 
 
 # dirname = int(sys.argv[1:][0])

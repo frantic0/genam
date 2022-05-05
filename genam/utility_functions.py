@@ -79,8 +79,12 @@ def convert_mesh(filename):
     Output
       .unv to *.mesh (Elmer format)
   """
-  os.system('cmd /c "ElmerGrid 8 2 {} -autoclean"'.format(filename))  
-
+  if os.name == 'nt':
+    os.system('cmd /c "ElmerGrid 8 2 {} -autoclean"'.format(filename))  
+  elif os.name == 'posix': 
+    os.system('ElmerGrid 8 2 {} -autoclean'.format(filename))  
+  else:
+    raise  NotImplementedError('operating system not support') 
 
 
 def export_parameterisable_solver_input_file( path, frequency):
