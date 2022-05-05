@@ -18,6 +18,7 @@ from genam.lens_configuration import lens_configurator
 from genam.mesh_configuration import selector as mesh_config_selector
 from matrices.quantized_1_1 import quantized_matrix_1_1
 from genam.utility_functions import convert_mesh, copy_solver_templates
+from genam.run_elmer_solver import run_elmer_solver
 
 lens_config = lens_configurator( quantized_matrix_1_1 )
 
@@ -63,3 +64,4 @@ copy_solver_templates(  path,
 print("Elmer template copied: {:.2f} sec".format( time.time() - start) )
 
 
+run_elmer_solver( path )
