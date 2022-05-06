@@ -628,42 +628,8 @@ Body 4
   Material = 1
 End
 
+
 ! Export the Sound Pressure Level with the Pressure Wave variables in vtu file (see below body force)
-! Solver 1
-!   Equation = Helmholtz Equation
-!   Procedure = "HelmholtzSolve" "HelmholtzSolver"
-!   Variable = -dofs 2 Pressure Wave
-!   Nonlinear Update Exported Variables = Logical True
-!   Exported Variable 1 = Pabs
-!   Exported Variable 2 = SPL
-!   Exported Variable 3 = Phase
-!   Exported Variable 4 = PhaseAtan2
-!   Exec Solver = Always
-!   Stabilize = True
-!   Bubbles = False
-!   Lumped Mass Matrix = False
-!   Optimize Bandwidth = True
-!   Steady State Convergence Tolerance = 1.0e-5
-!   Nonlinear System Convergence Tolerance = 1.0e-7
-!   Nonlinear System Max Iterations = 20
-!   Nonlinear System Newton After Iterations = 3
-!   Nonlinear System Newton After Tolerance = 1.0e-3
-!   Nonlinear System Relaxation Factor = 1
-!   Linear System Solver = Iterative
-!   Linear System Iterative Method = BiCGStabl
-!   Linear System Max Iterations = 1000
-!   Linear System Convergence Tolerance = 1.0e-10
-!   BiCGstabl polynomial degree = 2
-!   Linear System Preconditioning = ILU2
-!   ! Linear System Preconditioning = ILUT
-!   Linear System ILUT Tolerance = 1.0e-3
-!   Linear System Abort Not Converged = False
-!   Linear System Residual Output = 10
-!   Linear System Precondition Recompute = 1
-! End
-
-
-
 Solver 1
   Equation = Helmholtz Equation
   Procedure = "HelmholtzSolve" "HelmholtzSolver"
@@ -678,19 +644,43 @@ Solver 1
   Bubbles = False
   Lumped Mass Matrix = False
   Optimize Bandwidth = True
+  
   Steady State Convergence Tolerance = 1.0e-5
+  
   Nonlinear System Convergence Tolerance = 1.0e-7
   ! Nonlinear System Max Iterations = 1
   Nonlinear System Max Iterations = 20
   Nonlinear System Newton After Iterations = 3
   Nonlinear System Newton After Tolerance = 1.0e-3
   Nonlinear System Relaxation Factor = 1
-  Linear System Solver = Iterative
-  Linear System Iterative Method = BiCGStabl
+
+
+
+  ! ! ! ! DIRECT LINEAR SOLVER CONFIGURATION ! ! ! ! ! 
+  ! Linear System Solver = Direct
+  ! Linear System Direct Method = MUMPS   ! (serial and parallel)
+  ! Linear System Direct Method = umfpack ! (serial only)
+  ! Linear System Direct Method = Banded  ! (serial only)
+
+
+  ! ! ! ! ITERATIVE LINEAR SOLVER CONFIGURATION ! ! ! ! ! 
+  ! Linear System Solver = Iterative
+  ! Linear System Iterative Method = BiCGStabl
+  ! Linear System Iterative Method = BiCGStab
+  ! Linear System Iterative Method = GCR
+  ! Linear System Iterative Method = GMRes
+  ! Linear System Iterative Method = Idrs
+  ! Linear System Direct Method = BiCGStab
   Linear System Max Iterations = 100000
   ! Linear System Max Iterations = 10000
   Linear System Convergence Tolerance = 1.0e-10
   BiCGstabl polynomial degree = 2
+  ! Idrs Parameter = 4
+  ! BiCGstabl polynomial degree = 6
+  ! BiCGstabl polynomial degree = 10
+
+
+  ! ! ! ! PRECONDITIONER CONFIGURATION ! ! ! ! ! 
   ! Linear System Preconditioning = ILU0
   ! Linear System Preconditioning = ILU1
   ! Linear System Preconditioning = ILU2
@@ -699,6 +689,15 @@ Solver 1
   Linear System Abort Not Converged = True
   Linear System Residual Output = 10
   Linear System Precondition Recompute = 1
+  
+
+  ! ! ! ! INTERNAL MULTIGRID SOLVER CONFIGURATION ! ! ! ! ! 
+  Linear System Iterative Method = BoomerAMG
+
+
+  ! Linear System Solver = Multigrid
+
+
 End
 
 
@@ -963,7 +962,7 @@ End
   '''.format(frequency)
 
 
-  print(sif)
+  # print(sif)
   file = open(f"case-{frequency}.sif","w")
   file.write(sif)
   file.close() 
