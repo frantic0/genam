@@ -7,18 +7,23 @@ import salome
 salome.salome_init()
 
 # Set file paths for library and tests  
-# TODO: find a way to remove this into dependant classes as platform-dependent relative paths 
-sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline')
-sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline/genam')
-sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline/tests')
+
+# sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline')
+# sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline/genam')
+# sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline/tests')
+
+sys.path.insert(0, r'/home/bernardo/genam/')
+sys.path.insert(0, r'/home/bernardo/genam/genam/')
+sys.path.insert(0, r'/home/bernardo/genam/tests/')
+
 
 # Genam Lens, mesh configurator
 from genam.lens import Lens
 from genam.lens_configuration import lens_configurator 
 from genam.mesh_configuration import selector as mesh_config_selector
-from matrices.quantized_1_1 import quantized_matrix_1_1
 from genam.utility_functions import convert_mesh, copy_solver_templates
 from genam.run_elmer_solver import run_elmer_solver
+from matrices.quantized_1_1 import quantized_matrix_1_1
 
 lens_config = lens_configurator( quantized_matrix_1_1 )
 
@@ -43,7 +48,9 @@ print("Mesh computation time: {:.2f} sec".format( time.time() - start) )
 start = time.time()
 
 # define a path where all data will be stored (.unv mesh file, solver *.mesh files, sif. file )
-path = str(Path('C:/Users/francisco/Documents/acoustic-brick/').joinpath( lens_name + '.unv')) 
+# path = str(Path('C:/Users/francisco/Documents/acoustic-brick/').joinpath( lens_name + '.unv')) 
+path = str(Path('/SAN/uclic/ammdgop/data').joinpath( lens_name + '.unv'))
+
 
 lens.export_mesh( path ) # export .unv mesh file
 
@@ -51,17 +58,11 @@ print("Mesh exported to Elmer format: {:.2f} sec".format( time.time() - start) )
 
 start = time.time()
 
-
-
 convert_mesh( path ) # run elmergrid convert .unv mesh file to elmer format *.mesh files in a directory 
 
 # copy all the necessary templates to run elmer solver
-copy_solver_templates(  path, 
-                        start_frequency = 40000, 
-                        end_frequency = 41000, 
-                        step = 1000 )
+copy_solver_templates( path )
 
 print("Elmer template copied: {:.2f} sec".format( time.time() - start) )
-
 
 run_elmer_solver( path )

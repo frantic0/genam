@@ -50,8 +50,8 @@ def sketch_to_volume(geom_builder, sketch_obj, thickness, rotation=None, transla
 
 def copy_solver_templates(  path, 
                             start_frequency=40000,  
-                            end_frequency=41000, 
-                            step=1000 ): 
+                            end_frequency=0, 
+                            step=0 ): 
 
   # Get path to '../../solver/' 
   solver_templates_path = str( Path( os.path.dirname(os.path.realpath(__file__)) ).parent.joinpath('solver') )
@@ -65,9 +65,13 @@ def copy_solver_templates(  path,
     if os.path.isfile(source):
       shutil.copy(source, destination)
 
-  # NOTE: Needs refactor - if optional arguments  
-  for frequency in range(start_frequency, end_frequency + step, step):
-    export_parameterisable_solver_input_file( user_defined_path, frequency )
+  # NOTE: Needs refactor - if optional arguments
+
+  if end_frequency != 0 or step !=0 : 
+    export_parameterisable_solver_input_file( user_defined_path, start_frequency )
+  else:  
+    for frequency in range(start_frequency, end_frequency + step, step):
+      export_parameterisable_solver_input_file( user_defined_path, frequency )
 
 
 
@@ -94,8 +98,7 @@ def export_parameterisable_solver_input_file_0( path, frequency):
     Output
       .unv to *.mesh (Elmer w)
   """
-  # print(path)
-  # os.chdir(f"C:/Users/francisco/Documents/dev/pipeline/data/{dirname}")
+
   os.chdir(path)
  
   sif = f'''
