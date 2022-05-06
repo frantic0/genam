@@ -668,38 +668,75 @@ Solver 1
 
   ! ! ! ! ITERATIVE LINEAR SOLVER CONFIGURATION ! ! ! ! ! 
   ! Linear System Solver = Iterative
+  ! Linear System Iterative Method = CG
+  ! Linear System Iterative Method = CGS
+  
   ! Linear System Iterative Method = BiCGStabl
-  ! Linear System Iterative Method = BiCGStab
-  ! Linear System Iterative Method = GCR
-  ! Linear System Iterative Method = GMRes
-  ! Linear System Iterative Method = Idrs
-  ! Linear System Direct Method = BiCGStab
-  Linear System Max Iterations = 100000
-  ! Linear System Max Iterations = 10000
-  Linear System Convergence Tolerance = 1.0e-10
-  BiCGstabl polynomial degree = 2
-  ! Idrs Parameter = 4
+  ! BiCGstabl polynomial degree = 2
   ! BiCGstabl polynomial degree = 6
   ! BiCGstabl polynomial degree = 10
+  
+  ! Linear System Iterative Method = BiCGStab
+  ! Linear System Iterative Method = GCR
+  ! Linear System Iterative Method = TFQMR
+  
+  ! Linear System Iterative Method = GMRES
+  ! Linear System GMRES Restart = 10
+  
+  ! Linear System Iterative Method = Idrs
+  ! Idrs Parameter = 4
+  
+  ! Linear System Max Iterations = 10000
+  Linear System Max Iterations = 100000
+  Linear System Convergence Tolerance = 1.0e-10
 
 
   ! ! ! ! PRECONDITIONER CONFIGURATION ! ! ! ! ! 
+  ! Linear System Preconditioning = None
   ! Linear System Preconditioning = ILU0
   ! Linear System Preconditioning = ILU1
   ! Linear System Preconditioning = ILU2
   ! Linear System Preconditioning = ILUT
-  Linear System ILUT Tolerance = 1.0e-3
+  ! Linear System ILUT Tolerance = 1.0e-3
+
+  ! Linear System Preconditioning = Diagonal
+  Linear System Preconditioning = Multigrid
   Linear System Abort Not Converged = True
   Linear System Residual Output = 10
   Linear System Precondition Recompute = 1
   
 
   ! ! ! ! INTERNAL MULTIGRID SOLVER CONFIGURATION ! ! ! ! ! 
-  Linear System Iterative Method = BoomerAMG
-
-
   ! Linear System Solver = Multigrid
+  ! Linear System Iterative Method = BoomerAMG
+  ! BoomerAMG Relax = 0-9
+  ! BoomerAMG Coarsen = 0-9
 
+
+  ! MG Equal Split = False ! [False] to enable the use of user-supplied meshes
+  ! MG Levels = 4
+  ! MG Mesh Name = xpto
+  ! MG Max Iterations = 100000
+  ! MG Convergence Tolerance = 1.0e-10
+  ! MG Smoother = BiCGStab
+  ! MG Recompute Projector = True ! This flag may be used to enforce recomputation of the projector each time the algebraic multigrid
+solver is called. The default is False as usually the same projector is appropriate for all computations.
+  ! MG Eliminate Dirichlet = True ! At the highest level the fixed nodes may all be set to be coarse since their value is not affected by the
+lower levels. The default is True
+  ! MG Eliminate Dirichlet Limit = Real ! Gives the maximum fraction of non-diagonal entries for a Dirichlet node.
+  ! MG Smoother = String ! In addition to the selection for the GMG option sor (symmetric over relaxation) is possible.
+  ! MG SOR Relax = String ! The relaxation factor for the SOR method. The default is 1.
+  ! MG Strong Connection Limit = Real ! The coefficient c in the coarsening scheme. Default is 0.25.
+  ! MG Positive Connection Limit = Real ! The coefficient c+ in the coarsening scheme. Default is 1.0.
+  ! MG Projection Limit = Real ! The coefficient cw in the truncation of the small weights. The default is 0.1.
+  ! MG Direct Interpolate = Logical ! Chooses between direct and standard interpolation. The default is False.
+  ! MG Direct Interpolate Limit = Integer ! The standard interpolation may also be applied to nodes with only a small number of coarse connection. This gives the smallest number of nodes for which direct interpolation is used.
+  ! MG Cluster Size = Integer ! The desired choice of the cluster. Possible choices are 2,3,4,5,. . . and zero which corresponds to the
+maximum cluster.
+  ! MG Cluster Alpha = Real ! In the clustering algorithm the coarse level matrix is not optimal for getting the correct convergence. Tuning this value between 1 and 2 may give better performance.
+  ! MG Strong Connection Limit = Real ! This is used similarly as in the AMG method except it is related to positive and negative connections
+alike.
+  ! MG Strong Connection Minimum = Integer ! If the number of strong connections with the given limit is
 
 End
 
