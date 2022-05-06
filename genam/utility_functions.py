@@ -711,6 +711,9 @@ Solver 1
   ! Linear System Iterative Method = BoomerAMG
   ! BoomerAMG Relax = 0-9
   ! BoomerAMG Coarsen = 0-9
+  ! BoomerAMG Num Sweeps = 2 ! sets the number of sweeps on the finest level (default value = 1)
+  ! Boomeramg Max Levels = 50 ! sets maximum number of MG levels (default value = 25)
+  ! BoomerAMG Interpolation Type = 4 ! [1-13] Sets parallel interpolation operator. Possible options are
 
 
   ! MG Equal Split = False ! [False] to enable the use of user-supplied meshes
