@@ -48,7 +48,8 @@ def sketch_to_volume(geom_builder, sketch_obj, thickness, rotation=None, transla
     return None
 
 
-def copy_solver_templates(  path, 
+def copy_solver_templates(  path,
+                            sif_path="",
                             start_frequency=40000,  
                             end_frequency=0, 
                             step=0 ): 
@@ -66,29 +67,48 @@ def copy_solver_templates(  path,
       shutil.copy(source, destination)
 
   # NOTE: Needs refactor - if optional arguments
+  if(sif_path == ""):
+    if end_frequency != 0 or step !=0 : 
+      export_parameterisable_solver_input_file( user_defined_path, start_frequency )
+    else:  
+      for frequency in range(start_frequency, end_frequency + step, step):
+        export_parameterisable_solver_input_file( user_defined_path, frequency )
+  else:
+    if os.path.isfile(sif_path):
+      shutil.copy(source, destination)
 
-  if end_frequency != 0 or step !=0 : 
-    export_parameterisable_solver_input_file( user_defined_path, start_frequency )
-  else:  
-    for frequency in range(start_frequency, end_frequency + step, step):
-      export_parameterisable_solver_input_file( user_defined_path, frequency )
-
-
-
-def convert_mesh(filename):
+# TODO validate input 
+def convert_mesh(filename, options=""):
   """
     Input
       filename: name of the .unv file exported by Salome
+      parallel: mesh partitioning for parallel ElmerSolver runs
 
     Output
       .unv to *.mesh (Elmer format)
+
+    -partition int[3]   : the mesh will be partitioned in cartesian main directions
+    -partorder real[3]  : in the 'partition' method set the direction of the ordering
+    -partcell int[3]    : the mesh will be partitioned in cells of fixed sizes
+    -partcyl int[3]     : the mesh will be partitioned in cylindrical main directions
+    -metis int          : mesh will be partitioned with Metis using mesh routines
+    -metiskway int      : mesh will be partitioned with Metis using graph Kway routine
+    -metisrec int       : mesh will be partitioned with Metis using graph Recursive routine
+    -metiscontig        : enforce that the metis partitions are contiguous
+    -metisseed          : random number generator seed for Metis algorithms
+    -partdual           : use the dual graph in partition method (when available)
+    -halo               : create halo for the partitioning for DG
+    -halobc             : create halo for the partitioning at boundaries only
+    -haloz / -halor     : create halo for the the special z- or r-partitioning-halogreedy
+
   """
+  
   if os.name == 'nt':
-    os.system('cmd /c "ElmerGrid 8 2 {} -autoclean"'.format(filename))  
+    os.system('cmd /c "ElmerGrid 8 2 {} -autoclean {}"'.format(filename, options))
   elif os.name == 'posix': 
-    os.system('ElmerGrid 8 2 {} -autoclean'.format(filename))  
-  else:
-    raise  NotImplementedError('operating system not support') 
+    os.system('ElmerGrid 8 2 {} -autoclean {}'.format(filename, options))  
+  else: 
+    raise NotImplementedError('operating system not support') 
 
 
 def export_parameterisable_solver_input_file_0( path, frequency):
@@ -528,7 +548,6 @@ def export_parameterisable_solver_input_file( path, frequency):
   
   """
   
-  # os.chdir(f"C:/Users/francisco/Documents/dev/pipeline/data/{dirname}")
  
   os.chdir(path)
 
@@ -562,7 +581,7 @@ Simulation
   Output Intervals = 1
   Timestepping Method = BDF
   BDF Order = 1
-  Post File = case-{frequency}.vtu        ! set VTU file Export for visualization in Paraview
+  Post File = case-{frequency}.vtu  ! set VTU file Export for visualization in Paraview
 End
 
 Constants
@@ -691,7 +710,7 @@ Solver 1
   Linear System Convergence Tolerance = 1.0e-10
 
 
-  ! ! ! ! PRECONDITIONER CONFIGURATION ! ! ! ! ! 
+  ! ! ! ! PRECONDITIONER CONFIGURATION !  
   ! Linear System Preconditioning = None
   ! Linear System Preconditioning = ILU0
   ! Linear System Preconditioning = ILU1
@@ -706,7 +725,7 @@ Solver 1
   Linear System Precondition Recompute = 1
   
 
-  ! ! ! ! INTERNAL MULTIGRID SOLVER CONFIGURATION ! ! ! ! ! 
+  ! ! ! ! INTERNAL MULTIGRID SOLVER CONFIGURATION !  
   ! Linear System Solver = Multigrid
   ! Linear System Iterative Method = BoomerAMG
   ! BoomerAMG Relax = 0-9
@@ -715,32 +734,30 @@ Solver 1
   ! Boomeramg Max Levels = 50 ! sets maximum number of MG levels (default value = 25)
   ! BoomerAMG Interpolation Type = 4 ! [1-13] Sets parallel interpolation operator. Possible options are
 
-
   ! MG Equal Split = False ! [False] to enable the use of user-supplied meshes
   ! MG Levels = 4
   ! MG Mesh Name = xpto
   ! MG Max Iterations = 100000
   ! MG Convergence Tolerance = 1.0e-10
   ! MG Smoother = BiCGStab
-  ! MG Recompute Projector = True ! This flag may be used to enforce recomputation of the projector each time the algebraic multigrid
+  ! MG Recompute Projector = True               ! This flag may be used to enforce recomputation of the projector each time the algebraic multigrid
 solver is called. The default is False as usually the same projector is appropriate for all computations.
-  ! MG Eliminate Dirichlet = True ! At the highest level the fixed nodes may all be set to be coarse since their value is not affected by the
+  ! MG Eliminate Dirichlet = True               ! At the highest level the fixed nodes may all be set to be coarse since their value is not affected by the
 lower levels. The default is True
-  ! MG Eliminate Dirichlet Limit = Real ! Gives the maximum fraction of non-diagonal entries for a Dirichlet node.
-  ! MG Smoother = String ! In addition to the selection for the GMG option sor (symmetric over relaxation) is possible.
-  ! MG SOR Relax = String ! The relaxation factor for the SOR method. The default is 1.
-  ! MG Strong Connection Limit = Real ! The coefficient c in the coarsening scheme. Default is 0.25.
-  ! MG Positive Connection Limit = Real ! The coefficient c+ in the coarsening scheme. Default is 1.0.
-  ! MG Projection Limit = Real ! The coefficient cw in the truncation of the small weights. The default is 0.1.
-  ! MG Direct Interpolate = Logical ! Chooses between direct and standard interpolation. The default is False.
-  ! MG Direct Interpolate Limit = Integer ! The standard interpolation may also be applied to nodes with only a small number of coarse connection. This gives the smallest number of nodes for which direct interpolation is used.
-  ! MG Cluster Size = Integer ! The desired choice of the cluster. Possible choices are 2,3,4,5,. . . and zero which corresponds to the
+  ! MG Eliminate Dirichlet Limit = Real         ! Gives the maximum fraction of non-diagonal entries for a Dirichlet node.
+  ! MG Smoother = String                        ! In addition to the selection for the GMG option sor (symmetric over relaxation) is possible.
+  ! MG SOR Relax = String !                     ! The relaxation factor for the SOR method. The default is 1.
+  ! MG Strong Connection Limit = Real !         ! The coefficient c in the coarsening scheme. Default is 0.25.
+  ! MG Positive Connection Limit = Real !       ! The coefficient c+ in the coarsening scheme. Default is 1.0.
+  ! MG Projection Limit = Real !                ! The coefficient cw in the truncation of the small weights. The default is 0.1.
+  ! MG Direct Interpolate = Logical !           ! Chooses between direct and standard interpolation. The default is False.
+  ! MG Direct Interpolate Limit = Integer       ! The standard interpolation may also be applied to nodes with only a small number of coarse connection. This gives the smallest number of nodes for which direct interpolation is used.
+  ! MG Cluster Size = Integer                   ! The desired choice of the cluster. Possible choices are 2,3,4,5,. . . and zero which corresponds to the
 maximum cluster.
-  ! MG Cluster Alpha = Real ! In the clustering algorithm the coarse level matrix is not optimal for getting the correct convergence. Tuning this value between 1 and 2 may give better performance.
-  ! MG Strong Connection Limit = Real ! This is used similarly as in the AMG method except it is related to positive and negative connections
+  ! MG Cluster Alpha = Real                     ! In the clustering algorithm the coarse level matrix is not optimal for getting the correct convergence. Tuning this value between 1 and 2 may give better performance.
+  ! MG Strong Connection Limit = Real           ! This is used similarly as in the AMG method except it is related to positive and negative connections
 alike.
-  ! MG Strong Connection Minimum = Integer ! If the number of strong connections with the given limit is
-
+  ! MG Strong Connection Minimum = Integer      ! If the number of strong connections with the given limit is
 End
 
 
