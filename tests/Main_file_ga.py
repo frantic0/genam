@@ -1,5 +1,5 @@
 import numpy as np
-from ga import geneticalgorithm as ga
+from genam.optimisation.ga import geneticalgorithm as ga
 
 import os,sys  
 sys.path.append(os.getcwd())        # To extract the current working directory and appended to the path
@@ -36,7 +36,7 @@ def f(X):
    else:
       pen_f = 0
       
-   Obj_f =  performance.
+   Obj_f = 1
 
    return -Obj_f + pen_f                    # for maximum --ve
 

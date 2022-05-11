@@ -4,14 +4,14 @@ import sys, os
 
 def run_elmer_solver(path):
 
-  user_defined_path = os.path.splitext(path)[0]
+  print('run_e_s ' + str(path))
 
-  sif_files = [ f for f in os.listdir(user_defined_path) if ( f.endswith(".sif") and "entities.sif" not in f ) ]
+  sif_files = [ f for f in os.listdir(path) if ( f.endswith(".sif") and "entities.sif" not in f ) ]
 
-  print( sif_files )
-
+  print(sif_files)
   # execute comand and terminate
   for fileName in sif_files:
+
     if os.name == 'posix':
       os.system('ElmerSolver {}'.format(fileName))  
     elif os.name == 'nt':
@@ -21,9 +21,7 @@ def run_elmer_solver(path):
 
 def run_elmer_solver_parallel(path, n):
 
-  user_defined_path = os.path.splitext(path)[0]
-
-  sif_files = [ f for f in os.listdir(user_defined_path) if ( f.endswith(".sif") and "entities.sif" not in f ) ]
+  sif_files = [ f for f in os.listdir(path) if ( f.endswith(".sif") and "entities.sif" not in f ) ]
 
   print( sif_files )
 

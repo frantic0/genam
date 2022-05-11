@@ -18,18 +18,19 @@ sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline/tests')
 
 
 # Genam Lens, mesh configurator
-from matrices.quantized_16_1 import quantized_matrix_16_1
+from matrices.quantized_2_2 import quantized_matrix_2_2
 from genam.lens import Lens
 from genam.lens_configuration import lens_configurator 
 from genam.mesh_configuration import selector as mesh_config_selector
 from genam.utility_functions import convert_mesh, copy_solver_templates
 from genam.run_elmer_solver import run_elmer_solver
-from genam.analysis import Analysis
+from genam.analysis.analysis import Analysis
 
 
-lens_config = lens_configurator( quantized_matrix_16_1 )
 
-lens_name = 'quantized_matrix_16_1' 
+lens_config = lens_configurator( quantized_matrix_2_2 )
+
+lens_name = 'quantized_matrix_2_2' 
 
 # Create lens with name, bricks ID and mesh configurations 
 
@@ -49,23 +50,27 @@ print("Mesh computation time: {:.2f} sec".format( time.time() - start) )
 
 start = time.time()
 
-# define a path where all data will be stored (.unv mesh file, solver *.mesh files, sif. file )
-path = str(Path('C:/Users/francisco/Documents/acoustic-brick/').joinpath( lens_name + '.unv')) 
-# path = str(Path('/SAN/uclic/ammdgop/data').joinpath( lens_name + '.unv'))
 
+DATASET_PATH = Path('/SAN/uclic/ammdgop/data')              # Dataset path, where all data will be stored - .unv mesh files and solver directories
+UNV_PATH = DATASET_PATH.joinpath( lens_name + '.unv')       
+SIF_PATH = Path( 'test_parallel_quantized_matrix_16_2.sif')       
+SOLVER_DATA_PATH = DATASET_PATH.joinpath( lens_name )       #  solver *.mesh files, sif. file
 
-lens.export_mesh( path ) # export .unv mesh file
-
+lens.export_mesh( str( UNV_PATH ) ) # export .unv mesh file, requires conversion to string
 print("Mesh exported to Elmer format: {:.2f} sec".format( time.time() - start) )
 
 start = time.time()
 
-convert_mesh( path ) # run elmergrid convert .unv mesh file to elmer format *.mesh files in a directory 
+convert_mesh( UNV_PATH ) # run elmergrid convert .unv mesh file to elmer format *.mesh files in a directory 
 
-# copy all the necessary templates to run elmer solver
-copy_solver_templates( path )
+copy_solver_templates( SOLVER_DATA_PATH, SIF_PATH )                   # copy all the necessary templates to run elmer solver
 
 print("Elmer template copied: {:.2f} sec".format( time.time() - start) )
 
-run_elmer_solver( path )
+run_elmer_solver( SOLVER_DATA_PATH )
 
+analysis = Analysis( SOLVER_DATA_PATH.joinpath( 'case-40000_t0001.vtu' ))
+
+
+# print(analysis.absolute_pressure())
+print(analysis)

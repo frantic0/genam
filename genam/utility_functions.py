@@ -49,11 +49,12 @@ def sketch_to_volume(geom_builder, sketch_obj, thickness, rotation=None, transla
 
 
 def copy_solver_templates(  path,
-                            sif_path="",
+                            sif="",
                             start_frequency=40000,  
                             end_frequency=0, 
                             step=0 ): 
 
+  # TODO validate input and that solver directory is on the right place 
   # Get path to '../../solver/' 
   solver_templates_path = str( Path( os.path.dirname(os.path.realpath(__file__)) ).parent.joinpath('solver') )
   
@@ -67,15 +68,26 @@ def copy_solver_templates(  path,
       shutil.copy(source, destination)
 
   # NOTE: Needs refactor - if optional arguments
-  if(sif_path == ""):
-    if end_frequency != 0 or step !=0 : 
-      export_parameterisable_solver_input_file( user_defined_path, start_frequency )
-    else:  
-      for frequency in range(start_frequency, end_frequency + step, step):
+  if sif == "":
+    if end_frequency != 0 and step !=0 : 
+      for frequency in range( start_frequency, end_frequency + step, step ):
         export_parameterisable_solver_input_file( user_defined_path, frequency )
+    else:  
+      export_parameterisable_solver_input_file( user_defined_path, start_frequency )
+        
   else:
+
+    sif_path = str( Path( os.path.dirname(os.path.realpath(__file__)) ).parent.joinpath('tests').joinpath('sif').joinpath(sif) )
+
+    print('copy_s_t', sif_path)
+    
+    print( str(os.path.realpath(sif_path)) )
     if os.path.isfile(sif_path):
-      shutil.copy(source, destination)
+      shutil.copy(sif_path, user_defined_path)
+      print("copy sif")
+
+
+
 
 # TODO validate input 
 def convert_mesh(filename, options=""):
@@ -537,7 +549,7 @@ End
 
 
 
-def export_parameterisable_solver_input_file( path, frequency):
+def export_parameterisable_solver_input_file( path, frequency ):
   """
   Input
 
@@ -548,8 +560,9 @@ def export_parameterisable_solver_input_file( path, frequency):
   
   """
   
- 
-  os.chdir(path)
+  print(path)
+  print(frequency)
+  # os.chdir(path)
 
   sif = f'''
 

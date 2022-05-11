@@ -25,16 +25,16 @@ def calculate_focus_lens_phase_distribution(m, n, focal_length = 0.1):
 
     total_phases = -travel_distances * k # total change in phase of waves as they travel this distance.
     
-    return np.remainder(total_phases, 2*np.pi) # normalise phase to 0-2π [rads] to perform focusing, assuming incident plane wave
+    return np.remainder(total_phases, 2*np.pi) # phase to 0-2π [rads] performs focusing, assuming incident plane wave
 
 
 
 
-normalized_phases = calculate_focus_lens_phase_distribution(16, 2, 0.1)
-print(normalized_phases)
+phases = calculate_focus_lens_phase_distribution(16, 2)
+print(phases)
 
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(7,7))
-im = ax.imshow( normalized_phases )
+im = ax.imshow( phases )
 
 plt.colorbar(im)
 plt.show()
