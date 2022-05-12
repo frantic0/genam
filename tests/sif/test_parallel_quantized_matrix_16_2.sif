@@ -9,7 +9,7 @@ Header
   Results Directory ""
   $ rho0 = 1.205                     ! Medium (Air) Equilibrium Density
   $ c0 = -343                        ! Medium Sound Phase Speed
-  $ f = {frequency}                  ! Source Frequency
+  $ f = 40000                        ! Source Frequency
   $ p = 1.205                        ! Medium (Air) Equilibrium Density
   $ U = 10                           ! Source Surface Velocity
   ! $freqVec = vector(100,1800,50)
@@ -27,7 +27,7 @@ Simulation
   Output Intervals = 1
   Timestepping Method = BDF
   BDF Order = 1
-  Post File = case-{frequency}.vtu  ! set VTU file Export for visualization in Paraview
+  Post File = case-40000.vtu  ! set VTU file Export for visualization in Paraview
 End
 
 Constants
@@ -51,9 +51,6 @@ Body 1
   Material = 1
   Body Force = 1 ! Force applied to Air body, with scalars apply 
 End
-
-
-
 
 
 
@@ -181,15 +178,13 @@ Solver 1
   ! BoomerAMG Interpolation Type = 4 ! [1-13] Sets parallel interpolation operator. Possible options are
 
   ! MG Equal Split = False ! [False] to enable the use of user-supplied meshes
-  ! MG Levels = 4
+  MG Levels = 4
   ! MG Mesh Name = xpto
   ! MG Max Iterations = 100000
   ! MG Convergence Tolerance = 1.0e-10
   ! MG Smoother = BiCGStab
-  ! MG Recompute Projector = True               ! This flag may be used to enforce recomputation of the projector each time the algebraic multigrid
-solver is called. The default is False as usually the same projector is appropriate for all computations.
-  ! MG Eliminate Dirichlet = True               ! At the highest level the fixed nodes may all be set to be coarse since their value is not affected by the
-lower levels. The default is True
+  ! MG Recompute Projector = True               ! This flag may be used to enforce recomputation of the projector each time the algebraic multigrid solver is called. The default is False as usually the same projector is appropriate for all computations.
+  ! MG Eliminate Dirichlet = True               ! At the highest level the fixed nodes may all be set to be coarse since their value is not affected by the lower levels. The default is True
   ! MG Eliminate Dirichlet Limit = Real         ! Gives the maximum fraction of non-diagonal entries for a Dirichlet node.
   ! MG Smoother = String                        ! In addition to the selection for the GMG option sor (symmetric over relaxation) is possible.
   ! MG SOR Relax = String !                     ! The relaxation factor for the SOR method. The default is 1.
@@ -198,11 +193,9 @@ lower levels. The default is True
   ! MG Projection Limit = Real !                ! The coefficient cw in the truncation of the small weights. The default is 0.1.
   ! MG Direct Interpolate = Logical !           ! Chooses between direct and standard interpolation. The default is False.
   ! MG Direct Interpolate Limit = Integer       ! The standard interpolation may also be applied to nodes with only a small number of coarse connection. This gives the smallest number of nodes for which direct interpolation is used.
-  ! MG Cluster Size = Integer                   ! The desired choice of the cluster. Possible choices are 2,3,4,5,. . . and zero which corresponds to the
-maximum cluster.
+  ! MG Cluster Size = Integer                   ! The desired choice of the cluster. Possible choices are 2,3,4,5,. . . and zero which corresponds to the maximum cluster.
   ! MG Cluster Alpha = Real                     ! In the clustering algorithm the coarse level matrix is not optimal for getting the correct convergence. Tuning this value between 1 and 2 may give better performance.
-  ! MG Strong Connection Limit = Real           ! This is used similarly as in the AMG method except it is related to positive and negative connections
-alike.
+  ! MG Strong Connection Limit = Real           ! This is used similarly as in the AMG method except it is related to positive and negative connections alike.
   ! MG Strong Connection Minimum = Integer      ! If the number of strong connections with the given limit is
 End
 
@@ -316,7 +309,7 @@ End
 ! Equation 1
 !   Name = "Helmholtz"
 !   ! Frequency = Variable time; Real MATC "freqVec(tx - 1)"
-!   Angular Frequency = $ 2.0 * pi * {frequency}
+!   Angular Frequency = $ 2.0 * pi * 40000
 !   Active Solvers(6) = 1 2 3 4 5 6
 ! End
 

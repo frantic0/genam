@@ -49,7 +49,6 @@ def sketch_to_volume(geom_builder, sketch_obj, thickness, rotation=None, transla
 
 
 def copy_solver_templates(  path,
-                            sif="",
                             start_frequency=40000,  
                             end_frequency=0, 
                             step=0 ): 
@@ -61,30 +60,30 @@ def copy_solver_templates(  path,
   # Get path to user-defined data directory
   user_defined_path = os.path.splitext(path)[0]
 
+  print('Copying solver templates to directory:') 
   for fileName in os.listdir(solver_templates_path):
-    source = solver_templates_path + fileName
-    destination = user_defined_path + fileName 
+    source = Path(solver_templates_path).joinpath(fileName)
+    destination = Path(user_defined_path).joinpath(fileName) 
+    
     if os.path.isfile(source):
       shutil.copy(source, destination)
+      print('copied {} {}'.format(source, destination) )
 
   # NOTE: Needs refactor - if optional arguments
-  if sif == "":
-    if end_frequency != 0 and step !=0 : 
-      for frequency in range( start_frequency, end_frequency + step, step ):
-        export_parameterisable_solver_input_file( user_defined_path, frequency )
-    else:  
+  if end_frequency != 0 and step !=0 : 
+    for frequency in range( start_frequency, end_frequency + step, step ):
+      export_parameterisable_solver_input_file( user_defined_path, frequency )
+  else:  
       export_parameterisable_solver_input_file( user_defined_path, start_frequency )
         
-  else:
-
-    sif_path = str( Path( os.path.dirname(os.path.realpath(__file__)) ).parent.joinpath('tests').joinpath('sif').joinpath(sif) )
-
-    print('copy_s_t', sif_path)
-    
-    print( str(os.path.realpath(sif_path)) )
+  
+  
+def copy_sif( path, sif_path="" ):   
+  print('Copying SIF to directory:') 
+  if sif_path != "":
+    sif_path = str( Path( os.path.dirname(os.path.realpath(__file__)) ).parent.joinpath('tests').joinpath('sif').joinpath(sif_path) )
     if os.path.isfile(sif_path):
-      shutil.copy(sif_path, user_defined_path)
-      print("copy sif")
+      shutil.copy(sif_path, path)
 
 
 
@@ -560,10 +559,6 @@ def export_parameterisable_solver_input_file( path, frequency ):
   
   """
   
-  print(path)
-  print(frequency)
-  # os.chdir(path)
-
   sif = f'''
 
 Check Keywords "Warn"

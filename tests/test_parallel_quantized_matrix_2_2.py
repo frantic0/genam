@@ -1,13 +1,12 @@
-import sys
-import time
+import os, sys, time
 from pathlib import Path
 
 ### Salome GEOM and SMESH components
 import salome
 salome.salome_init()
 
-# Set file paths for library and tests  
 
+# Set file paths for library and tests  
 sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline')
 sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline/genam')
 sys.path.insert(0, r'C:/Users/francisco/Documents/dev/pipeline/tests')
@@ -22,7 +21,7 @@ from matrices.quantized_2_2 import quantized_matrix_2_2
 from genam.lens import Lens
 from genam.lens_configuration import lens_configurator 
 from genam.mesh_configuration import selector as mesh_config_selector
-from genam.utility_functions import convert_mesh, copy_solver_templates
+from genam.utility_functions import convert_mesh, copy_solver_templates, copy_sif
 from genam.run_elmer_solver import run_elmer_solver
 from genam.analysis.analysis import Analysis
 
@@ -53,7 +52,7 @@ start = time.time()
 
 DATASET_PATH = Path('/SAN/uclic/ammdgop/data')              # Dataset path, where all data will be stored - .unv mesh files and solver directories
 UNV_PATH = DATASET_PATH.joinpath( lens_name + '.unv')       
-SIF_PATH = Path( 'test_parallel_quantized_matrix_16_2.sif')       
+SIF_PATH = Path('test_parallel_quantized_matrix_16_2.sif')       
 SOLVER_DATA_PATH = DATASET_PATH.joinpath( lens_name )       #  solver *.mesh files, sif. file
 
 lens.export_mesh( str( UNV_PATH ) ) # export .unv mesh file, requires conversion to string
@@ -63,7 +62,8 @@ start = time.time()
 
 convert_mesh( UNV_PATH ) # run elmergrid convert .unv mesh file to elmer format *.mesh files in a directory 
 
-copy_solver_templates( SOLVER_DATA_PATH, SIF_PATH )                   # copy all the necessary templates to run elmer solver
+copy_solver_templates( SOLVER_DATA_PATH )          # copy all the necessary templates to run elmer solver
+copy_sif( SOLVER_DATA_PATH, SIF_PATH )          # copy all the necessary templates to run elmer solver
 
 print("Elmer template copied: {:.2f} sec".format( time.time() - start) )
 

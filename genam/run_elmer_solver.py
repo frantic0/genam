@@ -1,20 +1,28 @@
 
 import sys, os
+import subprocess
+from threading import Thread
 
+def call_subprocess(cmd):
+    proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out, err = proc.communicate()
+    if err:
+        print err
+
+# thread = Thread(target=call_subprocess, args=[cmd])
+# thread.start()
+# thread.join() # waits for completion.
 
 def run_elmer_solver(path):
 
-  print('run_e_s ' + str(path))
-
   sif_files = [ f for f in os.listdir(path) if ( f.endswith(".sif") and "entities.sif" not in f ) ]
-
-  print(sif_files)
+  os.chdir(path)
   # execute comand and terminate
   for fileName in sif_files:
-
     if os.name == 'posix':
       os.system('ElmerSolver {}'.format(fileName))  
     elif os.name == 'nt':
+      os.system('cmd /c "dir "'.format(fileName))  
       os.system('cmd /c "ElmerSolver {}"'.format(fileName))  
 
 
@@ -22,9 +30,7 @@ def run_elmer_solver(path):
 def run_elmer_solver_parallel(path, n):
 
   sif_files = [ f for f in os.listdir(path) if ( f.endswith(".sif") and "entities.sif" not in f ) ]
-
-  print( sif_files )
-
+  os.chdir(path)
   # execute comand and terminate
   for fileName in sif_files:
     if os.name == 'posix':
