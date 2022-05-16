@@ -50,7 +50,7 @@ lens.process_mesh() # Create lens mesh
 
 DATASET_PATH = Path('/SAN/uclic/ammdgop/data')              # Dataset path, where all data will be stored - .unv mesh files and solver directories
 UNV_PATH = DATASET_PATH.joinpath( lens_name + '.unv')       
-SIF_PATH = Path('test_parallel_quantized_matrix_16_2.sif')       
+SIF_PATH = Path('test_quantised_matrix.sif')       
 SOLVER_DATA_PATH = DATASET_PATH.joinpath( lens_name )       #  solver *.mesh files, sif. file
 
 lens.export_mesh( str( UNV_PATH ) ) # export .unv mesh file, requires conversion to string

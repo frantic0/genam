@@ -12,14 +12,11 @@ import math
 import SALOMEDS
 
 
-def copy_solver_templates(  path,
-                            start_frequency=40000,  
-                            end_frequency=0, 
-                            step=0 ): 
+def copy_solver_templates( path ):
 
   # TODO validate input and that solver directory is on the right place 
   # Get path to '../../solver/' 
-  solver_templates_path = str( Path( os.path.dirname(os.path.realpath(__file__)) ).parent.joinpath('solver') )
+  solver_templates_path = str( Path( os.path.dirname(os.path.realpath(__file__)) ).parent.parent.joinpath('solver') )
   
   # Get path to user-defined data directory
   user_defined_path = os.path.splitext(path)[0]
@@ -33,21 +30,27 @@ def copy_solver_templates(  path,
       shutil.copy(source, destination)
       print('copied {} {}'.format(source, destination) )
 
-  # NOTE: Needs refactor - if optional arguments
-  if end_frequency != 0 and step !=0 : 
-    for frequency in range( start_frequency, end_frequency + step, step ):
-      export_parameterisable_solver_input_file( user_defined_path, frequency )
-  else:  
-      export_parameterisable_solver_input_file( user_defined_path, start_frequency )
-        
+
   
-  
-def copy_sif( path, sif_path="" ):   
+def copy_sif( path, sif_path="",
+                    start_frequency=40000,  
+                    end_frequency=0, 
+                    step=0 ): 
+
+  user_defined_path = os.path.splitext(path)[0]
+
   print('Copying SIF to directory:') 
   if sif_path != "":
-    sif_path = str( Path( os.path.dirname(os.path.realpath(__file__)) ).parent.joinpath('tests').joinpath('sif').joinpath(sif_path) )
+    sif_path = str( Path( os.path.dirname(os.path.realpath(__file__)) ).parent.parent.joinpath('tests').joinpath('sif').joinpath(sif_path) )
+    print(sif_path, path)
     if os.path.isfile(sif_path):
       shutil.copy(sif_path, path)
+    # NOTE: Needs refactor - if optional arguments
+    elif end_frequency != 0 and step !=0 : 
+      for frequency in range( start_frequency, end_frequency + step, step ):
+        export_parameterisable_solver_input_file( user_defined_path, frequency )
+    else:  
+        export_parameterisable_solver_input_file( user_defined_path, start_frequency )
 
 
 
