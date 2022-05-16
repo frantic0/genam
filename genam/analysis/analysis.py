@@ -1,9 +1,10 @@
+from re import S
 import numpy as np
-# import pandas as pd
 import math
 import matplotlib.pyplot as plt
+# from operator import itemgetter
 from collections import namedtuple
-import vtk
+from vtkmodules.all import vtkXMLUnstructuredGridReader, vtkPoints, vtkCellArray, vtkPointLocator, vtkIdList, vtkQuad, vtkIntArray
 import meshio
 
 # Boundary Conditions
@@ -15,45 +16,36 @@ c0 = 343
 flowDir = np.array([1, 0, 0])
 
 
+calculate_absolute_pressure = lambda real, imag: 20*math.log10(((math.sqrt(real**2+imag**2))/math.sqrt(2)))
+# 20*math.log(((math.sqrt(real**2+imag**2))/math.sqrt(2)))
 
-# datFileName = lambda a: '../../ammgdop-20220221/brick-{}/SPLmean.dat'.format(a)
-# vtu_filename = '../ammgdop-ds-20220208/brick-15/case-40000_t0001.vtu'
-
-# datFileNames = [ datFileName(fn) for fn in range(1,16) ]
-
-# Parse input names, this list is shared across all bricks 
-# column_names = parseDatNames(datFileNames[14])
-
-def calculate_absolute_pressure(real, imag): 
-    return 20*math.log10(((math.sqrt(real**2+imag**2))/math.sqrt(2)))
-    # return 20*math.log(((math.sqrt(real**2+imag**2))/math.sqrt(2)))
-
-def calculate_absolute_pressure_pa(real, imag): 
-    return math.sqrt(real**2+imag**2)
+calculate_absolute_pressure_pa = lambda real, imag: math.sqrt(real**2+imag**2)
 
 
 class Analysis:
 
     def __init__( self, filename ):
-        self.reader = vtk.vtkXMLUnstructuredGridReader()
+        self.reader = vtkXMLUnstructuredGridReader()
         self.filename = filename
         self.__read()
 
 
     def __read(self):
        
-        try: 
+        try:
+            print('vtu: ' + self.filename)
             self.reader.SetFileName(self.filename)
             self.reader.Update()  # Needed because of GetScalarRange
-            self._unstructuredGrid =     self.reader.GetOutput() 
+            self._unstructuredGrid = self.reader.GetOutput() 
             
             Pressure = namedtuple('Pressure', 'real complex absolute')
+            
             self.pressure = Pressure(
                 self._unstructuredGrid.GetPointData().GetArray("pressure wave 1"),
                 self._unstructuredGrid.GetPointData().GetArray("pressure wave 2"),
                 self._unstructuredGrid.GetPointData().GetArray("pabs")
             )
-
+            
             self._real_pressure =        self._unstructuredGrid.GetPointData().GetArray("pressure wave 1")
             self._complex_pressure =     self._unstructuredGrid.GetPointData().GetArray("pressure wave 2")
             self._absolute_pressure =    self._unstructuredGrid.GetPointData().GetArray("pabs")
@@ -61,129 +53,82 @@ class Analysis:
             self._spl =                  self._unstructuredGrid.GetPointData().GetArray("spl")
             self._phase =                self._unstructuredGrid.GetPointData().GetArray("phase")
             self._phaseAtan2 =           self._unstructuredGrid.GetPointData().GetArray("phaseatan2")
+            
+            self._geometryIds =           self._unstructuredGrid.GetCellData().GetArray("GeometryIds")
 
-            self.data = meshio.read(self.filename)
-            self.field_data = self.data.point_data
-            self.coordinates = self.data.points
-                
+            self.points = [ self._unstructuredGrid.GetPoint(x) for x in range(self._unstructuredGrid.GetNumberOfPoints()) ]
+
+            # self.quad = vtkQuad()
+            # self.cells = vtkCellArray()
+            
+            self.pointLocator = vtkPointLocator()
+            self.pointLocator.SetDataSet(self.reader.GetOutput())
+            self.pointLocator.BuildLocator()
+
+            self._data = meshio.read(self.filename)
+
         except Exception as e:
-            print(e)
+            print('exception' + str(e) )
 
     @property
     def real_pressure(self):
-        return self._real_pressure
-
+        return self._data.point_data["pressure wave 1"]
+        
     @property
     def complex_pressure(self):
-        return self._complex_pressure
+        return self._data.point_data["pressure wave 2"]
 
     @property
     def absolute_pressure(self):
-        return self._absolute_pressure
-
+        return self._data.point_data["pabs"]
+        
     @property
     def spl(self):
-        return self._spl
+        return self._data.point_data["spl"]
 
     @property
     def phase(self):
-        return self._phase
-
+        return self._data.point_data["phase"]
+        
     @property
     def phase_atan2(self):
-        return self._phaseAtan2
-
-    @property
-    def field_data(self):
-        return self.field_data
-
-    @property
-    def coordinates(self):
-        return self.coordinates        
-
-
-    # @property
-    # def real_pressure(self):
-    #     return self._pressure_wave_2_flux
-
-    # @property
-    # def real_pressure(self):
-    #     return self._pressure_wave_1_flux
-
-    # def __parseDatNames__(filename):
-    #     res = [] # Initialize
-    #     if filename[-6:] != ".names":
-    #         filename = filename + ".names"
-    #     with open(filename, 'r') as f:
-    #         isHeader = True
-    #         for line in f:
-    #             if 'Variables in columns' in line:
-    #                 isHeader = False
-    #                 continue
-    #             if isHeader == True:
-    #                 continue
-    #             # strParse1: get rid of 1: boundary mean, and split over "over"
-    #             strParse1 = line.strip().split(':')[-1].strip().split('over')
-    #             if len(strParse1) == 1:
-    #                 res.append(strParse1[0])
-    #             else:
-    #                 if len(strParse1[0]) > 0:
-    #                     itemName = strParse1[0]
-    #                 else:
-    #                     strParse1[0] = itemName
-    #                 res.append(strParse1[0].strip() + '.' + strParse1[1].strip())
-    #     return res
-
-    # def calculateTransmissionLoss(self, res, frequency_column_index, flowDir):
-
-    # #     frequency_columns_index = column_names.index('frequency')
-    #     freqVec = res[:, frequency_column_index]
-    #     omegaVec = 2 * np.pi * freqVec
-
-    #     ## Get pressure at inlet and outlet
-
-    #     pIn = res[:, column_names.index('pressure wave 1.bc ' + str(inletBC))] \
-    #     + 1j * res[:, column_names.index('pressure wave 2.bc ' + str(inletBC))]
-
-    #     pOut = res[:, column_names.index('pressure wave 1.bc ' + str(outletBC))] \
-    #     + 1j * res[:, column_names.index('pressure wave 2.bc ' + str(outletBC))]
-
-    #     # print(pIn)
-    #     # print(pOut)
-
-    #     #  Check if it is 3D
-    #     dim = 3
-    #     if "pressure wave 1 grad 3.bc 1" not in column_names:
-    #         dim = 2
-    #         flowDir = flowDir[:-1]
-
-    #     pGradIn, pGradOut = np.zeros((freqVec.size, dim), dtype=np.complex_), np.zeros((freqVec.size, dim), dtype=np.complex_)
-
-    #     # Get pGradIn and pGradOut
-    #     fmt = 'pressure wave {0:d} grad {1:d}.bc {2:s}'
-    #     for ind in range(dim):
-    #         # Inlet
-    #         strReal = fmt.format(1, ind+1, str(inletBC))
-    #         strImag = fmt.format(2, ind+1, str(inletBC))
-    #         pGradIn[:, ind] = res[:, column_names.index(strReal)] + 1j * res[:, column_names.index(strImag)]
-    #         # outlet
-    #         strReal = fmt.format(1, ind+1, str(outletBC))
-    #         strImag = fmt.format(2, ind+1, str(outletBC))
-    #         pGradOut[:, ind] = res[:, column_names.index(strReal)] + 1j * res[:, column_names.index(strImag)]
-
-    #     # Decomposition at inlet
-    #     dpdnIn = pGradIn.dot(flowDir)
-    #     uIn = 1j/rho0/omegaVec*dpdnIn
-    #     pInPlus = (pIn + uIn*rho0*c0)/2
-    #     pInMinus = pIn - pInPlus
-
-    #     # Decomposition at outlet
-    #     dpdnOut = pGradOut.dot(flowDir)
-    #     uOut = 1j/rho0/omegaVec*dpdnOut
-
-    #     # Transmission Loss
-    #     TL = 20*np.log10(np.abs(pInPlus)/np.abs(pOut))
+        return self._data.point_data["phaseatan2"]
         
-    #     return freqVec, TL
+    @property
+    def getGeometryId(self, index:int) -> vtkIntArray :
+        return self._unstructuredGrid.GetCellData().GetArray("GeometryIds")
 
+    @property
+    def getNumberOfValues(self) -> int:
+        return self._unstructuredGrid.GetCellData().GetArray("GeometryIds").GetNumberOfValues()
+
+    @property
+    def getNumberOfPoints(self) -> int:
+        return self._unstructuredGrid.GetNumberOfPoints()
+
+    @property
+    def getPoint(self, id:int) -> tuple:
+        return self._unstructuredGrid.GetPoint(id)
+
+    @property
+    def findOptimisationPoint(self, optimisationValue=0.10, precision=2 ):
+    # def findOptimisationPoint(self, optimisationValue=0.10 ) -> list[tuple[int]]:
+
+        # Xmin, Xmax =    -0.0364845,     0.0364845
+        # Ymin, Ymax =    -0.00465529,    0.00465529
+        # Zmin, Zmax =    0,              0.102573
+        
+        found = lambda points, precision, value: list(filter( lambda x: round(x[0], precision) == 0 and round(x[1], precision) == 0 and x[2] == value, points ))
+
+        return found(self.points, 2, 0.10)
+
+        # if points_in_z_optim == []:  # reduce precision, one order of magnitude
+        #     points_in_z_optim = list( filter( lambda x: round(x[0], 2) == 0 and round(x[1], 2) == 0 and x[2] == optimisationValue, 
+        #                                     self.points )) 
+                                        
+        # return sorted( points_in_z_optim, key=lambda x: (x[0], x[1]) ) # return first element of list
+        
+    # @property
+    # def findOptimisationPointId(self, optimisationValue=0.10 ) -> int:
+    #     return self.points.index(self.findOptimisationPoint(optimisationValue))
 

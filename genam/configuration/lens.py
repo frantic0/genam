@@ -19,7 +19,7 @@ phases_list_radians = lambda : np.radians(np.array([
                                   flaps_configs['phase']
                                 ]))
 
-def lens_configurator( quantized_matrix ):
+def configurator( quantized_matrix ):
   # create configs matrix with shape (m,n,3)
   configs = np.array([ unit_cell_select_list(i) for i in quantized_matrix.ravel() ])
   # reshape configs matrix into shape (m,n,3) - exclude phases and transmission coeficients

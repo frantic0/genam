@@ -5,8 +5,6 @@ import time, os
 
 
 
-from utility_functions import * 
-
 salome.salome_init()
 import salome_notebook
 notebook = salome_notebook.NoteBook()
@@ -236,6 +234,7 @@ def parameterize_2D_inner_shape( waveLength, barLength, barSpacing ):
     print("Error drawing 2Dsketch: {} {} {}".format( waveLength, barLength, barSpacing ) )
 
     return None
+
 
 
 

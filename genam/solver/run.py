@@ -3,11 +3,11 @@ import sys, os
 import subprocess
 from threading import Thread
 
-def call_subprocess(cmd):
-    proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    out, err = proc.communicate()
-    if err:
-        print err
+# def call_subprocess(cmd):
+#     proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+#     out, err = proc.communicate()
+#     if err:
+#         print err
 
 # thread = Thread(target=call_subprocess, args=[cmd])
 # thread.start()
