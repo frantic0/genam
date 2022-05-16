@@ -25,23 +25,23 @@ from genam.analysis import Analysis
 
 
 
-# lens_config = lens_configurator( quantized_matrix_2_2 )
+lens_config = lens_configurator( quantized_matrix_2_2 )
 
 lens_name = 'quantized_matrix_2_2' 
 
 # # # Create lens with name, bricks ID and mesh configurations 
 
-# lens = Lens( lens_config, mesh_configurator(3), name = lens_name  )
+lens = Lens( lens_config, mesh_configurator(3), name = lens_name  )
 
 # # start = time.time()
 
-# lens.process_geometry() # Create the lens geometry 
+lens.process_geometry() # Create the lens geometry 
 
 # # print("Geometry computation time: {:.2f} sec".format(time.time() - start) )
 
 # # start = time.time()
 
-# lens.process_mesh() # Create lens mesh 
+lens.process_mesh() # Create lens mesh 
 
 # # print("Mesh computation time: {:.2f} sec".format( time.time() - start) )
 
@@ -53,18 +53,18 @@ UNV_PATH = DATASET_PATH.joinpath( lens_name + '.unv')
 SIF_PATH = Path('test_parallel_quantized_matrix_16_2.sif')       
 SOLVER_DATA_PATH = DATASET_PATH.joinpath( lens_name )       #  solver *.mesh files, sif. file
 
-# lens.export_mesh( str( UNV_PATH ) ) # export .unv mesh file, requires conversion to string
+lens.export_mesh( str( UNV_PATH ) ) # export .unv mesh file, requires conversion to string
 # print("Mesh exported to Elmer format: {:.2f} sec".format( time.time() - start) )
 
 # start = time.time()
 
-# convert_mesh( UNV_PATH ) # run elmergrid convert .unv mesh file to elmer format *.mesh files in a directory 
-# copy_solver_templates( SOLVER_DATA_PATH )          # copy all the necessary templates to run elmer solver
-# copy_sif( SOLVER_DATA_PATH, SIF_PATH )          # copy solver input file
+convert_mesh( UNV_PATH ) # run elmergrid convert .unv mesh file to elmer format *.mesh files in a directory 
+copy_solver_templates( SOLVER_DATA_PATH )          # copy all the necessary templates to run elmer solver
+copy_sif( SOLVER_DATA_PATH, SIF_PATH )          # copy solver input file
 
 # print("Elmer template copied: {:.2f} sec".format( time.time() - start) )
 
-# run_elmer_solver( SOLVER_DATA_PATH )
+run_elmer_solver( SOLVER_DATA_PATH )
 
 analysis = Analysis( str(SOLVER_DATA_PATH.joinpath( 'case.vtu' )) )
 
