@@ -23,7 +23,7 @@ from genam.configuration.mesh import configurator as mesh_configurator
 from genam.solver import convert_mesh, copy_solver_templates, copy_sif, run_elmer_solver
 from genam.analysis import Analysis
 
-def compute_lens_optimisation_target_value( lens_config, lens_name ):
+def compute_lens_optimisation_objective( lens_config, lens_name ):
     # lens_config = lens_configurator( matrices.quantized_matrix_16_2 )
     # lens_name = 'quantized_matrix_16_2' 
     # # # Create lens with name, bricks ID and mesh configurations 

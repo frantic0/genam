@@ -4,7 +4,7 @@ import numpy as np
 sys.path.append(os.getcwd())        # To extract the current working directory and appended to the path
 
 from matrices.quantized_16_2 import quantized_matrix_16_2
-from lens_optimisation_target_value import compute_lens_optimisation_target_value
+from compute_lens_optimisation_objective import compute_lens_optimisation_objective
 from genam.optimisation.ga import geneticalgorithm as ga
 
 ## Bounds of variables ## eg.: for real: varbound=np.array([[2,10]]*3) 
@@ -14,7 +14,6 @@ size_lens1 = size_lens_row*size_lens_column
 
 varbound = np.array([[0,15]]*(size_lens1))
 
-# objective function 
 def objective_function(X):
  
    # define quantized matrix 
@@ -25,11 +24,11 @@ def objective_function(X):
          quantized_mat[i,j] = X[count1]
          count1 = count1 + 1
       
-   compute_lens_optimisation_target_value(quantized_matrix_16_2)
+   optimisation_target, optimisation_target_pressure = compute_lens_optimisation_objective(quantized_matrix_16_2)
 
    # Penalty function for constraint 
    pen_f = 0 
-   if X[1]+X[2] < 2:
+   if X[1] + X[2] < 2:
       pen_f = 10e5
    else:
       pen_f = 0
