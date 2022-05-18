@@ -1,21 +1,21 @@
+import os, sys  
 import numpy as np
-from genam.optimisation.ga import geneticalgorithm as ga
 
-import os,sys  
 sys.path.append(os.getcwd())        # To extract the current working directory and appended to the path
 
-from tests.test_quantized_matrix_16_2 import test_quantized_matrix
+from matrices.quantized_16_2 import quantized_matrix_16_2
+from lens_optimisation_target_value import compute_lens_optimisation_target_value
+from genam.optimisation.ga import geneticalgorithm as ga
 
 ## Bounds of variables ## eg.: for real: varbound=np.array([[2,10]]*3) 
 size_lens_row = 16
 size_lens_column = 2
 size_lens1 = size_lens_row*size_lens_column
 
-varbound=np.array([[0,15]]*(size_lens1))
-
+varbound = np.array([[0,15]]*(size_lens1))
 
 # objective function 
-def f(X):
+def objective_function(X):
  
    # define quantized matrix 
    quantized_mat = np.array([np.zeros(size_lens_column).astype(int)]*size_lens_row)
@@ -25,9 +25,7 @@ def f(X):
          quantized_mat[i,j] = X[count1]
          count1 = count1 + 1
       
-   test_quantized_matrix(quantized_mat)
-      
-   # transmission loss and phase shift (objective)
+   compute_lens_optimisation_target_value(quantized_matrix_16_2)
 
    # Penalty function for constraint 
    pen_f = 0 
@@ -48,7 +46,10 @@ def f(X):
 ####                 mixed (both real and integer): for this also supply variable_type_mixed
 ####                 e.g, for 1 real and 2 int : vartype=np.array([['real'],['int'],['int']])
 
-model=ga(function=f,dimension= (size_lens1),variable_type='int',variable_boundaries=varbound)
+model = ga( function = objective_function,  
+            dimension = (size_lens1),
+            variable_type = 'int',
+            variable_boundaries = varbound )
 
 ## execute GA
 model.run()   
@@ -71,6 +72,7 @@ def const(xval):
       print("constraint NOT satisfied")   
 
    return c11
+
 c1 = const(xval)
 
 #np.savetxt('variable.txt',xval,fval,f1)
