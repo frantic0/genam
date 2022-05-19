@@ -1,5 +1,5 @@
 import numpy as np
 
-quantized_matrix_1_1 = np.array([
-                                  [ 15 ],
-                                ])
+
+# Inject brick ID 1-15
+quantized_matrix_1_1_x = lambda x: np.array([[ x ]])
