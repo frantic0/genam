@@ -7,13 +7,13 @@ import salome
 salome.salome_init()
 
 # Set file paths for library and tests  
-sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline')
-sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline/genam')
-sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline/tests')
+# sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline')
+# sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline/genam')
+# sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline/tests')
 
-# sys.path.insert(0, r'/home/bernardo/genam/')
-# sys.path.insert(0, r'/home/bernardo/genam/genam/')
-# sys.path.insert(0, r'/home/bernardo/genam/tests/')
+sys.path.insert(0, r'/home/bernardo/genam/')
+sys.path.insert(0, r'/home/bernardo/genam/genam/')
+sys.path.insert(0, r'/home/bernardo/genam/tests/')
 
 
 # Genam Lens, mesh configurator
@@ -26,11 +26,11 @@ from genam.analysis import Analysis
 
 
 
-print('#args', sys.argv)
+print('args', sys.argv[2:])
 
-lens_config = lens_configurator( quantized_matrix_1_1_x(sys.argv[1:]) )
+lens_config = lens_configurator( quantized_matrix_1_1_x( sys.argv[2:] ) )
 
-lens_name = 'quantized_matrix_1_1' 
+lens_name = 'quantized_matrix_1_1_{}'.format( sys.argv[2:] ) 
 
 # # Create lens with name, bricks ID and mesh configurations 
 
