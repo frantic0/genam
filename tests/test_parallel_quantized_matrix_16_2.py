@@ -7,13 +7,13 @@ import salome
 salome.salome_init()
 
 # Set file paths for library and tests  
-sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline')
-sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline/genam')
-sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline/tests')
+# sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline')
+# sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline/genam')
+# sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline/tests')
 
-# sys.path.insert(0, r'/home/bernardo/genam/')
-# sys.path.insert(0, r'/home/bernardo/genam/genam/')
-# sys.path.insert(0, r'/home/bernardo/genam/tests/')
+sys.path.insert(0, r'/home/bernardo/genam/')
+sys.path.insert(0, r'/home/bernardo/genam/genam/')
+sys.path.insert(0, r'/home/bernardo/genam/tests/')
 
 
 # Genam Lens, mesh configurator
@@ -34,19 +34,19 @@ lens_name = 'quantized_matrix_16_2'
 
 lens = Lens( lens_config, mesh_configurator(3), name = lens_name  )
 
-# # start = time.time()
+start = time.time()
 
 lens.process_geometry() # Create the lens geometry 
 
-# # print("Geometry computation time: {:.2f} sec".format(time.time() - start) )
+print("Geometry computation time: {:.2f} sec".format(time.time() - start) )
 
-# # start = time.time()
+start = time.time()
 
 lens.process_mesh() # Create lens mesh 
 
-# # print("Mesh computation time: {:.2f} sec".format( time.time() - start) )
+print("Mesh computation time: {:.2f} sec".format( time.time() - start) )
 
-# # start = time.time()
+start = time.time()
 
 
 DATASET_PATH = Path('/SAN/uclic/ammdgop/data')              # Dataset path, where all data will be stored - .unv mesh files and solver directories
@@ -54,14 +54,14 @@ UNV_PATH = DATASET_PATH.joinpath( lens_name + '.unv')
 SIF_PATH = Path('test_quantised_matrix.sif')       
 SOLVER_DATA_PATH = DATASET_PATH.joinpath( lens_name )       #  solver *.mesh files, sif. file
 
-# lens.export_mesh( str( UNV_PATH ) ) # export .unv mesh file, requires conversion to string
-# print("Mesh exported to Elmer format: {:.2f} sec".format( time.time() - start) )
+lens.export_mesh( str( UNV_PATH ) ) # export .unv mesh file, requires conversion to string
+print("Mesh exported to Elmer format: {:.2f} sec".format( time.time() - start) )
 
-# start = time.time()
+start = time.time()
 
-# convert_mesh( UNV_PATH ) # run elmergrid convert .unv mesh file to elmer format *.mesh files in a directory 
-# copy_solver_templates( SOLVER_DATA_PATH )          # copy all the necessary templates to run elmer solver
-# copy_sif( SOLVER_DATA_PATH, SIF_PATH )          # copy solver input file
+convert_mesh( UNV_PATH ) # run elmergrid convert .unv mesh file to elmer format *.mesh files in a directory 
+copy_solver_templates( SOLVER_DATA_PATH )          # copy all the necessary templates to run elmer solver
+copy_sif( SOLVER_DATA_PATH, SIF_PATH )          # copy solver input file
 
 # print("Elmer template copied: {:.2f} sec".format( time.time() - start) )
 
