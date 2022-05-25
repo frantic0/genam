@@ -28,7 +28,7 @@ if sys.argv == None:
    size_lens_row, size_lens_column = 2, 2
 else: 
    print( 'args', sys.argv )
-   size_lens_row, size_lens_column = sys.argv[2], sys.argv[3]
+   size_lens_row, size_lens_column = int(sys.argv[1]), int(sys.argv[2])
    
 size_lens = size_lens_row * size_lens_column
 

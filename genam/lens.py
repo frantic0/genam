@@ -18,8 +18,7 @@ from salome.GMSHPlugin import GMSHPluginBuilder
 
 class Lens:
   
-  def __init__( 
-                self,
+  def __init__( self,
                 unit_cells_config,
                 mesh_config,
                 name = 'lens',
