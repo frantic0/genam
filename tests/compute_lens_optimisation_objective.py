@@ -2,19 +2,6 @@ import os, sys, time, math
 import pandas as pd
 from pathlib import Path
 
-### Salome GEOM and SMESH components
-import salome
-salome.salome_init()
-
-# Set file paths for library and tests  
-sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline')
-sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline/genam')
-sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline/tests')
-
-# sys.path.insert(0, r'/home/bernardo/genam/')
-# sys.path.insert(0, r'/home/bernardo/genam/genam/')
-# sys.path.insert(0, r'/home/bernardo/genam/tests/')
-
 
 # Genam Lens, mesh configurator
 from genam.lens import Lens
@@ -23,9 +10,10 @@ from genam.configuration.mesh import configurator as mesh_configurator
 from genam.solver import convert_mesh, copy_solver_templates, copy_sif, run_elmer_solver
 from genam.analysis import Analysis
 
-def compute_lens_optimisation_objective( lens_config, lens_name ):
-    # lens_config = lens_configurator( matrices.quantized_matrix_16_2 )
-    # lens_name = 'quantized_matrix_16_2' 
+def compute_lens_optimisation_objective( quantized_matrix, iteration ):
+    lens_config = lens_configurator(quantized_matrix)
+    lens_name = f"quantized_matrix_{lens_config.shape[0]}_{lens_config.shape[1]}_{iteration}"
+ 
     # # # Create lens with name, bricks ID and mesh configurations 
     lens = Lens( lens_config, mesh_configurator(3), name = lens_name  )
     # # start = time.time()

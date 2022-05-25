@@ -14,8 +14,8 @@ class geneticalgorithm():
     def __init__(self, function, dimension, variable_type='binary', \
                  variable_boundaries=None,\
                  variable_type_mixed=None, \
-                 algorithm_parameters={'max_num_iteration': None,\
-                                       'population_size':100,\
+                 algorithm_parameters={'max_num_iteration': 20,\
+                                       'population_size':20,\
                                        'mutation_probability':0.1,\
                                        'elit_ratio': 0.01,\
                                        'crossover_probability': 0.5,\
@@ -23,7 +23,7 @@ class geneticalgorithm():
                                        'crossover_type':'uniform',\
                                        'max_iteration_without_improv':None},\
                      convergence_curve=True,\
-                         progress_bar=True):
+                         progress_bar=False):
 
         '''
         Here parent portion is the part of current gen population which is selected randomly 
@@ -144,6 +144,9 @@ class geneticalgorithm():
 ########################################################################## 
     def run(self):
         
+        # To save the variables in a file  
+        file_object = open("final_results.out","a+")
+        
         ##########################################################
         ######### Initialize Population (real or integer form)
         ##########################################################
@@ -191,6 +194,37 @@ class geneticalgorithm():
             # and select the first one as best objective function
             pop = pop[pop[:,self.dim].argsort()]
 
+            ###############################################
+            ################### SAVE FILES ###############
+            ##############################################
+            # TO print the pop and save count ids
+            pop_print=np.array([np.zeros(self.dim+2)]*self.pop_s)
+            solo_1 = np.zeros(self.dim+2)
+            for p1 in range(((t-1)*self.pop_s),(t*self.pop_s)):
+                for p2 in range(0,self.dim+1):
+                    solo_1[p2] = pop[p1-((t-1)*self.pop_s),p2]
+                solo_1[self.dim+1] = p1+1
+                pop_print[p1-((t-1)*self.pop_s)] = solo_1.copy()
+
+            # save file at every generations
+            file_object.seek(0)
+            file_object.write("\n")
+
+            # Append values
+            dict1 = {"Generations": t, "Population_size":self.pop_s, "Lens_size (rxc)": self.dim, "count_id_lb":((t-1)*self.pop_s)+1 ,"count_id_ub":(t*self.pop_s)}
+            str1 = repr(dict1)
+            file_object.write("dict1 = " + str1 + "\n")
+            file_object.write("\n")
+            file_object.write("################################################")
+            file_object.write("\n")
+
+            for p3 in range(((t-1)*self.pop_s),(t*self.pop_s)):
+                file_object.write(repr(pop_print[p3-((t-1)*self.pop_s),:]).replace("\n", " "))
+                file_object.write("\n")
+                file_object.seek(0)
+            file_object.write("\n") 
+            ##############################################################
+            #############################################################
                 
             # update the desired best fun and variable values
             if pop[0,self.dim]<self.best_function:
@@ -336,6 +370,7 @@ class geneticalgorithm():
             sys.stdout.write('\nWarning: GA is terminated due to the'+\
                              ' maximum number of iterations without improvement was met!')
 
+        file_object.close()
 ##############################################################################
 ##### Dependent functions (croosover, mutations, objective function calculation)         
 ##############################################################################         

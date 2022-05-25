@@ -26,6 +26,8 @@ def copy_solver_templates( path ):
     source = Path(solver_templates_path).joinpath(fileName)
     destination = Path(user_defined_path).joinpath(fileName) 
     
+    # TODO can fail if ElmerGrid failed to create directory. 
+    # Test directory existance
     if os.path.isfile(source):
       shutil.copy(source, destination)
       print('copied {} {}'.format(source, destination) )
