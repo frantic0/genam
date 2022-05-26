@@ -12,13 +12,13 @@ salome.salome_init()
 ### Path for Salome
 
 # Set file paths for library and tests  
-sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline')
-sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline/genam')
-sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline/tests')
+#sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline')
+#sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline/genam')
+#sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline/tests')
 
-# sys.path.insert(0, r'/home/bernardo/genam/')
-# sys.path.insert(0, r'/home/bernardo/genam/genam/')
-# sys.path.insert(0, r'/home/bernardo/genam/tests/')
+sys.path.insert(0, r'/SAN/uclic/ammdgop/genam/')
+sys.path.insert(0, r'/SAN/uclic/ammdgop/genam/genam/')
+sys.path.insert(0, r'/SAN/uclic/ammdgop/genam/tests/')
 
 from genam.optimisation.ga import geneticalgorithm as ga
 from compute_lens_optimisation_objective import compute_lens_optimisation_objective

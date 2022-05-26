@@ -12,8 +12,10 @@ from genam.analysis import Analysis
 
 def compute_lens_optimisation_objective( quantized_matrix, iteration ):
     lens_config = lens_configurator(quantized_matrix)
-    lens_name = f"quantized_matrix_{lens_config.shape[0]}_{lens_config.shape[1]}_{iteration}"
- 
+    print(quantized_matrix)
+    print(lens_config)
+    lens_name = f"quantized_matrix_{ quantized_matrix.shape[0] }_{ quantized_matrix.shape[1] }_{iteration}"
+    print(lens_name)
     # # # Create lens with name, bricks ID and mesh configurations 
     lens = Lens( lens_config, mesh_configurator(3), name = lens_name  )
     # # start = time.time()

@@ -11,9 +11,9 @@ salome.salome_init()
 # sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline/genam')
 # sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline/tests')
 
-sys.path.insert(0, r'/home/bernardo/genam/')
-sys.path.insert(0, r'/home/bernardo/genam/genam/')
-sys.path.insert(0, r'/home/bernardo/genam/tests/')
+sys.path.insert(0, r'/SAN/uclic/ammdgop/genam/')
+sys.path.insert(0, r'/SAN/uclic/ammdgop/genam/genam/')
+sys.path.insert(0, r'/SAN/uclic/ammdgop/genam/tests/')
 
 
 # Genam Lens, mesh configurator
