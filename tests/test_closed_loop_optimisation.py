@@ -12,13 +12,13 @@ salome.salome_init()
 ### Path for Salome
 
 # Set file paths for library and tests  
-sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline')
-sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline/genam')
-sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline/tests')
+#sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline')
+#sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline/genam')
+#sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline/tests')
 
-# sys.path.insert(0, r'/home/bernardo/genam/')
-# sys.path.insert(0, r'/home/bernardo/genam/genam/')
-# sys.path.insert(0, r'/home/bernardo/genam/tests/')
+sys.path.insert(0, r'/SAN/uclic/ammdgop/genam/')
+sys.path.insert(0, r'/SAN/uclic/ammdgop/genam/genam/')
+sys.path.insert(0, r'/SAN/uclic/ammdgop/genam/tests/')
 
 from genam.optimisation.ga import geneticalgorithm as ga
 from compute_lens_optimisation_objective import compute_lens_optimisation_objective
@@ -28,7 +28,7 @@ if sys.argv == None:
    size_lens_row, size_lens_column = 2, 2
 else: 
    print( 'args', sys.argv )
-   size_lens_row, size_lens_column = sys.argv[2], sys.argv[3]
+   size_lens_row, size_lens_column = int(sys.argv[1]), int(sys.argv[2])
    
 size_lens = size_lens_row * size_lens_column
 
