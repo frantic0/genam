@@ -12,9 +12,9 @@ salome.salome_init()
 ### Path for Salome
 
 # Set file paths for library and tests  
-#sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline')
-#sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline/genam')
-#sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline/tests')
+# sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline')
+# sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline/genam')
+# sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline/tests')
 
 sys.path.insert(0, r'/SAN/uclic/ammdgop/genam/')
 sys.path.insert(0, r'/SAN/uclic/ammdgop/genam/genam/')
@@ -50,7 +50,7 @@ def objective_function(X):
       
    lens_iteration += 1
 
-   optimisation_target, optimisation_target_pressure = compute_lens_optimisation_objective(quantized_mat, lens_iteration)
+   _, optimisation_target_pressure = compute_lens_optimisation_objective(quantized_mat, lens_iteration)
 
    return -( optimisation_target_pressure )             # for maximum --ve
 
