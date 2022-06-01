@@ -304,7 +304,7 @@ class geneticalgorithm():
             file_object.write("\n")
 
             # Append values
-            dict1 = {"Generations": t-1, "Population_size":self.pop_s, "Lens_size (rxc)": self.dim, "count_id_lb":((t-1)*self.pop_s)+1 ,"count_id_ub":(t*self.pop_s)-self.par_s}
+            dict1 = {"Generations": t-1, "Population_size":self.pop_s, "Lens_size (rxc)": self.dim, "count_id_lb":(((t-1)*self.pop_s)+1)-(self.par_s)*(t-2),"count_id_ub":((t*self.pop_s)-self.par_s)-(self.par_s)*(t-2)}
             str1 = repr(dict1)
             file_object.write("dict1 = " + str1 + "\n")
             file_object.write("\n")
@@ -379,7 +379,7 @@ class geneticalgorithm():
                 solo_3[0:self.dim+1] = solo.copy()
                 if obj < 0:
                    solo_3[self.dim] = -1*obj
-                solo_3[self.dim+1] = ((t-1)*self.pop_s) + 1 + k - self.par_s
+                solo_3[self.dim+1] = (((t-1)*self.pop_s) + 1 + k - self.par_s)-(self.par_s)*(t-2)
 
                 file_object.write(repr(solo_3[:]).replace("\n", " "))
                 file_object.write("\n")
@@ -395,7 +395,7 @@ class geneticalgorithm():
                 solo_3[0:self.dim+1] = solo.copy()
                 if obj < 0:
                    solo_3[self.dim] = -1*obj
-                solo_3[self.dim+1] = ((t-1)*self.pop_s) + 1 + 1 + k - self.par_s
+                solo_3[self.dim+1] = (((t-1)*self.pop_s) + 1 + 1 + k - self.par_s)-(self.par_s)*(t-2)
 
                 file_object.write(repr(solo_3[:]).replace("\n", " "))
                 file_object.write("\n")
