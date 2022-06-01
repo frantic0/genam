@@ -5,6 +5,7 @@ import numpy as np
 import sys                    # For writing on the console
 import time                   # for execute sleep function (for mwini case)
 import matplotlib.pyplot as plt
+import os.path
 
 class geneticalgorithm():
 
@@ -14,7 +15,7 @@ class geneticalgorithm():
     def __init__(self, function, dimension, variable_type='binary', \
                  variable_boundaries=None,\
                  variable_type_mixed=None, \
-                 algorithm_parameters={'max_num_iteration': 20,\
+                 algorithm_parameters={'max_num_iteration': 50,\
                                        'population_size':20,\
                                        'mutation_probability':0.1,\
                                        'elit_ratio': 0.01,\
@@ -22,7 +23,7 @@ class geneticalgorithm():
                                        'parents_portion': 0.3,\
                                        'crossover_type':'uniform',\
                                        'max_iteration_without_improv':None},\
-                     convergence_curve=True,\
+                     convergence_curve=False,\
                          progress_bar=False):
 
         '''
@@ -139,14 +140,42 @@ class geneticalgorithm():
         else: 
             self.mniwi=int(self.param['max_iteration_without_improv'])
 
+
+        # population store (initialize)
+        self.pop_store = np.array([np.zeros(self.dim)]*self.pop_s*(self.iterate+1))
+
 ##########################################################################
 ############# EXECUTE GA ALGORITHM #######################################
 ########################################################################## 
     def run(self):
         
-        # To save the variables in a file  
-        file_object = open("final_results.out","a+")
+        ###############################################
+        ################### SAVE FILES ###############
+        ##############################################
+
+        # To save the variables in a file 
+        save_path = "/SAN/uclic/ammdgop/data"
+        file_name_1 = "final_results.out"
+        complete_Name = os.path.join(save_path, file_name_1)
+        file_object = open(complete_Name,"a+")
+        #file_object = open("final_results.out","a+")
+
+        # save file at every generations
+        file_object.seek(0)
+        file_object.write("\n")
+
+        # GENERATION COUNTER
+        t=1   
+
+        # Append values
+        dict1 = {"Generations": t-1, "Population_size":self.pop_s, "Lens_size (rxc)": self.dim, "count_id_lb":((t-1)*self.pop_s)+1 ,"count_id_ub":(t*self.pop_s)}
+        str1 = repr(dict1)
+        file_object.write("dict1 = " + str1 + "\n")
+        file_object.write("\n")
+        file_object.write("################################################")
+        file_object.write("\n")
         
+
         ##########################################################
         ######### Initialize Population (real or integer form)
         ##########################################################
@@ -157,7 +186,9 @@ class geneticalgorithm():
         pop=np.array([np.zeros(self.dim+1)]*self.pop_s)
         solo=np.zeros(self.dim+1)
         var=np.zeros(self.dim)       
-        
+
+        solo_1 = np.zeros(self.dim+2)
+
         # Initialize population (randomly between bounds)
         for p in range(0,self.pop_s): 
             for i in self.integers[0]:
@@ -169,21 +200,40 @@ class geneticalgorithm():
                 (self.var_bound[i][1]-self.var_bound[i][0])    
                 solo[i]=var[i].copy()
 
-        # store the objective function value in pop as dim+1
+            # store the objective function value in pop as dim+1
             obj=self.sim(var)            
             solo[self.dim]=obj
             pop[p]=solo.copy()
+
+
+            ###############################################
+            ################### SAVE FILES ###############
+            ##############################################
+            
+            solo_1[0:self.dim+1] = solo.copy()
+            if obj < 0:
+               solo_1[self.dim] = -1*obj
+            solo_1[self.dim+1] = p+1
+            file_object.write(repr(solo_1[:]).replace("\n", " "))
+            file_object.write("\n")
+            file_object.seek(0)
+            file_object.write("\n")
+        file_object.write("\n") 
+       
 
         # Report
         self.report=[]
         self.test_obj=obj
         self.best_variable=var.copy()
         self.best_function=obj
-    
+
+        # store for every generation
+        self.pop_store[((t-1)*self.pop_s):(t*self.pop_s),0:self.dim] = pop[:,0:self.dim]
+           
         #############################################################  
         ############### GENERATION START ######################
         #############################################################              
-        t=1
+       
         counter=0
         while t<=self.iterate:
             
@@ -193,39 +243,8 @@ class geneticalgorithm():
             #Sort: in ascending order for minimum or maximum 
             # and select the first one as best objective function
             pop = pop[pop[:,self.dim].argsort()]
+        
 
-            ###############################################
-            ################### SAVE FILES ###############
-            ##############################################
-            # TO print the pop and save count ids
-            pop_print=np.array([np.zeros(self.dim+2)]*self.pop_s)
-            solo_1 = np.zeros(self.dim+2)
-            for p1 in range(((t-1)*self.pop_s),(t*self.pop_s)):
-                for p2 in range(0,self.dim+1):
-                    solo_1[p2] = pop[p1-((t-1)*self.pop_s),p2]
-                solo_1[self.dim+1] = p1+1
-                pop_print[p1-((t-1)*self.pop_s)] = solo_1.copy()
-
-            # save file at every generations
-            file_object.seek(0)
-            file_object.write("\n")
-
-            # Append values
-            dict1 = {"Generations": t, "Population_size":self.pop_s, "Lens_size (rxc)": self.dim, "count_id_lb":((t-1)*self.pop_s)+1 ,"count_id_ub":(t*self.pop_s)}
-            str1 = repr(dict1)
-            file_object.write("dict1 = " + str1 + "\n")
-            file_object.write("\n")
-            file_object.write("################################################")
-            file_object.write("\n")
-
-            for p3 in range(((t-1)*self.pop_s),(t*self.pop_s)):
-                file_object.write(repr(pop_print[p3-((t-1)*self.pop_s),:]).replace("\n", " "))
-                file_object.write("\n")
-                file_object.seek(0)
-            file_object.write("\n") 
-            ##############################################################
-            #############################################################
-                
             # update the desired best fun and variable values
             if pop[0,self.dim]<self.best_function:
                 counter=0
@@ -276,6 +295,22 @@ class geneticalgorithm():
                         ef_par_list[k]=True
                         par_count+=1  
             ef_par=par[ef_par_list].copy()
+
+            # Generation counter update
+            t+=1
+        
+            # save file at every generations
+            file_object.seek(0)
+            file_object.write("\n")
+
+            # Append values
+            dict1 = {"Generations": t-1, "Population_size":self.pop_s, "Lens_size (rxc)": self.dim, "count_id_lb":((t-1)*self.pop_s)+1 ,"count_id_ub":(t*self.pop_s)-self.par_s}
+            str1 = repr(dict1)
+            file_object.write("dict1 = " + str1 + "\n")
+            file_object.write("\n")
+            file_object.write("################################################")
+            file_object.write("\n")
+
     
             #############################################################  
             ############### Next generation update ######################
@@ -286,6 +321,28 @@ class geneticalgorithm():
             for k in range(0,self.par_s):
                 pop[k]=par[k].copy()
 
+
+            # write the individuals into file before variability
+            solo_2 = np.zeros(self.dim+2)
+            pop_print=np.array([np.zeros(self.dim+2)]*self.par_s)
+
+            for p1 in range(0,self.par_s):
+                for p2 in range(0,self.dim+1):
+                    solo_2[p2] = pop[p1,p2]
+                solo_2[self.dim+1] = 0
+                if solo_2[self.dim] < 0:
+                   solo_2[self.dim] = -1*solo_2[self.dim]
+                pop_print[p1] = solo_2.copy()
+            
+            for p3 in range(0,self.par_s):
+                file_object.seek(0)
+                file_object.write(repr(pop_print[p3,:]).replace("\n", " "))
+                file_object.write("\n")
+                file_object.seek(0) 
+                file_object.write("\n")
+
+            solo_3 = np.zeros(self.dim+2)
+
             # Variability (x-over and mutation)              
             for k in range(self.par_s, self.pop_s, 2):
                 r1=np.random.randint(0,par_count)
@@ -293,28 +350,72 @@ class geneticalgorithm():
                 pvar1=ef_par[r1,: self.dim].copy()
                 pvar2=ef_par[r2,: self.dim].copy()
                 
-                ch=self.cross(pvar1,pvar2,self.c_type)
-                ch1=ch[0].copy()
-                ch2=ch[1].copy()
-                
-                ch1=self.mut(ch1)
-                ch2=self.mutmidle(ch2,pvar1,pvar2)               
-                solo[: self.dim]=ch1.copy()                
+                while flag_1 == 2:
+
+                    ch=self.cross(pvar1,pvar2,self.c_type)
+                    ch1=ch[0].copy()
+                    ch2=ch[1].copy()
+                    
+                    ch1=self.mut(ch1)
+                    ch2=self.mutmidle(ch2,pvar1,pvar2)
+
+                    # compare with previous generations individuals
+                    for p4 in range(0,self.pop_s*(self.iterate+1)):
+
+                        comp_1 = np.array_equal(ch1[ch1.argsort()],self.pop_store[p4,self.pop_store[p4].argsort()])
+                        comp_2 = np.array_equal(ch2[ch2.argsort()],self.pop_store[p4,self.pop_store[p4].argsort()])
+
+                        if comp_1 or comp_2:
+                            flag_1 = 2
+                            break
+                        else:
+                            flag_1 = 1                
+
+                solo[: self.dim]=ch1.copy()
                 obj=self.sim(ch1)
                 solo[self.dim]=obj
-                pop[k]=solo.copy()                
-                solo[: self.dim]=ch2.copy()                
-                obj=self.sim(ch2)               
+                pop[k]=solo.copy()     
+
+                solo_3[0:self.dim+1] = solo.copy()
+                if obj < 0:
+                   solo_3[self.dim] = -1*obj
+                solo_3[self.dim+1] = ((t-1)*self.pop_s) + 1 + k - self.par_s
+
+                file_object.write(repr(solo_3[:]).replace("\n", " "))
+                file_object.write("\n")
+                file_object.seek(0)
+                file_object.write("\n")
+                
+
+                solo[: self.dim]=ch2.copy()
+                obj=self.sim(ch2)      
                 solo[self.dim]=obj
                 pop[k+1]=solo.copy()
-      
+
+                solo_3[0:self.dim+1] = solo.copy()
+                if obj < 0:
+                   solo_3[self.dim] = -1*obj
+                solo_3[self.dim+1] = ((t-1)*self.pop_s) + 1 + 1 + k - self.par_s
+
+                file_object.write(repr(solo_3[:]).replace("\n", " "))
+                file_object.write("\n")
+                file_object.seek(0)
+                file_object.write("\n")
+
+            file_object.write("\n")
+
+
+            # store for every generation
+            self.pop_store[((t-1)*self.pop_s):(t*self.pop_s),0:self.dim] = pop[:,0:self.dim]
+       
+
             #############################################################     
             ########## Increase GENERATION NUMBER 
             #############################################################  
             #if the first pop is less than equal to best value
             #then terminate the while loop after checking for total generations +1 iterations
             ##################################################################  
-            t+=1
+
             if counter > self.mniwi:
                 pop = pop[pop[:,self.dim].argsort()]
                 if pop[0,self.dim]<=self.best_function: 

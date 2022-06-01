@@ -52,7 +52,7 @@ def objective(X):
 
    _, optimisation_target_pressure = compute_lens_optimisation_objective(quantized_mat, lens_iteration)
 
-   return optimisation_target_pressure             # for maximum --ve
+   return -optimisation_target_pressure             # for maximum --ve
 
 
 ## Initializing parameters
