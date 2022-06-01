@@ -11,19 +11,23 @@ class geneticalgorithm():
 ################################################################
 ########### INITIALIZE PARAMETERS & VARIABLES
 ################################################################
-    def __init__(self, function, dimension, variable_type='binary', \
-                 variable_boundaries=None,\
-                 variable_type_mixed=None, \
-                 algorithm_parameters={'max_num_iteration': 20,\
-                                       'population_size':20,\
-                                       'mutation_probability':0.1,\
-                                       'elit_ratio': 0.01,\
-                                       'crossover_probability': 0.5,\
-                                       'parents_portion': 0.3,\
-                                       'crossover_type':'uniform',\
-                                       'max_iteration_without_improv':None},\
-                     convergence_curve=True,\
-                         progress_bar=False):
+    def __init__(self, 
+                function, 
+                dimension, 
+                variable_type = 'binary',
+                variable_boundaries = None,
+                variable_type_mixed = None,
+                algorithm_parameters = { 
+                    'max_num_iteration': 20,
+                    'population_size': 20,
+                    'mutation_probability': 0.1,
+                    'elit_ratio': 0.01,
+                    'crossover_probability': 0.5,
+                    'parents_portion': 0.3,
+                    'crossover_type': 'uniform',
+                    'max_iteration_without_improv': None },
+                convergence_curve = True,
+                progress_bar = False ):
 
         '''
         Here parent portion is the part of current gen population which is selected randomly 

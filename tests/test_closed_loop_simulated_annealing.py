@@ -20,7 +20,7 @@ sys.path.insert(0, r'/SAN/uclic/ammdgop/genam/')
 sys.path.insert(0, r'/SAN/uclic/ammdgop/genam/genam/')
 sys.path.insert(0, r'/SAN/uclic/ammdgop/genam/tests/')
 
-from genam.optimisation.ga import geneticalgorithm as ga
+from genam.optimisation.simulated_annealing import simulated_annealing
 from compute_lens_optimisation_objective import compute_lens_optimisation_objective
 
 
@@ -32,8 +32,7 @@ else:
    
 size_lens = size_lens_row * size_lens_column
 
-## Bounds of variables ## eg.: for real: varbound=np.array([[2,10]]*3) 
-varbound = np.array([[0,15]]*(size_lens))
+bounds = np.array( [[0,15]] * size_lens )
 lens_iteration = 0
 
 def objective(X):
@@ -41,7 +40,7 @@ def objective(X):
    global lens_iteration 
 
    # define quantized matrix 
-   quantized_mat = np.array([np.zeros(size_lens_column).astype(int)]*size_lens_row)
+   quantized_mat = np.array( [np.zeros(size_lens_column).astype(int)] * size_lens_row )
    idx = 0
    for i in range (0, size_lens_row):
       for j in range(0, size_lens_column):
@@ -55,6 +54,9 @@ def objective(X):
    return -(optimisation_target_pressure)             # for maximum --ve
 
 
+def objective_0(x):
+    return 0
+
 ## Initializing parameters
 #### f : objective function to minimize (for maximization insert -ve sign in the definition or 1/f)
 #### dimension: no of variables 
@@ -62,17 +64,11 @@ def objective(X):
 ####                 mixed (both real and integer): for this also supply variable_type_mixed
 ####                 e.g, for 1 real and 2 int : vartype=np.array([['real'],['int'],['int']])
 
-model = ga( function = objective,  
-            dimension = (size_lens),
-            variable_type = 'int',
-            variable_boundaries = varbound )
-
+model = simulated_annealing(objective,)
 
 
 # model.setPath('/SAN/uclic/ammdgop/data/generations.ga')
 
-
-## execute GA
 model.run()   
 
 
@@ -82,24 +78,6 @@ xval = model.best_variable
 fval = model.best_function
 final_pop = model.final_pop
 convergence=model.report
-
-
-#def const(xval):
-#   c11 = xval[0] + xval[1]
-#   
-#   if c11 > 2:
-#      print("constraint satisfied")
-#   else:
-#      print("constraint NOT satisfied")   
-#
-#   return c11
-#
-#c1 = const(xval)
-
-#np.savetxt('variable.txt',xval,fval,f1)
-#np.savetxt('final_pop.csv', [final_pop], delimiter=',', fmt='%d')
-
-
 
 
 
