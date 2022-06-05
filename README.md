@@ -194,5 +194,6 @@ optimisation_target_pressure = analysis._absolute_pressure.GetValue(optimisation
 ```
 
 
-
 ## License
+
+__genam__ is licensed under the MIT License
