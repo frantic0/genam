@@ -51,33 +51,13 @@ def objective(X):
 
    _, optimisation_target_pressure = compute_lens_optimisation_objective(quantized_mat, lens_iteration)
 
-   return -(optimisation_target_pressure)             # for maximum --ve
+   return -(optimisation_target_pressure)
 
 
-def objective_0(x):
-    return 0
+bounds = np.asarray([[-5.0, 5.0]])
+n_iterations = 1000
+step_size = 0.1
+initial_temperature = 10
 
-## Initializing parameters
-#### f : objective function to minimize (for maximization insert -ve sign in the definition or 1/f)
-#### dimension: no of variables 
-#### variable type : Real(real), integer(int), binary (0,1)-correction made inside
-####                 mixed (both real and integer): for this also supply variable_type_mixed
-####                 e.g, for 1 real and 2 int : vartype=np.array([['real'],['int'],['int']])
-
-model = simulated_annealing(objective,)
-
-
-# model.setPath('/SAN/uclic/ammdgop/data/generations.ga')
-
-model.run()   
-
-
-
-# final variables_after optimization (model.best_function, model.best_variable, model.final_pop)
-xval = model.best_variable
-fval = model.best_function
-final_pop = model.final_pop
-convergence=model.report
-
-
+best, score, scores = simulated_annealing(objective, bounds, n_iterations, step_size, initial_temperature)
 
