@@ -17,20 +17,20 @@ The following is the list of third-party software and python modules that aren n
 
 * [ElmerFEM](http://www.csc.fi/elmer) – Multiphysical simulation
 * [Paraview](https://www.paraview.org/) – Data analysis and visualization 
-* [Python 3.9](https://www.python.org/) and libraries for post-processing and analysis:
+* [Python](https://www.python.org/) libraries for post-processing and analysis:
   * [numpy](https://www.python.org/)
   * [pandas](https://www.python.org/)
   * [matplotlib](https://www.python.org/)
   * [meshio](https://www.python.org/)
   * [pytorch](https://pytorch.org)
 
-Additionally, you may want to install Jupiter notebooks to run interactive analyis
+Additionally, you may want to install Jupiter notebooks to run interactive analyis:
 
 * [Jupyter Notebooks](https://www.python.org/)
 
 You will also need an IDE or code editor to edit the Python code in your scripts. Here's is a useful thread on how to set up a code editor with Salome.
 
-[Using python salome libraries from a python IDE](https://discourse.salome-platform.org/t/using-python-salome-libraries-from-a-python-ide/63/7)
+* [Using python salome libraries from a python IDE](https://discourse.salome-platform.org/t/using-python-salome-libraries-from-a-python-ide/63/7)
 
 <br />
 
@@ -58,7 +58,7 @@ C:\SALOME-9.8.0\W64\Python\python -m pip install pandas
 ## Up and Running
 
 
-Once you have everything set up, start a Salome instance from your command line interface
+Once you have everything set up, start a Salome instance from your command line interface.
 
 ```
 python salome
@@ -70,7 +70,7 @@ You can also use salome in batch mode, which means without the graphical user in
 python .\salome -t -w1 
 ```
 
-For instance, to generate and run a study of the labyrinthine brick #15 using Salome in batch mode  
+For instance, to generate and run a study of the labyrinthine brick #15 using Salome in batch mode,  
 
 ```
 python .\salome -t -w1  .test_quantized_matrix_1_1.py args:15
@@ -96,7 +96,7 @@ import salome
 salome.salome_init()
 ```
 
-Because the script is running within Salome, which takes over the current working dir, we need to tell Salome where the __genam__ package is installed, like so:   
+Because the script is running within Salome, which takes over the current working directory, we need to tell Salome where the __genam__ package is installed, like so:   
 
 
 ```
@@ -106,11 +106,11 @@ sys.path.insert(0, r'C:/Users/user/Documents/dev/pipeline/genam')
 sys.path.insert(0, r'C:/Users/user/Documents/dev/pipeline/tests')
 ```
 
-The __genam__ package is structured with a simple namespace that reflects the main concepts and workflow stages that it implements. Typically, we to use geometry and meshing constructs, configuration, data structures and utility functions: 
+The __genam__ package is structured with a simple namespace that reflects its main package concepts, such as entities and workflow stages, and implementation. Typically, we to use geometry and meshing classes and methods, configuration entities and data structures, and utility functions: 
 
 ```
 # Genam Lens, mesh configurator
-from matrices.quantized_1_1 import quantized_matrix_1_1_x
+from matrices.quantized_8_8 import quantized_matrix_8_8
 from genam.lens import Lens
 from genam.configuration.lens import configurator as lens_configurator 
 from genam.configuration.mesh import configurator as mesh_configurator
@@ -121,9 +121,9 @@ from genam.analysis import Analysis
 To create a model of a lens, or a metasurface, you configure it with a matrice of quantized bricks identifiers (between 0 and 15), configure its mesh parameters and name it. 
 
 ```
-lens_config = lens_configurator( quantized_matrix_1_1 )
+lens_config = lens_configurator( quantized_matrix_8_8 )
 
-lens_name = 'quantized_matrix_1_1' 
+lens_name = 'quantized_matrix_8_8' 
 
 lens = Lens( lens_config, mesh_config_selector(3), name = lens_name  )
 ```
@@ -143,7 +143,7 @@ quantized_matrix_8_8 = np.array([
                                 ])
 ```
 
-Once the lens is created, you can request the processing of the lens geometry and mesh 
+Once the lens is created, you can request the lens geometry and mesh processing in that order: 
 
 ```
 lens.process_geometry() 
