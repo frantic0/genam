@@ -58,7 +58,7 @@ C:\SALOME-9.8.0\W64\Python\python -m pip install pandas
 ## Up and Running
 
 
-Once you have everything set up, start a Salome instance from your command line interface.
+Once you have everything set up, start a Salome instance from your command line interface
 
 ```
 python salome
