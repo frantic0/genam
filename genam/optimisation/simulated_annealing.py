@@ -12,6 +12,16 @@ def simulated_annealing(objective, bounds, n_iterations, step_size, temperature,
         If the new point is worse than the current candidate, it can still be accepted. The likelihood of accepting a solution worse than the current 
         is a function of the temperature of the search and how much worse the solution is than the current solution.
 
+        Advantages:
+        . can work with costt function and arbitrary systems 
+        . easy to code even if the problem at hand is complex
+        . garantees finding an optimal solution by preventing getting stuck in a local optima
+
+        Limitations
+        . cannot tell if optimal solution has been found
+        . with problems with a few local minina gradient descent would do a better job
+        . tend to be time consuming
+
     '''
     if best == None:                                                                # if initial solution is not provided
         best = bounds[:, 0] + rand(len(bounds)) * ( bounds[:, 1] - bounds[:, 0] )   # sample a random initial point (uniform distribution)
@@ -28,11 +38,11 @@ def simulated_annealing(objective, bounds, n_iterations, step_size, temperature,
         if candidate_eval < best_eval:                                              # check for new best solution
             best, best_eval = candidate, candidate_eval                             # store new best point
             
-            d = candidate_eval - current_eval                                       # difference between candidate and current point evaluation
+            difference = candidate_eval - current_eval                                       # difference between candidate and current point evaluation
             
-            metropolis = exp( -d / (temperature / float(i + 1)) )                   # calculate likelihood of accepting a solution with worse performance (metropolis acceptance criterion)
+            metropolis = exp( -difference / (temperature / float(i + 1)) )                   # calculate likelihood of accepting a solution with worse performance (metropolis acceptance criterion)
             
-            if d < 0 or rand() < metropolis:
+            if difference < 0 or rand() < metropolis:
                 current, current_eval = candidate, candidate_eval
 	
     return [ best, best_eval, scores ]
