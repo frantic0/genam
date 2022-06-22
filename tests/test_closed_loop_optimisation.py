@@ -2,7 +2,7 @@
 This is the main file to execute GA
 '''
 
-import os, sys  
+import sys  
 import numpy as np
 
 ### Salome GEOM and SMESH components
@@ -52,7 +52,7 @@ def objective(X):
 
    _, optimisation_target_pressure = compute_lens_optimisation_objective(quantized_mat, lens_iteration)
 
-   return -optimisation_target_pressure             # for maximum --ve
+   return -optimisation_target_pressure             # for maximum --ve, obj_type = 'Max'
 
 
 ## Initializing parameters
@@ -65,11 +65,29 @@ def objective(X):
 model = ga( function = objective,  
             dimension = (size_lens),
             variable_type = 'int',
-            variable_boundaries = varbound )
+            variable_boundaries = varbound,
+            obj_type='Max')
+
+
+## define path for the existing file (with prefix r)
+''' 
+pop_all.csv is created everytime to store the values at each generation (variables, objective, brickID, generationID)
+final_results.out is created to store all the relevant information. 
+
+If the csv file is already present in the directory defined by user below, 
+then model will read the file and continue to run from the next generation 
+
+If not then model will create a new file and store it in the user defined path. 
+
+Error will be thrown if an empty csv file will be supplied. 
+
+REMEMBER TO PREFIX r before the path of pop_all.csv file 
+'''
+
+model.set_path(r"/SAN/uclic/ammdgop/data/pop_all.csv")   # user defined path
 
 ## execute GA
 model.run()   
-
 
 
 # final variables_after optimization (model.best_function, model.best_variable, model.final_pop)
@@ -77,6 +95,8 @@ xval = model.best_variable
 fval = model.best_function
 final_pop = model.final_pop
 convergence=model.report
+
+
 
 
 #def const(xval):
