@@ -5,6 +5,7 @@ import time, os, shutil
 from pathlib import Path
 # import export_solver_input_file
 # from export_solver_input_file import export_parameterisable_solver_input_file
+import subprocess
 
 import GEOM
 from salome.geom import geomBuilder
@@ -84,7 +85,8 @@ def convert_mesh(filename, options=""):
   """
   
   if os.name == 'nt':
-    os.system('cmd /c "ElmerGrid 8 2 {} -autoclean {}"'.format(filename, options))
+    subprocess.call(["ElmerGrid", "8", "2", "{}".format(filename)])
+    # os.system('cmd /c "ElmerGrid 8 2 {} -autoclean {}"'.format(filename, options))
   elif os.name == 'posix': 
     os.system('ElmerGrid 8 2 {} -autoclean {}'.format(filename, options))  
   else: 
