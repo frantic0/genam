@@ -36,7 +36,7 @@ size_lens = size_lens_row * size_lens_column
 varbound = np.array([[0,15]]*(size_lens))
 lens_iteration = 0
 
-def objective_function(X):
+def objective(X):
   
    global lens_iteration 
 
@@ -52,7 +52,7 @@ def objective_function(X):
 
    _, optimisation_target_pressure = compute_lens_optimisation_objective(quantized_mat, lens_iteration)
 
-   return -( optimisation_target_pressure )             # for maximum --ve
+   return -(optimisation_target_pressure)             # for maximum --ve
 
 
 ## Initializing parameters
@@ -62,10 +62,15 @@ def objective_function(X):
 ####                 mixed (both real and integer): for this also supply variable_type_mixed
 ####                 e.g, for 1 real and 2 int : vartype=np.array([['real'],['int'],['int']])
 
-model = ga( function = objective_function,  
-            dimension = ( size_lens),
+model = ga( function = objective,  
+            dimension = (size_lens),
             variable_type = 'int',
             variable_boundaries = varbound )
+
+
+
+# model.setPath('/SAN/uclic/ammdgop/data/generations.ga')
+
 
 ## execute GA
 model.run()   
