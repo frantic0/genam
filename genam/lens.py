@@ -167,7 +167,11 @@ class Lens:
 
         else: 
 
-          Sketch_1 = parameterize_2D_inner_shape( self.wavelenght,
+          # Sketch_1 = parameterize_2D_inner_shape( self.wavelenght,
+          #                                         self.unit_cells_config[m][n][1] * self.wavelenght,
+          #                                         self.unit_cells_config[m][n][2] * self.wavelenght )
+          
+          Sketch_1 = parameterize_2D_inner_shape_no_fillet( self.wavelenght,
                                                   self.unit_cells_config[m][n][1] * self.wavelenght,
                                                   self.unit_cells_config[m][n][2] * self.wavelenght )
 
