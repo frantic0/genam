@@ -55,6 +55,7 @@ def objective(X):
    return -optimisation_target_pressure             # for maximum --ve, obj_type = 'Max'
 
 
+
 ## Initializing parameters
 #### f : objective function to minimize (for maximization insert -ve sign in the definition or 1/f)
 #### dimension: no of variables 
@@ -85,6 +86,11 @@ REMEMBER TO PREFIX r before the path of pop_all.csv file
 '''
 
 model.set_path(r"/SAN/uclic/ammdgop/data/pop_all.csv")   # user defined path
+
+
+
+# model.setPath('/SAN/uclic/ammdgop/data/generations.ga')
+
 
 ## execute GA
 model.run()   
