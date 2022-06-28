@@ -29,7 +29,7 @@ from genam.analysis import Analysis
 brick_ID = -1
 
 if sys.argv == ['']:
-   brick_ID = 2
+   brick_ID = 15
 else: 
    print( 'args', sys.argv )
    brick_ID =  int(sys.argv[2])
