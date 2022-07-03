@@ -67,7 +67,7 @@ class Lens:
     geompy.addToStudy( y, 'y' )
     geompy.addToStudy( z, 'z' )
 
-    probing_distance = 100
+    # probing_distance = 100
 
 
     # TODO: we want to make 'm' and 'n' consistent with the input grid size. 
@@ -105,7 +105,7 @@ class Lens:
                                           pml_bottom_height + air_bottom_height )
     # geompy.addToStudy( lens_outer, 'lens_outer' )
 
-    air_height = probing_distance - (pml_bottom_height + air_bottom_height + self.wavelenght)
+    air_height = self.probing_distance - (pml_bottom_height + air_bottom_height + self.wavelenght)
 
     air_outlet = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( lens_side_x, lens_side_y, air_height ),
                                           x_translation_shift, 
@@ -114,7 +114,7 @@ class Lens:
 
     pml_top = geompy.MakeTranslation( pml_bottom,
                                       0, 0,
-                                      probing_distance )
+                                      pml_bottom_height + air_bottom_height + self.wavelenght + self.probing_distance )
     # geompy.addToStudy( pml_top, 'pml_top' )
 
     row = 0
@@ -149,14 +149,6 @@ class Lens:
   
         if self.unit_cells_config[m][n][0] == 0:
 
-          # brick_inner = geompy.MakeTranslation(
-          #                   geompy.MakeBoxDXDYDZ( boxSide - 2 * self.wavelenght/40, 
-          #                                         boxSide - 2 * self.wavelenght/40, 
-          #                                         self.wavelenght ),
-          #                   self.wavelenght/40, 
-          #                   self.wavelenght/40,
-          #                   pml_bottom_height + air_bottom_height )    
-
           brick_inner = geompy.MakeTranslation(
                             geompy.MakeBoxDXDYDZ( boxSide - 2 * self.wavelenght/40, 
                                                   boxSide - 2 * self.wavelenght/40, 
@@ -182,7 +174,7 @@ class Lens:
           translation_x = self.wavelenght/40 + column * ( self.wavelenght/40 + self.wavelenght/2 )     
           translation_y = self.wavelenght/40 + row * (self.wavelenght/40 + self.wavelenght/2 )     
           
-          # TODO : replace hardcoded constant but ratio
+          # TODO : replace hardcoded constant by ratio
           translation = ( translation_shift[0] + translation_x,
                           translation_shift[1] + translation_y + self.wavelenght/2, 
                           6.861 )
