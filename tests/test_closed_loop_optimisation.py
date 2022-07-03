@@ -66,7 +66,9 @@ def objective(X):
 model = ga( function = objective,  
             dimension = (size_lens),
             variable_type = 'int',
-            variable_boundaries = varbound,
+            variable_boundaries=varbound, 
+            iterations_number= 20,
+            population_size=20,
             obj_type='Max')
 
 

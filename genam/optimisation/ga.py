@@ -1,5 +1,6 @@
 
-# Single objective GA with real, integer, and mixed form of variables
+# Back up file to run GA 
+# Single objective GA with constraint handling 
 
 import numpy as np
 import sys                    # For writing on the console
@@ -7,6 +8,7 @@ import time                   # for execute sleep function (for mwini case)
 import os.path
 import csv
 
+#import pandas as pd
 #import matplotlib.pyplot as plt
 
 class geneticalgorithm():
@@ -20,9 +22,9 @@ class geneticalgorithm():
                 variable_type = 'binary',
                 variable_boundaries = None,
                 variable_type_mixed = None,
-                algorithm_parameters = { 
-                    'max_num_iteration': 20,
-                    'population_size': 20,
+                iterations_number =  1000,
+                population_size =  20,
+                algorithm_parameters = {                
                     'mutation_probability': 0.1,
                     'elit_ratio': 0.01,
                     'crossover_probability': 0.5,
@@ -99,7 +101,8 @@ class geneticalgorithm():
         self.param=algorithm_parameters
 
         # population size
-        self.pop_s=int(self.param['population_size'])
+        self.pop_s= int(population_size)
+        #int(self.param['population_size'])
 
           
         # parent population as portion of total pop
@@ -132,7 +135,8 @@ class geneticalgorithm():
             self.num_elit=int(trl)
             
         # for no of iterations (generations: if pop size is more then generations are less)
-        if self.param['max_num_iteration']==None:
+        if iterations_number==None:
+        #if self.param['max_num_iteration']==None:
             self.iterate=0
             for i in range (0,self.dim):
                 if self.var_type[i]=='int':
@@ -143,7 +147,8 @@ class geneticalgorithm():
             if (self.iterate*self.pop_s)>10000000:
                 self.iterate=10000000/self.pop_s
         else:
-            self.iterate=int(self.param['max_num_iteration'])
+            self.iterate=int(iterations_number)
+            #self.iterate=int(self.param['max_num_iteration'])
         
         
         # if there is no improvement in the function value for this number
@@ -187,8 +192,8 @@ class geneticalgorithm():
     def run(self):
 
         # To save the variables in a file  
-        #save_path_1 = "/SAN/uclic/ammdgop/data"
-        save_path_1 = "/SAN/uclic/ammdgop/data" 
+        #save_path_1 = self.cwd1 #"D:/UCL/Codes/GA_Python/Sample1 code"
+        save_path_1 = "/SAN/uclic/ammdgop/data"
         save_path_2 = self.cwd1        
 
         file_name_1 = "final_results.out"
@@ -231,18 +236,25 @@ class geneticalgorithm():
             for row1 in reader:
                 row2.append(row1)
             
-            var_1 = np.array(row2,dtype=object)[len(row2)-2]
-            var_2 = var_1
-
-            var_1 = var_1[len(var_1)-1]
-            var_1 = int(var_1[0])
-            t = var_1 +1               # iteration number
- 
-
-            if len(var_2) == 0:
+            if len(row2) < self.pop_s:
                 print('ERROR: ****THE PASSED FILE IS EMPTY - DELETE THE FILE OR CHANGE IT WITH THE SUITABLE (pop_all.csv) file*******')
                 exit()
             else:
+
+                par_1 = 0
+                var_1 = []
+                while (len(var_1) < 7):
+                    par_1 = par_1 + 1 
+                    var_1 = np.array(row2,dtype=object)[len(row2)-par_1]
+                                
+                var_1 = var_1[len(var_1)-1]
+                var_1 = int(var_1[:len(var_1)-2])
+                t = var_1 +1               # iteration number
+                
+                sys.stdout.write('\n\n :::::::::STARTING FROM GENERATION:::::\n %s\n' % (t))
+                sys.stdout.flush() 
+
+    
                 count_var1 = 0
                 for p0 in range(0,len(row2)):
                     if len(np.array(row2,dtype=object)[p0]) != 0:
@@ -293,16 +305,29 @@ class geneticalgorithm():
 
             solo_1 = np.zeros(self.dim+2)
 
+           
             # Initialize population (randomly between bounds)
             for p in range(0,self.pop_s): 
-                for i in self.integers[0]:
-                    var[i]=np.random.randint(self.var_bound[i][0],\
-                            self.var_bound[i][1]+1)  
-                    solo[i]=var[i].copy()
-                for i in self.reals[0]:
-                    var[i]=self.var_bound[i][0]+np.random.random()*\
-                    (self.var_bound[i][1]-self.var_bound[i][0])    
-                    solo[i]=var[i].copy()
+            
+                flag_c = 2 # to avoid repetition 1 for no repeat 2 for repeat
+                while flag_c == 2:
+                    for i in self.integers[0]:
+                        var[i]=np.random.randint(self.var_bound[i][0],\
+                                self.var_bound[i][1]+1)  
+                        solo[i]=var[i].copy()
+
+                    for i in self.reals[0]:
+                        var[i]=self.var_bound[i][0]+np.random.random()*\
+                        (self.var_bound[i][1]-self.var_bound[i][0])    
+                        solo[i]=var[i].copy()
+                    
+                    for p_flag in range(0,self.pop_s):
+                        comp_flag = np.array_equal(solo[:self.dim],pop[p_flag,:self.dim])
+
+                    if comp_flag:
+                        flag_c = 2
+                    else:
+                        flag_c = 1
 
                 # store the objective function value in pop as dim+1
                 obj=self.sim(var)            
@@ -351,6 +376,12 @@ class geneticalgorithm():
         
         counter=0
         while t<=self.iterate:
+
+            file_object_1.close()           
+            file_object_1 = open(complete_Name_2,"a+", newline='')    
+            writer = csv.writer(file_object_1, dialect='excel')
+           # file_object_1.write("\n")
+
             
             if self.progress_bar==True:
                 self.progress(t,self.iterate,status="GA is running...")
@@ -471,16 +502,17 @@ class geneticalgorithm():
 
             solo_3 = np.zeros(self.dim+2)
             
-            flag_1 = 2  # 1 if no repetiton # 2 if found repetiton
-
             # Variability (x-over and mutation)              
             for k in range(self.par_s, self.pop_s, 2):
-                r1=np.random.randint(0,par_count)
-                r2=np.random.randint(0,par_count)
-                pvar1=ef_par[r1,: self.dim].copy()
-                pvar2=ef_par[r2,: self.dim].copy()
-                
+
+                flag_1 = 2  # 1 if no repetiton # 2 if found repetiton
                 while flag_1 == 2:
+
+                    r1=np.random.randint(0,par_count)
+                    r2=np.random.randint(0,par_count)
+
+                    pvar1=ef_par[r1,: self.dim].copy()
+                    pvar2=ef_par[r2,: self.dim].copy()
 
                     ch=self.cross(pvar1,pvar2,self.c_type)
                     ch1=ch[0].copy()
@@ -489,19 +521,41 @@ class geneticalgorithm():
                     ch1=self.mut(ch1)
                     ch2=self.mutmidle(ch2,pvar1,pvar2)
 
-                    # compare with previous generations individuals
-                    for p4 in range(0,self.pop_s*(self.iterate+1)):
+                    # compare with previous individuals in the same pop
+                    for p4_1 in range(0,self.pop_s):
 
-                        comp_1 = np.array_equal(ch1[ch1.argsort()],self.pop_store[p4,self.pop_store[p4,: self.dim].argsort()])
-                        comp_2 = np.array_equal(ch2[ch2.argsort()],self.pop_store[p4,self.pop_store[p4,: self.dim].argsort()])
+                        comp_1_1 = (ch1==self.pop_store_indi[p4_1,: self.dim]).all()
+                        comp_2_1 = (ch2==self.pop_store_indi[p4_1,: self.dim]).all()
 
-                        if comp_1 or comp_2:
+                        #comp_1 = np.array_equal(ch1[ch1.argsort()],self.pop_store[p4,self.pop_store[p4,: self.dim].argsort()])
+                        #comp_2 = np.array_equal(ch2[ch2.argsort()],self.pop_store[p4,self.pop_store[p4,: self.dim].argsort()])
+
+                        if comp_1_1 or comp_2_1:
                             flag_1 = 2
                             break
                         else:
                             flag_1 = 1
 
-                     
+                    if p4_1 == self.pop_s-1:
+                        
+                        # compare with previous generations individuals
+                        for p4 in range(0,self.pop_s*(t)):
+
+                            #comp_1 = np.array_equal(ch1,self.pop_store[p4,: self.dim])
+                            comp_1 = (ch1 == self.pop_store[p4,: self.dim]).all()
+                            comp_2 = (ch2 == self.pop_store[p4,: self.dim]).all()
+                            comp_3 = (ch1 == ch2).all()
+
+                            #comp_1 = np.array_equal(ch1[ch1.argsort()],self.pop_store[p4,self.pop_store[p4,: self.dim].argsort()])
+                            #comp_2 = np.array_equal(ch2[ch2.argsort()],self.pop_store[p4,self.pop_store[p4,: self.dim].argsort()])
+
+                            if comp_1 or comp_2 or comp_3:
+                                flag_1 = 2
+                                break
+                            else:
+                                flag_1 = 1
+
+
                 solo[: self.dim]=ch1.copy()
                 obj=self.sim(ch1)
                 solo[self.dim]=obj
@@ -510,7 +564,7 @@ class geneticalgorithm():
 
                 solo_3[0:self.dim+1] = solo.copy()
                 if obj < 0:
-                   solo_3[self.dim] = -1*obj
+                    solo_3[self.dim] = -1*obj
                 solo_3[self.dim+1] = (((t-1)*self.pop_s) + 1 + k - self.par_s)-(self.par_s)*(t-2)
 
                 self.pop_store_indi[k,:self.dim+2] = solo_3.copy()
@@ -529,7 +583,7 @@ class geneticalgorithm():
 
                 solo_3[0:self.dim+1] = solo.copy()
                 if obj < 0:
-                   solo_3[self.dim] = -1*obj
+                    solo_3[self.dim] = -1*obj
                 solo_3[self.dim+1] = (((t-1)*self.pop_s) + 1 + 1 + k - self.par_s)-(self.par_s)*(t-2)
 
                 self.pop_store_indi[k+1,:self.dim+2] = solo_3.copy()
@@ -564,7 +618,6 @@ class geneticalgorithm():
             #if the first pop is less than equal to best value
             #then terminate the while loop after checking for total generations +1 iterations
             ##################################################################  
-            
 
             if counter > self.mniwi:
                 pop = pop[pop[:,self.dim].argsort()]
@@ -622,8 +675,7 @@ class geneticalgorithm():
                              ' maximum number of iterations without improvement was met!')
 
         file_object.close()
-        file_object_1.close()
-
+     #   file_object_1.close()
 
 ##############################################################################
 ##### Dependent functions (croosover, mutations, objective function calculation)         
@@ -721,7 +773,3 @@ class geneticalgorithm():
         sys.stdout.flush()     
 ###############################################################################            
 ###############################################################################
-            
-             
-            
-            
