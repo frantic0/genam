@@ -32,7 +32,11 @@ lens_name = 'quantized_matrix_2_2'
 
 # # # Create lens with name, bricks ID and mesh configurations 
 
-lens = Lens( lens_config, mesh_configurator(3), name = lens_name  )
+lens = Lens(  lens_config, 
+              mesh_configurator(3), 
+              name = lens_name, 
+              pml_inlet_offset = 20, 
+              pml_outlet_offset = 20 )
 
 # # start = time.time()
 

@@ -22,8 +22,8 @@ class Lens:
                 unit_cells_config,
                 mesh_config,
                 name = 'lens',
-                probing_distance = 100,
-                nearfield_limit = 8.661,
+                pml_inlet_offset = 8.661,
+                pml_outlet_offset = 100,
                 wavelenght = 8.661
               ):
 
@@ -37,8 +37,8 @@ class Lens:
     self.m = len(unit_cells_config)
     self.n = len(unit_cells_config[0])
 
-    self.nearfield_limit = nearfield_limit
-    self.probing_distance = probing_distance
+    self.pml_inlet_offset = pml_inlet_offset
+    self.pml_outlet_offset = pml_outlet_offset
 
     self.geompy = geomBuilder.New()
     self.geometry = {}
@@ -67,7 +67,7 @@ class Lens:
     geompy.addToStudy( y, 'y' )
     geompy.addToStudy( z, 'z' )
 
-    # probing_distance = 100
+
 
 
     # TODO: we want to make 'm' and 'n' consistent with the input grid size. 
@@ -79,7 +79,7 @@ class Lens:
     
     pml_bottom_height = 2.573
   
-    air_bottom_height = 4.288
+    # air_bottom_height = 4.288
   
     # y_translation_shift = - ( self.wavelenght/40 + self.m * ( self.wavelenght/2 + self.wavelenght/40 ))
     y_translation_shift =  -( self.wavelenght/40 + self.m * ( self.wavelenght/2 + self.wavelenght/40 )) / 2 
@@ -92,29 +92,33 @@ class Lens:
                                           y_translation_shift,
                                           0 )
     # geompy.addToStudy( pml_bottom, 'pml_bottom' )
-
-    air_inlet = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( lens_side_x, lens_side_y, air_bottom_height),
-                                        x_translation_shift, 
-                                        y_translation_shift,
-                                        pml_bottom_height )
-    # geompy.addToStudy( air_inlet, 'air_inlet' )
+    
+    air_inlet = {}
+    if self.pml_inlet_offset > 0:
+      air_inlet = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( lens_side_x, lens_side_y, self.pml_inlet_offset),
+                                          x_translation_shift, 
+                                          y_translation_shift,
+                                          pml_bottom_height )
+      # geompy.addToStudy( air_inlet, 'air_inlet' )
     
     lens_outer = geompy.MakeTranslation(  geompy.MakeBoxDXDYDZ( lens_side_x, lens_side_y, self.wavelenght ),
                                           x_translation_shift, 
                                           y_translation_shift,
-                                          pml_bottom_height + air_bottom_height )
+                                          pml_bottom_height + self.pml_inlet_offset )
     # geompy.addToStudy( lens_outer, 'lens_outer' )
 
-    air_height = self.probing_distance - (pml_bottom_height + air_bottom_height + self.wavelenght)
+    # air_height = self.pml_outlet_offset - ( pml_bottom_height + self.pml_inlet_offset + self.wavelenght )
 
-    air_outlet = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( lens_side_x, lens_side_y, air_height ),
-                                          x_translation_shift, 
-                                          y_translation_shift, 
-                                          pml_bottom_height + air_bottom_height + self.wavelenght )
+    air_outlet = {}
+    if self.pml_outlet_offset > 0:
+      air_outlet = geompy.MakeTranslation(  geompy.MakeBoxDXDYDZ( lens_side_x, lens_side_y, self.pml_outlet_offset ),
+                                            x_translation_shift, 
+                                            y_translation_shift, 
+                                            pml_bottom_height + self.pml_inlet_offset + self.wavelenght )
 
     pml_top = geompy.MakeTranslation( pml_bottom,
                                       0, 0,
-                                      pml_bottom_height + air_bottom_height + self.wavelenght + self.probing_distance )
+                                      pml_bottom_height + self.pml_inlet_offset + self.wavelenght + self.pml_outlet_offset )
     # geompy.addToStudy( pml_top, 'pml_top' )
 
     row = 0
@@ -155,7 +159,7 @@ class Lens:
                                                   self.wavelenght ),
                             translation_shift[0] + translation_x,
                             translation_shift[1] + translation_y,
-                            6.861 )    
+                            pml_bottom_height + self.pml_inlet_offset )    
 
         else: 
 
@@ -163,9 +167,9 @@ class Lens:
           #                                         self.unit_cells_config[m][n][1] * self.wavelenght,
           #                                         self.unit_cells_config[m][n][2] * self.wavelenght )
           
-          Sketch_1 = parameterize_2D_inner_shape_no_radii( self.wavelenght,
-                                                  self.unit_cells_config[m][n][1] * self.wavelenght,
-                                                  self.unit_cells_config[m][n][2] * self.wavelenght )
+          Sketch_1 = parameterize_2D_inner_shape_no_radii(  self.wavelenght,
+                                                            self.unit_cells_config[m][n][1] * self.wavelenght,
+                                                            self.unit_cells_config[m][n][2] * self.wavelenght )
 
           # geompy.addToStudy( Sketch_1, 'Sketch' )
           rotation = [(x, 90)]
@@ -177,7 +181,7 @@ class Lens:
           # TODO : replace hardcoded constant by ratio
           translation = ( translation_shift[0] + translation_x,
                           translation_shift[1] + translation_y + self.wavelenght/2, 
-                          6.861 )
+                          pml_bottom_height + self.pml_inlet_offset )
           
           try:
             brick_inner = sketch_to_volume( geompy, Sketch_1, self.wavelenght /2, rotation, translation)
@@ -215,7 +219,14 @@ class Lens:
 
     
     # Fuse all the air sections, the bricks positives with air sections at the inlet and outlet 
-    air = geompy.MakeFuseList( [ air_inlet, air_outlet ] + bricks, True, True)
+    if air_inlet and air_outlet:
+      air = geompy.MakeFuseList( [ air_inlet, air_outlet ] + bricks, True, True)
+    elif air_outlet:
+      air = geompy.MakeFuseList( [ air_outlet ] + bricks, True, True)
+    elif air_inlet:
+      air = geompy.MakeFuseList( [ air_inlet ] + bricks, True, True)
+    else: 
+      air = geompy.MakeFuseList( [ ] + bricks, True, True)
     # geompy.addToStudy( air, 'Air' )
 
     self.geometry = geompy.MakePartition([pml_bottom, pml_top, lens, air], [], [], [], geompy.ShapeType["SOLID"], 0, [], 0)
@@ -236,6 +247,7 @@ class Lens:
     # solids.sort( key=lambda s: geompy.PointCoordinates(geompy.MakeCDG(s))[2] ) # alternative methods, similar performance
 
     # expand ordered list and assign to objects for futher processing
+    print(solids_sorted)
     [ solid_pml_inlet, solid_lens, solid_air, solid_pml_outlet ] = solids_sorted
 
     self.groups['solid_pml_inlet'] = solid_pml_inlet
