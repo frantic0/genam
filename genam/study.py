@@ -22,11 +22,9 @@ class Lens:
                 unit_cells_config,
                 mesh_config,
                 name = 'lens',
-                inlet_offset = 0.001,
-                outlet_offset = 0.001,
-                wavelength = 8.661,
-                hemisphere = False,
-                PML = True
+                inlet_offset = 8.661,
+                outlet_offset = 100,
+                wavelength = 8.661
               ):
 
     self.wavelength = wavelength
@@ -52,33 +50,9 @@ class Lens:
 
     self.start = 0
     self.end = 0
-    self.hemisphere = hemisphere
-    
-    self.pml_bottom_height = 2.573
 
     pass
 
-  def __create_hemisphere__(  self,
-                              radius = 17.322, 
-                              has_PML = True 
-                              ):
-    hemisphere = {}
-
-    sphere_inner = geompy.MakeSphereR(radius)
-    sphere_outer = geompy.MakeSphereR(radius + self.pml_bottom_height)
-    box_cut = geompy.MakeBoxDXDYDZ(40, 40, 20)
-    self.geompy.TranslateDXDYDZ(box_cut, -20, -20, -20)
-    partition_spheres = geompy.MakePartition([ sphere_inner, sphere_outer ], [], [], [], geompy.ShapeType["SOLID"], 0, [], 0)
-    cut_spheres = geompy.MakeCutList(partition_spheres, [box_cut], True)
-    hemisphere = geompy.TranslateDXDYDZ(cut_spheres, 0, 0, 16.2)
-    
-    # geompy.addToStudy( sphere_inner, 'sphere_inner' )
-    # geompy.addToStudy( sphere_outer, 'sphere_outer' )
-    # geompy.addToStudy( box_cut, 'box_cut' )
-    # geompy.addToStudy( partition_spheres, 'partition_spheres' )
-    # geompy.addToStudy( cut_spheres, 'cut_spheres' )
-    
-    return hemisphere
 
   # TODO: add try catch exceptions
   def process_geometry(self):
@@ -93,9 +67,7 @@ class Lens:
     geompy.addToStudy( y, 'y' )
     geompy.addToStudy( z, 'z' )
 
-    if self.hemisphere:
-      self.__create_hemisphere__( self.outlet_offset,
-                                  has_PML=True )
+
 
 
     # TODO: we want to make 'm' and 'n' consistent with the input grid size. 
@@ -122,7 +94,6 @@ class Lens:
     # geompy.addToStudy( pml_bottom, 'pml_bottom' )
     
     air_inlet = {}
-
     if self.inlet_offset > 0:
       air_inlet = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( lens_side_x, lens_side_y, self.inlet_offset),
                                           x_translation_shift, 
@@ -133,21 +104,21 @@ class Lens:
     lens_outer = geompy.MakeTranslation(  geompy.MakeBoxDXDYDZ( lens_side_x, lens_side_y, self.wavelength ),
                                           x_translation_shift, 
                                           y_translation_shift,
-                                          self.pml_bottom_height + self.inlet_offset )
+                                          pml_bottom_height + self.inlet_offset )
     # geompy.addToStudy( lens_outer, 'lens_outer' )
 
-    # air_height = self.outlet_offset - ( self.pml_bottom_height + self.inlet_offset + self.wavelength )
+    # air_height = self.outlet_offset - ( pml_bottom_height + self.inlet_offset + self.wavelength )
 
     air_outlet = {}
     if self.outlet_offset > 0:
       air_outlet = geompy.MakeTranslation(  geompy.MakeBoxDXDYDZ( lens_side_x, lens_side_y, self.outlet_offset ),
                                             x_translation_shift, 
                                             y_translation_shift, 
-                                            self.pml_bottom_height + self.inlet_offset + self.wavelength )
+                                            pml_bottom_height + self.inlet_offset + self.wavelength )
 
     pml_top = geompy.MakeTranslation( pml_bottom,
                                       0, 0,
-                                      self.pml_bottom_height + self.inlet_offset + self.wavelength + self.outlet_offset )
+                                      pml_bottom_height + self.inlet_offset + self.wavelength + self.outlet_offset )
     # geompy.addToStudy( pml_top, 'pml_top' )
 
     row = 0
@@ -188,7 +159,7 @@ class Lens:
                                                   self.wavelength ),
                             translation_shift[0] + translation_x,
                             translation_shift[1] + translation_y,
-                            self.pml_bottom_height + self.inlet_offset )    
+                            pml_bottom_height + self.inlet_offset )    
 
         else: 
 
@@ -209,7 +180,7 @@ class Lens:
           
           translation = ( translation_shift[0] + translation_x,
                           translation_shift[1] + translation_y + self.wavelength/2, 
-                          self.pml_bottom_height + self.inlet_offset )
+                          pml_bottom_height + self.inlet_offset )
           
           try:
             brick_inner = sketch_to_volume( geompy, Sketch_1, self.wavelength /2, rotation, translation)

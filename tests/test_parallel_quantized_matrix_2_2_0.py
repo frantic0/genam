@@ -34,23 +34,25 @@ lens_name = 'quantized_matrix_2_2_0'
 
 lens = Lens(  lens_config, 
               mesh_configurator(3), 
-              name = lens_name, 
-              pml_inlet_offset = 1, 
-              pml_outlet_offset = 1 )
+              name=lens_name,
+              inlet_offset=4.3,
+              outlet_offset=17.3,  
+              wavelength=8.661,
+              hemisphere=True )
 
-# # start = time.time()
+start = time.time()
 
 lens.process_geometry() # Create the lens geometry 
 
-# # print("Geometry computation time: {:.2f} sec".format(time.time() - start) )
+print("Geometry computation time: {:.2f} sec".format(time.time() - start) )
 
-# # start = time.time()
+start = time.time()
 
 lens.process_mesh() # Create lens mesh 
 
-# # print("Mesh computation time: {:.2f} sec".format( time.time() - start) )
+print("Mesh computation time: {:.2f} sec".format( time.time() - start) )
 
-# # start = time.time()
+start = time.time()
 
 
 # DATASET_PATH = Path('/SAN/uclic/ammdgop/data')              # Dataset path, where all data will be stored - .unv mesh files and solver directories
@@ -59,15 +61,15 @@ lens.process_mesh() # Create lens mesh
 # SOLVER_DATA_PATH = DATASET_PATH.joinpath( lens_name )       #  solver *.mesh files, sif. file
 
 # lens.export_mesh( str( UNV_PATH ) ) # export .unv mesh file, requires conversion to string
-# # print("Mesh exported to Elmer format: {:.2f} sec".format( time.time() - start) )
+# print("Mesh exported to Elmer format: {:.2f} sec".format( time.time() - start) )
 
-# # start = time.time()
+# start = time.time()
 
 # convert_mesh( UNV_PATH ) # run elmergrid convert .unv mesh file to elmer format *.mesh files in a directory 
 # copy_solver_templates( SOLVER_DATA_PATH )          # copy all the necessary templates to run elmer solver
 # copy_sif( SOLVER_DATA_PATH, SIF_PATH )          # copy solver input file
 
-# # print("Elmer template copied: {:.2f} sec".format( time.time() - start) )
+# print("Elmer template copied: {:.2f} sec".format( time.time() - start) )
 
 # run_elmer_solver( SOLVER_DATA_PATH )
 

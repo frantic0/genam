@@ -15,7 +15,6 @@ sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline/tests')
 # sys.path.insert(0, r'/home/bernardo/genam/genam/')
 # sys.path.insert(0, r'/home/bernardo/genam/tests/')
 
-
 # Genam Lens, mesh configurator
 from matrices.quantized_2_2 import quantized_matrix_2_2
 from genam.lens import Lens
@@ -23,7 +22,6 @@ from genam.configuration.lens import configurator as lens_configurator
 from genam.configuration.mesh import configurator as mesh_configurator
 from genam.solver import convert_mesh, copy_solver_templates, copy_sif, run_elmer_solver
 from genam.analysis import Analysis
-
 
 
 lens_config = lens_configurator( quantized_matrix_2_2 )
@@ -35,8 +33,8 @@ lens_name = 'quantized_matrix_2_2'
 lens = Lens(  lens_config, 
               mesh_configurator(3), 
               name = lens_name, 
-              pml_inlet_offset = 20, 
-              pml_outlet_offset = 20 )
+              inlet_offset = 20, 
+              outlet_offset = 20 )
 
 # # start = time.time()
 
