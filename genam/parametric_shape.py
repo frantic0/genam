@@ -174,10 +174,7 @@ def parameterize_2D_inner_shape_no_radii( waveLength, barLength, barSpacing ):
   # sk.addArcRadiusAbsolute( 0.0000000, S0 + S1 + 2 * Bh, -OR, 0.0000000) # outerRadius 4
   sk.addSegmentAbsolute( 0.0000000, S0 + S1 + 2 * Bh) # outerRadius 4
   
-
   sk.addSegmentAbsolute( 0.0000000, waveLength ) # top left corner
-
-
 
   sk.addSegmentAbsolute( waveLength/2, waveLength) # top right corner
 
@@ -230,8 +227,6 @@ def parameterize_2D_inner_shape_no_radii( waveLength, barLength, barSpacing ):
   wire = geompy.MakeMarker(0, 0, 0, 1, 0, 0, 0, 1, 0)
 
   return sk.wire(wire)
-
-
 
 
 
