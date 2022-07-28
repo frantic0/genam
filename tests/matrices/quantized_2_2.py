@@ -6,6 +6,17 @@ quantized_matrix_2_2 = np.array([
                                 ])
 
 quantized_matrix_2_2_0 = np.array([ 
-                                  [ 0, 0 ],
-                                  [ 0, 0 ] 
-                                ])
+                                    [ 0, 0 ],
+                                    [ 0, 0 ] 
+                                  ])
+
+
+quantized_matrix_2_2_x = np.array([ 
+                                    [  0, -1 ],
+                                    [ -1, -1 ] 
+                                  ])
+
+quantized_matrix_2_2_y = np.array([ 
+                                    [  0, -1 ],
+                                    [ -1,  1 ] 
+                                  ])         

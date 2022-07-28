@@ -15,3 +15,4 @@ for w in np.arange(min, max, step):
 print(len(space))
 #print(*sample, sep='\n')
 
+

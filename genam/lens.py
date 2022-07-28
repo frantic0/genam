@@ -134,7 +134,7 @@ class Lens:
 
     for m in range( 0, self.m ):
       for n in range( 0, self.n ):
-
+        print(f"m:{m},n:{n}")
         # brickID = random.randint(1, 15)                                   # generate random brickID
         # brickID = [*range(1,9),*range(10,16)][random.randint(0, 13)]        # generate random brickID, but exclude index 9, shape is buggy 
 
@@ -144,18 +144,17 @@ class Lens:
 
         brick_inner = []
 
-        translation_x = self.wavelenght/40 + column * ( self.wavelenght/2 + self.wavelenght/40 )     
-        translation_y = self.wavelenght/40 + row    * ( self.wavelenght/2 + self.wavelenght/40 )     
-  
-        if self.unit_cells_config[m][n][0] == 0:
+        # y_translation_shift =  -( self.wavelenght/40 + self.m * ( self.wavelenght/2 + self.wavelenght/40 )) / 2 
+        # x_translation_shift =  -( self.wavelenght/40 + self.n * ( self.wavelenght/2 + self.wavelenght/40 )) / 2
 
-          # brick_inner = geompy.MakeTranslation(
-          #                   geompy.MakeBoxDXDYDZ( boxSide - 2 * self.wavelenght/40, 
-          #                                         boxSide - 2 * self.wavelenght/40, 
-          #                                         self.wavelenght ),
-          #                   self.wavelenght/40, 
-          #                   self.wavelenght/40,
-          #                   pml_bottom_height + air_bottom_height )    
+
+        translation_x = self.wavelenght/40 + row *    ( self.wavelenght/2 + self.wavelenght/40 )     
+        translation_y = self.wavelenght/40 + column * ( self.wavelenght/2 + self.wavelenght/40 )     
+  
+        if self.unit_cells_config[m][n][0] < 0:       # if negative number, do not add unit cell for lens cut
+          continue       
+
+        elif self.unit_cells_config[m][n][0] == 0:    # if zero, add empty unit cell for lens cut
 
           brick_inner = geompy.MakeTranslation(
                             geompy.MakeBoxDXDYDZ( boxSide - 2 * self.wavelenght/40, 
@@ -165,7 +164,7 @@ class Lens:
                             translation_shift[1] + translation_y,
                             6.861 )    
 
-        else: 
+        else:                                       # if greater than zero, place brick ID as corresponding cell for lens cut
 
           Sketch_1 = parameterize_2D_inner_shape( self.wavelenght,
                                                   self.unit_cells_config[m][n][1] * self.wavelenght,
@@ -175,8 +174,8 @@ class Lens:
           rotation = [(x, 90)]
           
           # translation = ( waveLenght/40, waveLenght/40 + waveLenght/2, 6.861)
-          translation_x = self.wavelenght/40 + column * ( self.wavelenght/40 + self.wavelenght/2 )     
-          translation_y = self.wavelenght/40 + row * (self.wavelenght/40 + self.wavelenght/2 )     
+          translation_x = self.wavelenght/40 + row * ( self.wavelenght/40 + self.wavelenght/2 )     
+          translation_y = self.wavelenght/40 + column * (self.wavelenght/40 + self.wavelenght/2 )     
           
           # TODO : replace hardcoded constant but ratio
           translation = ( translation_shift[0] + translation_x,

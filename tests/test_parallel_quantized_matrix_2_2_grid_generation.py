@@ -17,7 +17,7 @@ sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline/tests')
 
 
 # Genam Lens, mesh configurator
-from matrices.quantized_2_2 import quantized_matrix_2_2
+from matrices.quantized_2_2 import quantized_matrix_2_2_0
 from genam.lens import Lens
 from genam.lens_hemisphere import Lens as Lens_hemi
 from genam.configuration.lens import configurator as lens_configurator 
@@ -27,9 +27,9 @@ from genam.analysis import Analysis
 
 
 
-lens_config = lens_configurator( quantized_matrix_2_2 )
+lens_config = lens_configurator( quantized_matrix_2_2_0 )
 
-lens_name = 'quantized_matrix_2_2' 
+lens_name = 'quantized_matrix_2_2_0' 
 
 # # # Create lens with name, bricks ID and mesh configurations 
 
