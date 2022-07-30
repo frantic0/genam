@@ -69,17 +69,18 @@ class Lens:
 
     probing_distance = 100
 
+    boxSide = self.wavelenght/2 + 2 * self.wavelenght/40
+    
+    pml_bottom_height = 2.573
+  
+    air_bottom_height = 4.288
+
 
     # TODO: we want to make 'm' and 'n' consistent with the input grid size. 
     # Check self.m and self.n initialisation
     lens_side_x = self.wavelenght/40 + self.n * ( self.wavelenght/2 + self.wavelenght/40 )
     lens_side_y = self.wavelenght/40 + self.m * ( self.wavelenght/2 + self.wavelenght/40 )
 
-    boxSide = self.wavelenght/2 + 2 * self.wavelenght/40
-    
-    pml_bottom_height = 2.573
-  
-    air_bottom_height = 4.288
   
     # y_translation_shift = - ( self.wavelenght/40 + self.m * ( self.wavelenght/2 + self.wavelenght/40 ))
     y_translation_shift =  -( self.wavelenght/40 + self.m * ( self.wavelenght/2 + self.wavelenght/40 )) / 2 
@@ -148,7 +149,7 @@ class Lens:
         # x_translation_shift =  -( self.wavelenght/40 + self.n * ( self.wavelenght/2 + self.wavelenght/40 )) / 2
 
 
-        translation_x = self.wavelenght/40 + row *    ( self.wavelenght/2 + self.wavelenght/40 )     
+        translation_x = self.wavelenght/40 + row    * ( self.wavelenght/2 + self.wavelenght/40 )     
         translation_y = self.wavelenght/40 + column * ( self.wavelenght/2 + self.wavelenght/40 )     
   
         if self.unit_cells_config[m][n][0] < 0:       # if negative number, do not add unit cell for lens cut
@@ -164,7 +165,7 @@ class Lens:
                             translation_shift[1] + translation_y,
                             6.861 )    
 
-        else:                                       # if greater than zero, place brick ID as corresponding cell for lens cut
+        else:                                         # if greater than zero, place brick ID as corresponding cell for lens cut
 
           Sketch_1 = parameterize_2D_inner_shape( self.wavelenght,
                                                   self.unit_cells_config[m][n][1] * self.wavelenght,
@@ -174,8 +175,8 @@ class Lens:
           rotation = [(x, 90)]
           
           # translation = ( waveLenght/40, waveLenght/40 + waveLenght/2, 6.861)
-          translation_x = self.wavelenght/40 + row * ( self.wavelenght/40 + self.wavelenght/2 )     
-          translation_y = self.wavelenght/40 + column * (self.wavelenght/40 + self.wavelenght/2 )     
+          translation_x = self.wavelenght/40 + row    * ( self.wavelenght/40 + self.wavelenght/2 )     
+          translation_y = self.wavelenght/40 + column * ( self.wavelenght/40 + self.wavelenght/2 )     
           
           # TODO : replace hardcoded constant but ratio
           translation = ( translation_shift[0] + translation_x,
@@ -194,8 +195,6 @@ class Lens:
       column = 0
 
 
-    #################################
-
     # Fuse the Lens_Outer (box that will contain all the brics ) with all the bricks  
 
     lens_fused = geompy.MakeFuseList( [ lens_outer ] + bricks, True, True)
@@ -205,21 +204,23 @@ class Lens:
 
     lens_fused_faces = geompy.SubShapeAll( group_fused, geompy.ShapeType["FACE"] )
 
-    #################################
 
     # Cut the bricks positives from the above fused result 
     lens = geompy.MakeCutList( lens_fused, bricks, True)
     # geompy.addToStudy( lens, 'Lens' )
 
-    lens_faces = []
     lens_faces =  geompy.ExtractShapes(lens, geompy.ShapeType["FACE"], True) # generates 1946 faces instead of 54
     # print( '#lensFaces: {}'.format(len(lens_faces)) ) 
     # print( *lens_faces, sep='\n') 
 
+    #################################
     
     # Fuse all the air sections, the bricks positives with air sections at the inlet and outlet 
     air = geompy.MakeFuseList( [ air_inlet, air_outlet ] + bricks, True, True)
     # geompy.addToStudy( air, 'Air' )
+
+
+    #################################
 
     self.geometry = geompy.MakePartition([pml_bottom, pml_top, lens, air], [], [], [], geompy.ShapeType["SOLID"], 0, [], 0)
     geompy.addToStudy( self.geometry, 'Structure' )

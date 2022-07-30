@@ -9,20 +9,18 @@ import SMESH, SALOMEDS
 from salome.smesh import smeshBuilder
 from salome.GMSHPlugin import GMSHPluginBuilder
 
+from abc import ABC, abstractmethod
 
-class Unit_cell():
+
+class UnitCell(ABC):
     
-    def __init__( self,
-                  wavelength,
-                  flaplength,
-                  flapspacing,
-                  translation ):
-        
-        self.wavelength = wavelength
-        self.boxSide = self.wavelength/2 + 2 * self.wavelength/40
-        self.wavelength = wavelength
-        self.flaplength = flaplength
+  def __init__( self, id, name ):
+    self.id = id
+    self.name = name
 
+    @abstractmethod
+    def calculate_payroll(self):
+        pass
 
 
 

@@ -17,7 +17,11 @@ sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline/tests')
 
 
 # Genam Lens, mesh configurator
-from matrices.quantized_2_2 import quantized_matrix_2_2_y, quantized_matrix_2_2_x
+from matrices.quantized_2_2 import quantized_matrix_2_2_y, quantized_matrix_2_2_0    # [ [  0, -1 ], [ -1,  1 ] ]
+from matrices.quantized_1_4 import quantized_matrix_1_4, quantized_matrix_1_4_0     # [ [  1 ], [ -1 ], [  0 ], [ -1 ] ]
+from matrices.quantized_4_1 import quantized_matrix_4_1, quantized_matrix_4_1_0     # [ [ 1,  -1,  0,  -1] ]
+
+
 from genam.lens import Lens
 from genam.lens_hemisphere import Lens as Lens_hemi
 from genam.configuration.lens import configurator as lens_configurator 
@@ -27,41 +31,66 @@ from genam.analysis import Analysis
 
 
 
+
+
 # lens_config = lens_configurator( quantized_matrix_2_2_0 )
 
-lens_config = lens_configurator( quantized_matrix_2_2_y )
-lens_config_hemi = lens_configurator( quantized_matrix_2_2_y )
+config_lens_hemi_2_2 = lens_configurator( quantized_matrix_2_2_y )
+# config_lens_hemi_2_2 = lens_configurator( quantized_matrix_2_2_0 )
 
-lens_name = 'quantized_matrix_2_2_y' 
+config_lens_hemi_1_4 = lens_configurator( quantized_matrix_1_4 )
+# config_lens_hemi_1_4 = lens_configurator( quantized_matrix_1_4_0 )
+
+config_lens_hemi_4_1 = lens_configurator( quantized_matrix_4_1 )
+# config_lens_hemi_4_1 = lens_configurator( quantized_matrix_4_1_0 )
+
+lens_hemi_2_2_name = 'quantized_matrix_2_2_y' 
+lens_hemi_1_4_name = 'quantized_matrix_1_4' 
+lens_hemi_4_1_name = 'quantized_matrix_4_1' 
 
 # # # Create lens with name, bricks ID and mesh configurations 
 
-lens_hemi = Lens_hemi(  lens_config_hemi, 
+lens_hemi_2_2 = Lens_hemi(  config_lens_hemi_2_2, 
               mesh_configurator(3), 
-              name              = lens_name,
+              name              = lens_hemi_2_2_name,
+              inlet_offset      = 4.3,
+              outlet_offset     = 17.3,
+              wavelength        = 8.661,
+              set_hemisphere    = True )
+
+lens_hemi_1_4 = Lens_hemi(  config_lens_hemi_1_4, 
+              mesh_configurator(3), 
+              name              = lens_hemi_1_4_name,
+              inlet_offset      = 4.3,
+              outlet_offset     = 17.3,
+              wavelength        = 8.661,
+              set_hemisphere    = True )
+
+lens_hemi_4_1 = Lens_hemi(  config_lens_hemi_4_1, 
+              mesh_configurator(3), 
+              name              = lens_hemi_4_1_name,
               inlet_offset      = 4.3,
               outlet_offset     = 17.3,
               wavelength        = 8.661,
               set_hemisphere    = True )
 
 
-lens = Lens(  lens_config, 
-              mesh_configurator(3), 
-              name              = lens_name,
-              wavelenght        = 8.661 )
 
 start = time.time()
 
 
-lens_hemi.process_geometry() # Create the lens geometry 
-lens.process_geometry() # Create the lens geometry 
+lens_hemi_2_2.process_geometry() # Create the lens geometry 
+lens_hemi_1_4.process_geometry() # Create the lens geometry 
+lens_hemi_4_1.process_geometry() # Create the lens geometry 
+ 
 
 print("Geometry computation time: {:.2f} sec".format(time.time() - start) )
 
 start = time.time()
 
-lens_hemi.process_mesh() # Create lens mesh 
-lens.process_mesh() # Create lens mesh 
+lens_hemi_2_2.process_mesh() # Create lens mesh 
+lens_hemi_1_4.process_mesh() # Create lens mesh 
+lens_hemi_4_1.process_mesh() # Create lens mesh 
 
 print("Mesh computation time: {:.2f} sec".format( time.time() - start) )
 

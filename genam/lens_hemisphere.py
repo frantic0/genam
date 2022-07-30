@@ -98,32 +98,43 @@ class Lens:
     geompy.addToStudy( y, 'y' )
     geompy.addToStudy( z, 'z' )
 
-    
-
-
     # TODO: we want to make 'm' and 'n' consistent with the input grid size. 
-    # Check self.m and self.n initialisation
+    # Check self.m and self.n initialisation 
     lens_side_x = self.wavelength/40 + self.n * ( self.wavelength/2 + self.wavelength/40 )
     lens_side_y = self.wavelength/40 + self.m * ( self.wavelength/2 + self.wavelength/40 )
 
     boxSide = self.wavelength/2 + 2 * self.wavelength/40
     
-    # pml_bottom_height = 2.573
-  
-    # air_bottom_height = 4.288
-  
-    # y_translation_shift = - ( self.wavelength/40 + self.m * ( self.wavelength/2 + self.wavelength/40 ))
-    y_translation_shift =  -( self.wavelength/40 + self.m * ( self.wavelength/2 + self.wavelength/40 )) / 2 
-    x_translation_shift =  -( self.wavelength/40 + self.n * ( self.wavelength/2 + self.wavelength/40 )) / 2
-  
-    counter = 0
+    # geompy.addToStudy( pml_bottom, 'pml_bottom' )
+
+    # translation = ( 0, 0, 0 )
+
+    x_translation_shift =  -( self.wavelength/40 + self.n * ( self.wavelength/2 + self.wavelength/40 )) / 2 
+    y_translation_shift =  -( self.wavelength/40 + self.m * ( self.wavelength/2 + self.wavelength/40 )) / 2
+   
+    translation_lens_center_origin = ( 
+                    -( self.wavelength/40 + self.n * ( self.wavelength/2 + self.wavelength/40 )) / 2,
+                    -( self.wavelength/40 + self.m * ( self.wavelength/2 + self.wavelength/40 )) / 2,
+                    0
+                  )
+
 
     pml_bottom = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( lens_side_x, lens_side_y, self.pml_bottom_height),
                                           x_translation_shift, 
                                           y_translation_shift,
                                           0 )
-    # geompy.addToStudy( pml_bottom, 'pml_bottom' )
+    #################################
     
+
+    lens_outer = geompy.MakeTranslation(  geompy.MakeBoxDXDYDZ( lens_side_x, lens_side_y, self.wavelength ),
+                                          x_translation_shift, 
+                                          y_translation_shift,
+                                          self.pml_bottom_height + self.inlet_offset )
+    # geompy.addToStudy( lens_outer, 'lens_outer' )
+
+    #################################
+    
+
     air_inlet = {}
 
     if self.inlet_offset > 0:
@@ -133,94 +144,105 @@ class Lens:
                                           self.pml_bottom_height )
       # geompy.addToStudy( air_inlet, 'air_inlet' )
     
-    lens_outer = geompy.MakeTranslation(  geompy.MakeBoxDXDYDZ( lens_side_x, lens_side_y, self.wavelength ),
-                                          x_translation_shift, 
-                                          y_translation_shift,
-                                          self.pml_bottom_height + self.inlet_offset )
-    # geompy.addToStudy( lens_outer, 'lens_outer' )
 
-    # air_height = self.outlet_offset - ( self.pml_bottom_height + self.inlet_offset + self.wavelength )
-
-      # geompy.addToStudy( pml_top, 'pml_top' )
-
-    row = 0
-    column = 0
-
-    translation = ( 0, 0, 0 )
-
-    translation_shift = ( x_translation_shift, y_translation_shift , 0 )
-    
+   
 
     #################################
     
     # GENERATE RANDOM ARRAY of 8 BRICKS and ADD to FATHER
+   
+    unit_cells = list()
+
+    row = 0
+    column = 0
+
+
+    for m in range( 0, self.m ):                    # Y row index
+      for n in range( 0, self.n ):                  # X column index
+
+        unit_cell_negative = {}
+        # translation = ( 0, 0, 0 )
+
+        # y_translation_shift =  -( self.wavelength/40 + self.m * ( self.wavelength/2 + self.wavelength/40 )) / 2 
+        # x_translation_shift =  -( self.wavelength/40 + self.n * ( self.wavelength/2 + self.wavelength/40 )) / 2
+      
+        # translation_shift = ( x_translation_shift, y_translation_shift , 0 )
+
+        if self.unit_cells_config[m][n][0] < 0:       # if negative number, do not add unit cell negative for lens cut
+          pass
+
+        elif self.unit_cells_config[m][n][0] == 0:      # if zero, add empty unit cell for lens cut
+
+          # translation = (
+          #   translation_lens_center_origin[0] + self.wavelength/40 + column * ( self.wavelength/2 + self.wavelength/40 ),
+          #   translation_lens_center_origin[1] + self.wavelength/40 +    row * ( self.wavelength/2 + self.wavelength/40 ),
+          #   0 )
+
+          translation = (
+            translation_lens_center_origin[0] + self.wavelength/40 + column * ( self.wavelength/2 + self.wavelength/40 ),
+            translation_lens_center_origin[1] + self.wavelength/40 +    row * ( self.wavelength/2 + self.wavelength/40 ),
+            0 )     
     
-    bricks = list()
-    # bricks_faces = []
+          unit_cell_negative = geompy.MakeTranslation(
+                                  geompy.MakeBoxDXDYDZ( boxSide - 2 * self.wavelength/40, 
+                                                        boxSide - 2 * self.wavelength/40, 
+                                                        self.wavelength ),
+                                  translation[0],
+                                  translation[1],
+                                  self.pml_bottom_height + self.inlet_offset )    
 
-    for m in range( 0, self.m ):
-      for n in range( 0, self.n ):
+          unit_cells.append(unit_cell_negative)
 
-        # brickID = random.randint(1, 15)                                   # generate random brickID
-        # brickID = [*range(1,9),*range(10,16)][random.randint(0, 13)]        # generate random brickID, but exclude index 9, shape is buggy 
+        else:                                         # if greater than zero, place brick ID as corresponding cell for lens cut
 
-        # Sketch_1 = parameterize_2D_inner_shape( wavelength,
-        #                                         self.unit_cells_config['length'][brickID-1] * wavelength,
-        #                                         self.unit_cells_config['distance'][brickID-1] * wavelength )
-
-        brick_inner = []
-
-        translation_x = self.wavelength/40 + column * ( self.wavelength/2 + self.wavelength/40 )     
-        translation_y = self.wavelength/40 + row    * ( self.wavelength/2 + self.wavelength/40 )     
-  
-        if self.unit_cells_config[m][n][0] == 0:
-
-          brick_inner = geompy.MakeTranslation(
-                            geompy.MakeBoxDXDYDZ( boxSide - 2 * self.wavelength/40, 
-                                                  boxSide - 2 * self.wavelength/40, 
-                                                  self.wavelength ),
-                            translation_shift[0] + translation_x,
-                            translation_shift[1] + translation_y,
-                            self.pml_bottom_height + self.inlet_offset )    
-
-        else: 
-
-          # Sketch_1 = parameterize_2D_inner_shape( self.wavelength,
+          # unit_cell_negative = Labyrinthine()
+          # unit_cell_negative.configure( waveLength = self.wavelength,
+          #                               barLength  = self.unit_cells_config[m][n][1] * self.wavelength, 
+          #                               barSpacing = self.unit_cells_config[m][n][2] * self.wavelength, 
+          #                               radius = None )
+                                               
+                                              
+          # sketch = parameterize_2D_inner_shape( self.wavelength,
           #                                         self.unit_cells_config[m][n][1] * self.wavelength,
           #                                         self.unit_cells_config[m][n][2] * self.wavelength )
           
-          Sketch_1 = parameterize_2D_inner_shape_no_radii(  self.wavelength,
-                                                            self.unit_cells_config[m][n][1] * self.wavelength,
-                                                            self.unit_cells_config[m][n][2] * self.wavelength )
+          sketch = parameterize_2D_inner_shape_no_radii(  self.wavelength,
+                                                          self.unit_cells_config[m][n][1] * self.wavelength,
+                                                          self.unit_cells_config[m][n][2] * self.wavelength )
           # geompy.addToStudy( Sketch_1, 'Sketch' )
           
           rotation = [(x, 90)]
-          
-          # translation = ( wavelength/40, wavelength/40 + wavelength/2, 6.861)
-          translation_x = self.wavelength/40 + column * ( self.wavelength/40 + self.wavelength/2 )     
-          translation_y = self.wavelength/40 + row    * ( self.wavelength/40 + self.wavelength/2 )     
-          
-          translation = ( translation_shift[0] + translation_x,
-                          translation_shift[1] + translation_y + self.wavelength/2, 
-                          self.pml_bottom_height + self.inlet_offset )
+
+          translation = (
+            translation_lens_center_origin[0] + self.wavelength/40 + column * ( self.wavelength/2 + self.wavelength/40 ),
+            translation_lens_center_origin[1] + self.wavelength/40 +    row * ( self.wavelength/2 + self.wavelength/40 ) + self.wavelength/2,
+            self.pml_bottom_height + self.inlet_offset 
+          )
+            
+          # translation = ( translation_shift[0] + translation_x,
+          #                 translation_shift[1] + translation_y + self.wavelength/2, 
           
           try:
-            brick_inner = sketch_to_volume( geompy, Sketch_1, self.wavelength /2, rotation, translation)
+            unit_cell_negative = sketch_to_volume(  geompy, 
+                                                    sketch, 
+                                                    self.wavelength /2, 
+                                                    rotation, 
+                                                    translation )
           except: 
-            print("{} {} {}".format(Sketch_1, m, n))
+            print("{} {} {}".format(sketch, m, n))
 
-        bricks.append(brick_inner)
+          unit_cells.append(unit_cell_negative)
 
         column += 1
-      row += 1
       column = 0
+      row += 1
 
 
     #################################
 
     # Fuse the Lens_Outer (box that will contain all the brics ) with all the bricks  
 
-    lens_fused = geompy.MakeFuseList( [ lens_outer ] + bricks, True, True)
+    lens_fused = geompy.MakeFuseList( [ lens_outer ] + unit_cells, True, True)
     # geompy.addToStudy( lens_fused, 'Fused' )
 
     group_fused = geompy.CreateGroup( lens_fused, geompy.ShapeType["FACE"] )
@@ -230,7 +252,7 @@ class Lens:
     #################################
 
     # Cut the bricks positives from the above fused result 
-    lens = geompy.MakeCutList( lens_fused, bricks, True)
+    lens = geompy.MakeCutList( lens_fused, unit_cells, True)
     # geompy.addToStudy( lens, 'Lens' )
 
     lens_faces = []
@@ -245,7 +267,7 @@ class Lens:
       hemisphere = self.__create_hemisphere__(  radius = self.outlet_offset,
                                                 translationDZ = self.pml_bottom_height + self.inlet_offset + self.wavelength )
       
-      air = geompy.MakeFuseList( [ air_inlet, hemisphere ] + bricks, True, True)
+      air = geompy.MakeFuseList( [ air_inlet, hemisphere ] + unit_cells, True, True)
 
       self.geometry = geompy.MakePartition([pml_bottom, lens, air], [], [], [], geompy.ShapeType["SOLID"], 0, [], 0)
       # geompy.addToStudy( hemisphere, 'hemisphere' )
@@ -264,17 +286,17 @@ class Lens:
 
     # Fuse all the air sections, the bricks positives with air sections at the inlet and outlet 
       if air_inlet != {} and air_outlet != {}:
-        air = geompy.MakeFuseList( [ air_inlet, air_outlet ] + bricks, True, True)
+        air = geompy.MakeFuseList( [ air_inlet, air_outlet ] + unit_cells, True, True)
       elif air_outlet != {}:
-        air = geompy.MakeFuseList( [ air_outlet ] + bricks, True, True)
+        air = geompy.MakeFuseList( [ air_outlet ] + unit_cells, True, True)
 
       self.geometry = geompy.MakePartition([pml_bottom, pml_top, lens, air], [], [], [], geompy.ShapeType["SOLID"], 0, [], 0)
     
     elif air_inlet:
-      air = geompy.MakeFuseList( [ air_inlet ] + bricks, True, True)
+      air = geompy.MakeFuseList( [ air_inlet ] + unit_cells, True, True)
       self.geometry = geompy.MakePartition([pml_bottom, lens, air], [], [], [], geompy.ShapeType["SOLID"], 0, [], 0)
     else: 
-      air = geompy.MakeFuseList( [ ] + bricks, True, True)
+      air = geompy.MakeFuseList( [ ] + unit_cells, True, True)
       self.geometry = geompy.MakePartition([pml_bottom, lens, air], [], [], [], geompy.ShapeType["SOLID"], 0, [], 0)
       # geompy.addToStudy( air, 'Air' )
     geompy.addToStudy( self.geometry, 'Structure' )

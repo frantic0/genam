@@ -67,26 +67,10 @@ class Lens:
     geompy.addToStudy( y, 'y' )
     geompy.addToStudy( z, 'z' )
 
-
-
-
-    # TODO: we want to make 'm' and 'n' consistent with the input grid size. 
-    # Check self.m and self.n initialisation
-    lens_side_x = self.wavelength/40 + self.n * ( self.wavelength/2 + self.wavelength/40 )
-    lens_side_y = self.wavelength/40 + self.m * ( self.wavelength/2 + self.wavelength/40 )
-
     boxSide = self.wavelength/2 + 2 * self.wavelength/40
     
     pml_bottom_height = 2.573
   
-    # air_bottom_height = 4.288
-  
-    # y_translation_shift = - ( self.wavelength/40 + self.m * ( self.wavelength/2 + self.wavelength/40 ))
-    y_translation_shift =  -( self.wavelength/40 + self.m * ( self.wavelength/2 + self.wavelength/40 )) / 2 
-    x_translation_shift =  -( self.wavelength/40 + self.n * ( self.wavelength/2 + self.wavelength/40 )) / 2
-  
-    counter = 0
-
     pml_bottom = geompy.MakeTranslation( geompy.MakeBoxDXDYDZ( lens_side_x, lens_side_y, pml_bottom_height),
                                           x_translation_shift, 
                                           y_translation_shift,
@@ -121,6 +105,16 @@ class Lens:
                                       pml_bottom_height + self.inlet_offset + self.wavelength + self.outlet_offset )
     # geompy.addToStudy( pml_top, 'pml_top' )
 
+    # TODO: we want to make 'm' and 'n' consistent with the input grid size. 
+    # Check self.m and self.n initialisation
+    lens_side_x = self.wavelength/40 + self.n * ( self.wavelength/2 + self.wavelength/40 )
+    lens_side_y = self.wavelength/40 + self.m * ( self.wavelength/2 + self.wavelength/40 )
+
+    # air_bottom_height = 4.288
+  
+    y_translation_shift =  -( self.wavelength/40 + self.m * ( self.wavelength/2 + self.wavelength/40 )) / 2 
+    x_translation_shift =  -( self.wavelength/40 + self.n * ( self.wavelength/2 + self.wavelength/40 )) / 2
+  
     row = 0
     column = 0
 
@@ -136,6 +130,9 @@ class Lens:
     bricks = list()
     # bricks_faces = []
 
+    translation_x = self.wavelength/40 + row    * ( self.wavelength/40 + self.wavelength/2 )     
+    translation_y = self.wavelength/40 + column * ( self.wavelength/40 + self.wavelength/2 )     
+
     for m in range( 0, self.m ):
       for n in range( 0, self.n ):
 
@@ -146,14 +143,14 @@ class Lens:
         #                                         self.unit_cells_config['length'][brickID-1] * wavelength,
         #                                         self.unit_cells_config['distance'][brickID-1] * wavelength )
 
-        brick_inner = []
-
-        translation_x = self.wavelength/40 + column * ( self.wavelength/2 + self.wavelength/40 )     
-        translation_y = self.wavelength/40 + row    * ( self.wavelength/2 + self.wavelength/40 )     
+        brick_negative = {}
   
-        if self.unit_cells_config[m][n][0] == 0:
+        if self.unit_cells_config[m][n][0] < 0:       # if negative number, do not add unit cell for lens cut
+          continue    
 
-          brick_inner = geompy.MakeTranslation(
+        if self.unit_cells_config[m][n][0] == 0:      # if zero, add empty unit cell for lens cut
+
+          brick_negative = geompy.MakeTranslation(
                             geompy.MakeBoxDXDYDZ( boxSide - 2 * self.wavelength/40, 
                                                   boxSide - 2 * self.wavelength/40, 
                                                   self.wavelength ),
@@ -163,11 +160,11 @@ class Lens:
 
         else: 
 
-          # Sketch_1 = parameterize_2D_inner_shape( self.wavelength,
+          # sketch = parameterize_2D_inner_shape( self.wavelength,
           #                                         self.unit_cells_config[m][n][1] * self.wavelength,
           #                                         self.unit_cells_config[m][n][2] * self.wavelength )
           
-          Sketch_1 = parameterize_2D_inner_shape_no_radii(  self.wavelength,
+          sketch = parameterize_2D_inner_shape_no_radii(  self.wavelength,
                                                             self.unit_cells_config[m][n][1] * self.wavelength,
                                                             self.unit_cells_config[m][n][2] * self.wavelength )
           # geompy.addToStudy( Sketch_1, 'Sketch' )
@@ -175,19 +172,17 @@ class Lens:
           rotation = [(x, 90)]
           
           # translation = ( wavelength/40, wavelength/40 + wavelength/2, 6.861)
-          translation_x = self.wavelength/40 + column * ( self.wavelength/40 + self.wavelength/2 )     
-          translation_y = self.wavelength/40 + row    * ( self.wavelength/40 + self.wavelength/2 )     
           
           translation = ( translation_shift[0] + translation_x,
                           translation_shift[1] + translation_y + self.wavelength/2, 
                           pml_bottom_height + self.inlet_offset )
           
           try:
-            brick_inner = sketch_to_volume( geompy, Sketch_1, self.wavelength /2, rotation, translation)
+            brick_negative = sketch_to_volume( geompy, sketch, self.wavelength /2, rotation, translation)
           except: 
-            print("{} {} {}".format(Sketch_1, m, n))
+            print("{} {} {}".format(sketch, m, n))
 
-        bricks.append(brick_inner)
+        bricks.append(brick_negative)
 
         column += 1
       row += 1

@@ -19,4 +19,4 @@ quantized_matrix_2_2_x = np.array([
 quantized_matrix_2_2_y = np.array([ 
                                     [  0, -1 ],
                                     [ -1,  1 ] 
-                                  ])         
+                                  ])
