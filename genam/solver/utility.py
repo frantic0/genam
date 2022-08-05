@@ -85,7 +85,7 @@ def convert_mesh(filename, options=""):
   """
   
   if os.name == 'nt':
-    subprocess.call(["ElmerGrid", "8", "2", "{}".format(filename)])
+    subprocess.call(["ElmerGrid", "8", "2", "{}".format(filename), "-autoclean"])
     # os.system('cmd /c "ElmerGrid 8 2 {} -autoclean {}"'.format(filename, options))
   elif os.name == 'posix': 
     os.system('ElmerGrid 8 2 {} -autoclean {}'.format(filename, options))  

@@ -157,8 +157,10 @@ class Lens:
     column = 0
 
 
-    for m in range( 0, self.m ):                    # Y row index
-      for n in range( 0, self.n ):                  # X column index
+#    for m in range( 0, self.m ):                    # Y row index
+#      for n in range( 0, self.n ):                  # X column index
+    for m in range( self.m-1, -1, -1 ):                    # Y row index
+      for n in range( self.n-1, -1, -1 ):                  # X column index
 
         unit_cell_negative = {}
         # translation = ( 0, 0, 0 )
@@ -299,7 +301,7 @@ class Lens:
       air = geompy.MakeFuseList( [ ] + unit_cells, True, True)
       self.geometry = geompy.MakePartition([pml_bottom, lens, air], [], [], [], geompy.ShapeType["SOLID"], 0, [], 0)
       # geompy.addToStudy( air, 'Air' )
-    geompy.addToStudy( self.geometry, 'Structure' )
+    geompy.addToStudy( self.geometry, self.name )
 
 
 
