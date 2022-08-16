@@ -35,10 +35,6 @@ source_config = source_configurator(  0.02,
                                       2, 2,       # metasurface configuration
                                       p0 = 8.02,
                                     ) 
-# source_config = None                          # Plane wave configuration 
-
-
-
 
 lens_name = 'export_2_2_0_inlet' 
 
@@ -90,6 +86,7 @@ INLET_DAT_PATH = DATASET_PATH.joinpath( lens_name ).joinpath( lens_name + '.dat'
     
 
 lens_hemi.export_mesh( str( UNV_PATH ) ) # export .unv mesh file, requires conversion to string
+lens_hemi.export_complex_pressure_at_inlet( source_config, str( SOLVER_DATA_PATH ) )
 lens_hemi.export_inlet_mesh( str( INLET_DAT_PATH ) ) # export .unv mesh file, requires conversion to string
 # print("Mesh exported to Elmer format: {:.2f} sec".format( time.time() - start) )
 

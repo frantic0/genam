@@ -7,14 +7,7 @@ from mpl_toolkits.axes_grid1.axes_divider import make_axes_locatable
 c = 343 # m/s
 v = 40000 # Hz
 lam = c/v # m
-# dx_AMM = lam/2
 k = 2*np.pi/lam # rads/m
-
-# ---> AMM params <---
-dist = .1 # focal length of the board [m] and distance to the AMM
-prop_dist = 12*lam # focal length of the AMM [m]
-resolution = 10
-iterations = 200
 
 
 # Transducer piston model
@@ -144,12 +137,14 @@ def write_complex_pressure_inlet( configurator,
 
     try:
         with open(path, 'w') as f:
+            f.write(f"{m} {n}\n")
             for i in range(m):
                 for j in range(n):
-                    f.write(f"{xx[i,j]} {yy[i,j]} {Pf[i,j]}\n")
-                    # print(xx[i,j], yy[i,j], Pf[i,j])
+                    # f.write(f"{xx[i,j]*1e-2} {yy[i,j]*1e-2} {Pf[i,j].real} {Pf[i,j].imag}\n")
+                    f.write(f"{xx[i,j]} {yy[i,j]} {Pf[i,j].real} {Pf[i,j].imag}\n")
+                    print(xx[i,j], yy[i,j], Pf[i,j])
     except FileNotFoundError:
-        print("The file doesn't exist")
+        print("The file doesn't exist!")
     # finally:
         
     return
@@ -177,11 +172,11 @@ def configurator(   dist,
 
     Pf = np.dot( H, Pt ).reshape( m, n ) # propagate to far field and reshape to array
 
-    # print("H:", H.shape)
-    # print("Pt:", Pt)
-    # print("Pt shape: ", Pt.shape)
-    # print(f'Pf: {Pf}')
-    # print(f'Pf shape: {Pf.shape}')
+    print("H:", H.shape)
+    print("Pt:", Pt)
+    print("Pt shape: ", Pt.shape)
+    print(f'Pf: {Pf}')
+    print(f'Pf shape: {Pf.shape}')
 
     xx, yy = inlet_grid( lam/2, m, n, sparse=False, indexing='ij' )
     return xx, yy, Pf

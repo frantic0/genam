@@ -630,7 +630,40 @@ class Lens:
       print('ExportUNV() failed. Invalid file name?')
 
 
+  def export_complex_pressure_at_inlet( configurator,
+                                  path ):
+    """
 
+      Input
+
+
+      Output
+
+        .unv to *.mesh (Elmer w)  
+    
+    """
+    path_dir = os.path.dirname(path)
+    if not os.path.exists( path_dir ):
+      try:
+        os.makedirs( path_dir )
+      except:
+        print('ExportDAT() failed. Directory does not exist and could not create it')
+
+      xx, yy, Pf = configurator
+      m, n = configurator[0].shape
+
+      try:
+          with open(path, 'w') as f:
+              f.write(f"{xx[i,j].shape}\n")
+              for i in range(m):
+                  for j in range(n):
+                    f.write(f"{xx[i,j]*10**-3} {yy[i,j]*10**-3} {Pf[i,j].real} {Pf[i,j].imag}\n")
+                      # print(xx[i,j], yy[i,j], Pf[i,j])
+      except FileNotFoundError:
+          print("The file doesn't exist")
+      # finally:
+          
+      return
 
 
   def export_inlet_mesh( self, path) : 
