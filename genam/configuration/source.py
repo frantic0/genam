@@ -42,25 +42,27 @@ def piston_model_matrix(rxy, rxyz, k, p0=8.02, d=10.5/1000):
     # return 2*(p0/b)*(tay/rxyz)*np.exp(1j*k*rxyz)
 
 
+
 def inlet_grid( unit_cell_size,
                 side_length_x, 
-                side_length_y ):
+                side_length_y, 
+                sparse = False,
+                indexing = 'xy' ):
 
-    ex = np.arange(   # x side length vector 
+    x = np.arange(   # x side length vector 
         unit_cell_size * (-side_length_x + 1)/2, 
         unit_cell_size * ( side_length_x + 1)/2, 
         unit_cell_size ) 
     
 
-    ey = np.arange(   # y side length vector
+    y = np.arange(   # y side length vector
         unit_cell_size * (-side_length_y + 1)/2, 
         unit_cell_size * ( side_length_y + 1)/2, 
         unit_cell_size )
     
-    exx, eyy = np.meshgrid(ex, ey)
+    return np.meshgrid(x, y, sparse = sparse, indexing = indexing )
 
-    return exx, eyy
-
+    
 
 def transducer_grid( pitch, # inter-element spacing or pitch between adjacent transducer
                      transducers_m, 
@@ -80,6 +82,7 @@ def transducer_grid( pitch, # inter-element spacing or pitch between adjacent tr
     tzz = np.zeros_like(txx)  # transducer arrangement in z 
 
     return txx, tyy, tzz
+
 
 
 def transducer_inlet_grid(  transducer_grid,
@@ -103,6 +106,8 @@ def transducer_inlet_grid(  transducer_grid,
     
     return rxyz, rxy
 
+
+
 def plotter( Pf ):
 
     fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(20, 7))
@@ -115,38 +120,39 @@ def plotter( Pf ):
 
     divider = make_axes_locatable(ax1)
     cax1 = divider.append_axes("right", size='5%', pad=.1)
-
-    # ax1.title.set_text("phasemap")
-    # ax1.set_title("phasemap", fontsize=15)
+    ax1.set_title("phasemap", fontsize=15)
     plt.colorbar(im1, cax=cax1)
 
-    im2 = ax2.imshow(   
-            abs(Pf), 
-            cmap=cm.get_cmap('jet') )
 
+    im2 = ax2.imshow( abs(Pf), cmap=cm.get_cmap('jet') )
     divider = make_axes_locatable(ax2)
     cax2 = divider.append_axes("right", size='5%', pad=.1)
-    
     ax2.set_title("propagation", fontsize=15)
-    
     plt.colorbar(im2, cax=cax2)
 
     fig.tight_layout()
 
     plt.show()
 
-def write_complex_pressure_inlet_( configurator,
 
+
+def write_complex_pressure_inlet( configurator,
                                   path ):
 
+    xx, yy, Pf = configurator
+    m, n = configurator[0].shape
 
-    exx, eyy,  Pf =  configurator
-
-    for m in m = 2,
-                    n = 2,  
-
-
-    pass
+    try:
+        with open(path, 'w') as f:
+            for i in range(m):
+                for j in range(n):
+                    f.write(f"{xx[i,j]} {yy[i,j]} {Pf[i,j]}\n")
+                    # print(xx[i,j], yy[i,j], Pf[i,j])
+    except FileNotFoundError:
+        print("The file doesn't exist")
+    # finally:
+        
+    return
 
 def configurator(   dist,
                     tm = 1,
@@ -177,7 +183,7 @@ def configurator(   dist,
     # print(f'Pf: {Pf}')
     # print(f'Pf shape: {Pf.shape}')
 
-    exx, eyy = inlet_grid( lam/2, m, n )
+    xx, yy = inlet_grid( lam/2, m, n, sparse=False, indexing='ij' )
+    return xx, yy, Pf
 
-    return exx.flatten(), eyy.flatten(), Pf.flatten()
    
