@@ -26,8 +26,9 @@ class Lens:
                 inlet_offset = 0.001,
                 outlet_offset = 0.001,
                 wavelength = 8.661,
-                set_hemisphere = False,
-                set_PML = True
+                set_PML = True,
+                source_config = None,
+                set_hemisphere = False
               ):
 
     self.wavelength = wavelength
@@ -56,6 +57,8 @@ class Lens:
     self.start = 0
     self.end = 0
     self.pml_bottom_height = 2.573
+
+    self.source_config = source_config
 
     pass
 
@@ -577,18 +580,16 @@ class Lens:
     self.__set_mesh_strategy__( algo )
     
     # Add meshing groups
+    isDone = self.mesh.Compute()  
     
     pml_bottom_mesh = self.mesh.GroupOnGeom( self.groups['solid_pml_inlet'], 'pml_inlet', SMESH.VOLUME)
     brick_mesh = self.mesh.GroupOnGeom( self.groups['solid_lens'], 'lens', SMESH.VOLUME)
     air_mesh = self.mesh.GroupOnGeom( self.groups['solid_air'], 'air', SMESH.VOLUME)
-    # pml_top_mesh = self.mesh.GroupOnGeom( self.groups['solid_pml_outlet'], 'pml_outlet', SMESH.VOLUME)
-    
-    # air_faces_mesh = Structure_1.GroupOnGeom(Group_Air_Faces,'air_faces', SMESH.FACE)
 
     hemisphere_faces_mesh = self.mesh.GroupOnGeom( self.groups['group_faces_hemisphere'], 'hemisphere', SMESH.FACE)
     outlet_faces_mesh = self.mesh.GroupOnGeom( self.groups['group_faces_outlet'], 'outlet', SMESH.FACE)
     
-    inlet_face_mesh = self.mesh.GroupOnGeom( self.groups['group_faces_inlet'], 'inlet', SMESH.FACE)
+    self.inlet_face_mesh = self.mesh.GroupOnGeom( self.groups['group_faces_inlet'], 'inlet', SMESH.FACE)
     # faces_air_cut_mesh = Structure_1.GroupOnGeom( group_faces_air_cut, 'air', SMESH.FACE)
     brick_faces_mesh = self.mesh.GroupOnGeom( self.groups['group_faces_air_lens'], 'lens_air', SMESH.FACE)
     faces_lens_cut_mesh = self.mesh.GroupOnGeom( self.groups['group_faces_lens_cut'], 'lens_shell', SMESH.FACE)
@@ -601,7 +602,6 @@ class Lens:
     mesh_air_right = self.mesh.GroupOnGeom( self.groups['group_faces_right'], 'right', SMESH.FACE)
     mesh_air_left = self.mesh.GroupOnGeom( self.groups['group_faces_left'], 'left', SMESH.FACE)
 
-    isDone = self.mesh.Compute()  
 
   def export_mesh( self, path ) : 
     """
@@ -629,3 +629,32 @@ class Lens:
     except:
       print('ExportUNV() failed. Invalid file name?')
 
+
+
+
+
+  def export_inlet_mesh( self, path) : 
+    """
+
+      Input
+
+
+      Output
+
+        .unv to *.mesh (Elmer w)  
+    
+    """
+    path_dir = os.path.dirname(path)
+    if not os.path.exists( path_dir ):
+      try:
+        os.makedirs( path_dir )
+      except:
+        print('ExportDAT() failed. Directory does not exist and could not create it')
+
+    # os.chdir(path)
+
+    # print(self.inlet_face_mesh.GetNodeIDs())
+    try:
+      self.mesh.ExportDAT( path, meshPart = self.inlet_face_mesh, renumber = False ) # ExportDAT requires string as input type, not path!
+    except:
+      print('ExportDAT() failed. Invalid file name?')
