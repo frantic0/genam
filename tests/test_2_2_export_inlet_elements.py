@@ -32,7 +32,7 @@ lens_config = lens_configurator( quantized_matrix_2_2_0 )
 
 source_config = source_configurator(  0.02, 
                                       2, 2,       # transducer columns * rows configuration  
-                                      2, 2,       # metasurface configuration
+                                      2, 2,       # metasurface unit cell configuration
                                       p0 = 8.02,
                                     ) 
 

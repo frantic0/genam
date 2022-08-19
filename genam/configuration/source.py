@@ -3,13 +3,6 @@ from mpl_toolkits.axes_grid1.axes_divider import make_axes_locatable
 
 
 
-# ---> physics params <---
-c = 343 # m/s
-v = 40000 # Hz
-lam = c/v # m
-k = 2*np.pi/lam # rads/m
-
-
 # Transducer piston model
 def piston_model_matrix(rxy, rxyz, k, p0=8.02, d=10.5/1000):
     """
@@ -43,17 +36,17 @@ def inlet_grid( unit_cell_size,
                 indexing = 'xy' ):
 
     x = np.arange(   # x side length vector 
-        unit_cell_size * (-side_length_x + 1)/2, 
-        unit_cell_size * ( side_length_x + 1)/2, 
-        unit_cell_size ) 
+            unit_cell_size * (-side_length_x + 1)/2, 
+            unit_cell_size * ( side_length_x + 1)/2, 
+            unit_cell_size ) 
     
 
     y = np.arange(   # y side length vector
-        unit_cell_size * (-side_length_y + 1)/2, 
-        unit_cell_size * ( side_length_y + 1)/2, 
-        unit_cell_size )
+            unit_cell_size * (-side_length_y + 1)/2, 
+            unit_cell_size * ( side_length_y + 1)/2, 
+            unit_cell_size )
     
-    return np.meshgrid(x, y, sparse = sparse, indexing = indexing )
+    return np.meshgrid( x, y, sparse = sparse, indexing = indexing )
 
     
 
@@ -62,14 +55,14 @@ def transducer_grid( pitch, # inter-element spacing or pitch between adjacent tr
                      transducers_n ):
 
     tx = np.arange(          # transducer arrangement in x 
-        pitch * (-transducers_m + 1 ) /2, 
-        pitch * ( transducers_m + 1 ) /2, 
-        pitch ) 
+            pitch * (-transducers_m + 1 ) /2, 
+            pitch * ( transducers_m + 1 ) /2, 
+            pitch ) 
 
     ty = np.arange(          # transducer arrangement in y 
-        pitch * (-transducers_n + 1 ) /2, 
-        pitch * ( transducers_n + 1 ) /2, 
-        pitch ) 
+            pitch * (-transducers_n + 1 ) /2, 
+            pitch * ( transducers_n + 1 ) /2, 
+            pitch ) 
     
     txx, tyy = np.meshgrid(tx, ty)
     tzz = np.zeros_like(txx)  # transducer arrangement in z 
@@ -129,56 +122,75 @@ def plotter( Pf ):
 
 
 
-def write_complex_pressure_inlet( configurator,
-                                  path ):
+def write_complex_pressure_inlet( configurator, path ):
 
-    xx, yy, Pf = configurator
-    m, n = configurator[0].shape
-
+    xx, yy, Pf = configurator.xx, configurator.yy, configurator.Pf
+    m, n = configurator.m, configurator.n
+    
     try:
         with open(path, 'w') as f:
-            f.write(f"{m} {n}\n")
+
+            f.write(f"{ configurator.wavelength/2 } { m } { n }\n") # write first line to enable parsing of the file the f90 module 
+            
             for i in range(m):
                 for j in range(n):
                     # f.write(f"{xx[i,j]*1e-2} {yy[i,j]*1e-2} {Pf[i,j].real} {Pf[i,j].imag}\n")
-                    f.write(f"{xx[i,j]} {yy[i,j]} {Pf[i,j].real} {Pf[i,j].imag}\n")
+                    f.write(f"{ xx[i,j] } { yy[i,j] } { Pf[i,j].real } { Pf[i,j].imag }\n")
                     print(xx[i,j], yy[i,j], Pf[i,j])
+    
     except FileNotFoundError:
         print("The file doesn't exist!")
     # finally:
         
     return
 
-def configurator(   dist,
+class configurator:
+
+    def __init__(   self,
+                    dist,
                     tm = 1,
                     tn = 1,
                     m = 2,
                     n = 2,  
                     p0 = 8.02,                  # tranducer reference pressure [Pa] 
-                    pitch = 10.5/1000 ):        # inter-element spacing or pitch between adjacent transducer [m] 
-                                                # ( diameter of a transducer 10mm + spacing of 0.5mm )
+                    pitch = 10.5/1000,          # inter-element spacing or pitch between adjacent transducer [m], ( diameter of a transducer 10mm + spacing of 0.5mm ) 
+                    A = 1,                      # amplitude for each transducer to take (max=1, min=0)
+                    wavelength = 343/40000 ):       
+                                            
+        self.dist = dist
+        self.tm = tm
+        self.tn = tn
+        self.m  = m
+        self.n  = n  
+        self.p0 = p0                  
+        self.pitch = pitch          
+        self.A = A  
+        self.wavelength = wavelength                
+        self.k = 2*np.pi/wavelength # rads/m
+    
 
-    A = 1                                       # amplitude for each transducer to take (max=1, min=0)
+    def calculate_piston_propagation_matrix( self ) :
 
-    rxyz, rxy = transducer_inlet_grid( 
-                    transducer_grid( pitch, tm, tn ),
-                    inlet_grid( lam/2, m, n ), 
-                    dist
-                    )
+        rxyz, rxy = transducer_inlet_grid( 
+                        transducer_grid( self.pitch, self.tm, self.tn ),
+                        inlet_grid( self.wavelength/2, self.m, self.n ), 
+                        self.dist )
 
-    H = piston_model_matrix( rxy, rxyz, k, p0, pitch ) # propagator
+        H = piston_model_matrix( rxy, rxyz, self.k, self.p0, self.pitch ) # propagator
 
-    Pt = A * np.ones( tm * tn ) * np.exp( 1j * np.zeros( tm * tn ) ) # transducer complex pressure
+        self.Pt = self.A * np.ones( self.tm * self.tn ) * np.exp( 1j * np.zeros( self.tm * self.tn ) ) # transducer complex pressure
 
-    Pf = np.dot( H, Pt ).reshape( m, n ) # propagate to far field and reshape to array
+        self.Pf = np.dot( H, self.Pt ).reshape( self.m, self.n ) # propagate to far field and reshape to array
 
-    print("H:", H.shape)
-    print("Pt:", Pt)
-    print("Pt shape: ", Pt.shape)
-    print(f'Pf: {Pf}')
-    print(f'Pf shape: {Pf.shape}')
+        # print("H:", H.shape)
+        # print("Pt:", self.Pt)
+        # print("Pt shape: ", self.Pt.shape)
+        # print(f'Pf: {self.Pf}')
+        # print(f'Pf shape: {self.Pf.shape}')
 
-    xx, yy = inlet_grid( lam/2, m, n, sparse=False, indexing='ij' )
-    return xx, yy, Pf
+        # meshgrid with matrix indexing
+        # with inputs of length M and N, the outputs are of shape (N, M) for ‘xy’ indexing and (M, N) for ‘ij’ indexing.
+        self.xx, self.yy = inlet_grid( self.wavelength/2, self.m, self.n, sparse=False, indexing='ij' )
+
 
    
