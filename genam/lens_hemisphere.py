@@ -71,17 +71,21 @@ class Lens:
     '''    
     sphere_inner = geompy.MakeSphereR(radius)
     sphere_outer = geompy.MakeSphereR(radius + self.pml_bottom_height)
-    box_cut = geompy.MakeBoxDXDYDZ(40, 40, 20)
-    self.geompy.TranslateDXDYDZ(box_cut, -20, -20, -20)
+    # box_cut = geompy.MakeBoxDXDYDZ(40, 40, 20)
+    box_cut = geompy.MakeBoxDXDYDZ((radius + self.pml_bottom_height)*2, (radius + self.pml_bottom_height)*2, radius + self.pml_bottom_height)
+    # self.geompy.TranslateDXDYDZ(box_cut, -20, -20, -20)
+    self.geompy.TranslateDXDYDZ(box_cut, -(radius + self.pml_bottom_height),
+                                         -(radius + self.pml_bottom_height), 
+                                         -(radius + self.pml_bottom_height) )
     partition_spheres = geompy.MakePartition([ sphere_inner, sphere_outer ], [], [], [], geompy.ShapeType["SOLID"], 0, [], 0)
     cut_spheres = geompy.MakeCutList(partition_spheres, [box_cut], True)
     hemisphere = geompy.TranslateDXDYDZ(cut_spheres, 0, 0, translationDZ)
     
-    # geompy.addToStudy( sphere_inner, 'sphere_inner' )
-    # geompy.addToStudy( sphere_outer, 'sphere_outer' )
-    # geompy.addToStudy( box_cut, 'box_cut' )
-    # geompy.addToStudy( partition_spheres, 'partition_spheres' )
-    # geompy.addToStudy( cut_spheres, 'cut_spheres' )
+    geompy.addToStudy( sphere_inner, 'sphere_inner' )
+    geompy.addToStudy( sphere_outer, 'sphere_outer' )
+    geompy.addToStudy( box_cut, 'box_cut' )
+    geompy.addToStudy( partition_spheres, 'partition_spheres' )
+    geompy.addToStudy( cut_spheres, 'cut_spheres' )
     
     return hemisphere
 
@@ -630,8 +634,7 @@ class Lens:
       print('ExportUNV() failed. Invalid file name?')
 
 
-  def export_complex_pressure_at_inlet( configurator,
-                                  path ):
+  def export_complex_pressure_at_inlet( self, configurator, path ):
     """
 
       Input
@@ -649,21 +652,23 @@ class Lens:
       except:
         print('ExportDAT() failed. Directory does not exist and could not create it')
 
-      xx, yy, Pf = configurator
-      m, n = configurator[0].shape
+    xx, yy, Pf = configurator.xx, configurator.yy, configurator.Pf
+    m, n = configurator.m, configurator.n
+    
+    try:
+      with open(path, 'w') as f:
 
-      try:
-          with open(path, 'w') as f:
-              f.write(f"{xx[i,j].shape}\n")
-              for i in range(m):
-                  for j in range(n):
-                    f.write(f"{xx[i,j]*10**-3} {yy[i,j]*10**-3} {Pf[i,j].real} {Pf[i,j].imag}\n")
-                      # print(xx[i,j], yy[i,j], Pf[i,j])
-      except FileNotFoundError:
-          print("The file doesn't exist")
-      # finally:
-          
-      return
+        f.write(f"{ configurator.wavelength/2 } { m } { n }\n") # write first line to enable parsing of the file the f90 module 
+            
+        for i in range(m):
+          for j in range(n):
+            # f.write(f"{xx[i,j]*1e-2} {yy[i,j]*1e-2} {Pf[i,j].real} {Pf[i,j].imag}\n")
+            f.write(f"{ xx[i,j] } { yy[i,j] } { Pf[i,j].real } { Pf[i,j].imag }\n")
+            print(xx[i,j], yy[i,j], Pf[i,j])
+    except FileNotFoundError:
+      print("The file doesn't exist!")          
+    
+    return
 
 
   def export_inlet_mesh( self, path) : 

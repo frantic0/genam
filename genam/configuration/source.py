@@ -2,7 +2,6 @@ import numpy as np, matplotlib.pyplot as plt, matplotlib.colors, matplotlib.cm a
 from mpl_toolkits.axes_grid1.axes_divider import make_axes_locatable
 
 
-
 # Transducer piston model
 def piston_model_matrix(rxy, rxyz, k, p0=8.02, d=10.5/1000):
     """
@@ -169,7 +168,7 @@ class configurator:
         self.k = 2*np.pi/wavelength # rads/m
     
 
-    def calculate_piston_propagation_matrix( self ) :
+    def propagate( self ) :
 
         rxyz, rxy = transducer_inlet_grid( 
                         transducer_grid( self.pitch, self.tm, self.tn ),
@@ -180,7 +179,7 @@ class configurator:
 
         self.Pt = self.A * np.ones( self.tm * self.tn ) * np.exp( 1j * np.zeros( self.tm * self.tn ) ) # transducer complex pressure
 
-        self.Pf = np.dot( H, self.Pt ).reshape( self.m, self.n ) # propagate to far field and reshape to array
+        self.Pf = np.dot( H, self.Pt ).reshape( self.n, self.m ) # propagate to far field and reshape to array
 
         # print("H:", H.shape)
         # print("Pt:", self.Pt)
