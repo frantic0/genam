@@ -36,8 +36,6 @@ source_config = source_configurator(  0.02,
                                       p0 = 8.02   # reference pressure
                                     )
 
-source_config.calculate_piston_propagation_matrix() 
-
 lens_name = 'export_16_3_0_inlet' 
 
 # # # Create lens with name, bricks ID and mesh configurations 
