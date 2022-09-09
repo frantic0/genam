@@ -175,14 +175,10 @@ End
 Boundary Condition 1
   Target Boundaries(1) = $ hemisphere
   Name = hemisphere
-!  Wave Impedance 1 = $ c0
-!  Wave Impedance 2 = 0
   Wave impedance 1 = Real MATC "((2 * pi * f * r)^2) / (c * (1 + (((2 * pi * f * r)^2) / (c^2))))"
   Wave impedance 2 = Real MATC "(2 * pi * f * r) / (1 + (((2 * pi * f * r)^2) / (c^2)))"
   Save Scalars = Logical True
 End
-
-
 
 Boundary Condition 2
   Target Boundaries(1) = $ outlet
@@ -196,20 +192,13 @@ Boundary Condition 3
   Target Boundaries(1) = $ inlet
   Name = inlet
   Plane Wave BC = False ! Automatically sets the boundary conditions assuming outgoing plane waves
-$p0=100.0
+$p0=920
 $k1=1.0
 $k2=0.0
 $k3=1.0
-  ! Pressure Wave 1 = 100
   Pressure Wave 2 = 0
   Pressure Wave 1 = Variable Coordinate 
     Real MATC "p0 * cos(k1*tx(0) + k2*tx(1) + k3*tx(2))"
-  ! Wave Impedance 1 = $ c0 !
-  ! Pressure Wave 1 = 1
-  ! Wave Flux 1 = Variable time; Real MATC "2 * pi * f * p * U"
-  ! Wave Flux 2 = 0
-  ! We want to save data at the inlet 
-  ! TODO how do we save data at the outlet
   Save Scalars = Logical True
 End
 

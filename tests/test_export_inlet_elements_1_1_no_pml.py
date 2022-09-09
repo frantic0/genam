@@ -17,9 +17,10 @@ sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline/tests')
 
 
 # Genam Lens, mesh configurator
-from matrices.quantized_2_2 import quantized_matrix_2_2_0
+from matrices.quantized_1_1 import quantized_matrix_1_1_x
+# from matrices.quantized_2_2 import quantized_matrix_2_2_0, quantized_matrix_2_2_y, quantized_matrix_2_2
 from genam.lens import Lens
-from genam.lens_hemisphere import Lens as Lens_hemi
+from genam.lens_hemisphere_PML import Lens as Lens_hemi
 from genam.configuration.lens import configurator as lens_configurator 
 from genam.configuration.mesh import configurator as mesh_configurator
 # from genam.configuration.source import configurator as source_configurator
@@ -27,8 +28,12 @@ from genam.solver import convert_mesh, copy_solver_templates, copy_sif, compile_
 from genam.analysis import Analysis
 
 
+quantized_matrix_id = 1
 
-lens_config = lens_configurator( quantized_matrix_2_2_0 )
+lens_config = lens_configurator( quantized_matrix_1_1_x( quantized_matrix_id ) )
+# lens_config = lens_configurator( quantized_matrix_2_2_0 )
+# lens_config = lens_configurator( quantized_matrix_2_2_y )
+# lens_config = lens_configurator( quantized_matrix_2_2 )
 
 # source_config = source_configurator(  0.02, 
 #                                       2, 2,       # transducer columns * rows configuration  
@@ -38,7 +43,7 @@ lens_config = lens_configurator( quantized_matrix_2_2_0 )
 
 # source_config.calculate_piston_propagation_matrix() 
 
-lens_name = 'export_2_2_kernel' 
+lens_name = f'export_1_1_{ quantized_matrix_id }_kernel' 
 
 
 
@@ -52,7 +57,7 @@ lens_hemi = Lens_hemi(  lens_config,
                         outlet_offset     = 17.3,
                         wavelength        = 8.661,
                         set_hemisphere    = True,
-                        set_PML = True )
+                        set_PML = False )
 
 start = time.time()
 

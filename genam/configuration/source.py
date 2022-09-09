@@ -32,7 +32,8 @@ def piston_model_matrix( rxy, rxyz, k, p0 = 8.02, d = 10.5/1000 ):
 def transducer_grid( pitch,         # inter-element spacing or pitch between adjacent transducer
                      transducers_m, 
                      transducers_n 
-                    ) -> tuple[ np.ndarray, np.ndarray, np.ndarray ]:
+                    ):
+                    # ) -> tuple[ np.ndarray, np.ndarray, np.ndarray ]:
                     
 
   tx = np.arange(          # transducer arrangement in x 
@@ -55,7 +56,8 @@ def inlet_grid( unit_cell_size,
                 side_length_x, 
                 side_length_y, 
                 sparse = False,
-                indexing = 'xy' ) -> list[ np.ndarray ]:
+                indexing = 'xy' ):
+                # indexing = 'xy' ) -> list[ np.ndarray ]:
 
   """
   
@@ -78,7 +80,8 @@ def inlet_grid( unit_cell_size,
 
 def transducer_inlet_grid(  transducer_grid,
                             inlet_grid,
-                            dist ) -> tuple:
+                            dist ):
+                            # dist ) -> tuple:
   """
   
   """
@@ -147,6 +150,14 @@ def write_complex_pressure_inlet( configurator, path ) -> None:
       
   return
 
+
+tm = 1,
+tn = 1,
+m = 2,
+n = 2,  
+pitch = 10.5/1000, 
+
+
 class configurator:
 
   def __init__( self,
@@ -155,8 +166,8 @@ class configurator:
                 tn = 1,
                 m = 2,
                 n = 2,  
-                p0 = 8.02,                  # tranducer reference pressure [Pa] 
                 pitch = 10.5/1000,          # inter-element spacing or pitch between adjacent transducer [m], ( diameter of a transducer 10 mm + spacing of 0.5mm ) 
+                p0 = 8.02,                  # tranducer reference pressure [Pa] 
                 A = 1,                      # amplitude for each transducer to take (max=1, min=0)
                 wavelength = 343/40000 ):
     """
@@ -177,6 +188,7 @@ class configurator:
     self.p0 = p0                  
     self.pitch = pitch          
     self.A = A  
+
     self.wavelength = wavelength                
     self.k = 2*np.pi/wavelength # rads/m
 
