@@ -92,6 +92,230 @@ def convert_mesh(filename, options=""):
   else: 
     raise NotImplementedError('operating system not support') 
 
+def write_pressure_sif(path, PRESSURE_DATA_PATH, process_id):
+
+  PRESSURE_DATA_PATH = str( Path( os.path.dirname(os.path.realpath(__file__)) ).parent.parent.joinpath('tests').joinpath('sif').joinpath(PRESSURE_DATA_PATH) )
+  
+  pressures = []
+  for line in open( PRESSURE_DATA_PATH ): 
+      pressures.append(line)
+  
+  pressure = pressures[process_id]
+  print(pressure)
+
+  real, imag = complex(pressure).real, complex(pressure).imag
+
+  sif = f'''
+Check Keywords "Warn"
+  INCLUDE mesh.names
+! location of mesh files
+
+Header
+  Mesh DB "." "."
+  Include Path ""
+  Results Directory ""
+  $ rho0 = 1.205                     ! Medium (Air) Equilibrium Density
+  $ c0 = -343                        ! Medium Sound Phase Speed
+  $ c = 343.0                        ! Medium Sound Phase Speed
+  $ f = 40000                        ! Source Frequency
+  $ p = 1.205                        ! Medium (Air) Equilibrium Density
+  $ U = 10                           ! Source Surface Velocity
+  $ r = 0.019873
+  ! $freqVec = vector(100,1800,50)
+End
+
+! general information that is not specific to a particular Helmholtz
+Simulation
+  Max Output Level = 5
+  Coordinate System = Cartesian
+  Coordinate Mapping(3) = 1 2 3
+  Coordinate Scaling = Real 0.001   ! set dimensions in mm (instead of m)
+  !  Simulation Type = Scanning     ! set Frequency sweeps
+  Simulation Type = Steady state    ! set Stationary problem
+  Steady State Max Iterations = 1
+  Output Intervals = 1
+  Timestepping Method = BDF
+  BDF Order = 1
+  Post File = mushroom.vtu        ! set VTU file Export for visualization in Paraview
+End
+
+Constants
+  Gravity(4) = 0 -1 0 9.82
+  Stefan Boltzmann = 5.67e-08
+  Permittivity of Vacuum = 8.8542e-12
+  Boltzmann Constant = 1.3807e-23
+  Unit Charge = 1.602e-19
+End
+
+
+Solver 1
+  Equation = Helmholtz Equation
+  Procedure = "HelmholtzSolve" "HelmholtzSolver"
+  Variable = -dofs 2 Pressure Wave
+  Nonlinear Update Exported Variables = Logical True
+  Exported Variable 1 = Pabs
+  Exported Variable 2 = SPL
+  Exported Variable 3 = Phase
+  Exported Variable 4 = PhaseAtan2
+  Exec Solver = Always
+  Stabilize = True
+  Bubbles = False
+  Lumped Mass Matrix = False
+  Optimize Bandwidth = True
+  Steady State Convergence Tolerance = 1.0e-5
+  Nonlinear System Convergence Tolerance = 1.0e-7
+  ! Nonlinear System Max Iterations = 1
+  Nonlinear System Max Iterations = 20
+  Nonlinear System Newton After Iterations = 3
+  Nonlinear System Newton After Tolerance = 1.0e-3
+  Nonlinear System Relaxation Factor = 1
+  Linear System Solver = Iterative
+  Linear System Iterative Method = BiCGStabl
+  Linear System Max Iterations = 100000
+  ! Linear System Max Iterations = 10000
+  Linear System Convergence Tolerance = 1.0e-10
+  BiCGstabl polynomial degree = 2
+  ! Linear System Preconditioning = ILU0
+  ! Linear System Preconditioning = ILU1
+  ! Linear System Preconditioning = ILU2
+  Linear System Preconditioning = ILUT
+  Linear System ILUT Tolerance = 1.0e-3
+  Linear System Abort Not Converged = True
+  Linear System Residual Output = 10
+  Linear System Precondition Recompute = 1
+End
+
+
+!!!!!!!!!!!!!!!!!!!!!!!
+! EQUATION SECTIONS
+!!!!!!!!!!!!!!!!!!!!!!! 
+
+Equation 1
+  Name = "Helmholtz"
+Angular Frequency = $ 2.0 * pi * f
+  Active Solvers(1) = 1
+End
+
+
+!!!!!!!!!!!!!!!!!!!!!!!
+! MATERIAL SECTIONS
+!!!!!!!!!!!!!!!!!!!!!!!
+
+
+Material 1
+  Name = "Air (room temperature)"
+  Relative Permittivity = 1.00059
+  Heat Conductivity = 0.0257
+  Sound speed = 343.0
+  ! Density = Real MATC "p"
+  Density = 1.205
+  Porosity Model = Always saturated
+  Heat Capacity = 1005.0
+  Viscosity = 1.983e-5
+  Heat expansion Coefficient = 3.43e-3
+End
+
+
+Material 2 
+  Name = "Plastic"
+  Heat expansion Coefficient = 7.0e-5
+  Heat Conductivity = 0.18
+  Sound speed = 2750
+  Heat Capacity = 1470
+  Density = 1190
+  Poisson ratio = 0.35
+  Youngs modulus = 3.2e9
+End
+
+
+!------ Skeleton for body section -----
+
+Body 1
+  Name = lens
+  Equation = 1
+  Material = 2  
+End
+
+Body 2
+  Name = air
+  Equation = 1
+  Material = 1
+  Body Force = 1 ! Force applied to Air body, with scalars apply 
+End
+
+Body Force 1
+  Name = "Pabs"
+Pabs = Variable Pressure Wave 1, Pressure Wave 2 
+      Real MATC "sqrt(tx(0)^2+tx(1)^2)"
+  Name = "SPL" 
+SPL = Variable Pressure Wave 1, Pressure Wave 2
+      Real MATC "20*log(((sqrt(tx(0)^2+tx(1)^2))/(sqrt(2)*20e-6)))"
+  Name = "Phase"
+Phase = Variable Pressure Wave 1, Pressure Wave 2
+      Real MATC "atan(tx(0)/(tx(1)))"
+  Name = "PhaseAtan2"    
+PhaseAtan2 = Variable Pressure Wave 1, Pressure Wave 2
+      Real MATC "atan2(tx(0),tx(1))"
+End
+
+!------ Skeleton for boundary section -----
+
+
+Boundary Condition 1
+  Target Boundaries(1) = $ hemisphere
+  Name = hemisphere
+  Wave impedance 1 = Real MATC "((2 * pi * f * r)^2) / (c * (1 + (((2 * pi * f * r)^2) / (c^2))))"
+  Wave impedance 2 = Real MATC "(2 * pi * f * r) / (1 + (((2 * pi * f * r)^2) / (c^2)))"
+  Save Scalars = Logical True
+End
+
+Boundary Condition 2
+  Target Boundaries(1) = $ outlet
+  Name = outlet
+  Wave Impedance 1 = $ c0
+  Wave Impedance 2 = 0
+  Save Scalars = Logical True
+End
+
+Boundary Condition 3
+  Target Boundaries(1) = $ inlet
+  Name = inlet
+  Plane Wave BC = False ! Automatically sets the boundary conditions assuming outgoing plane waves
+  Pressure Wave 1 = { real }
+  Pressure Wave 2 = { imag } 
+  Save Scalars = Logical True
+End
+
+
+Boundary Condition 4
+  Target Boundaries(1) = $ lens_air
+  Name = lens_air
+  Wave Flux 1 = 0
+  Wave Flux 2 = 0
+End
+
+Boundary Condition 5
+  Target Boundaries(1) = $ lens_shell
+  Name = lens_shell
+  Wave Flux 1 = 0
+  Wave Flux 2 = 0
+End
+  '''.format(real, imag)
+
+
+  # print("DEBUG")
+  # print(path)
+  # print(sif)
+  
+  file = open( Path(path).joinpath("entities.sif"), "w" )
+  file.write(sif)
+  file.close()
+
+
+
+
+
+
 
 def export_parameterisable_solver_input_file_0( path, frequency):
   """

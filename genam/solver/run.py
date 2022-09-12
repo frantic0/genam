@@ -16,7 +16,8 @@ import subprocess
 
 def run_elmer_solver(path):
 
-  sif_files = [ f for f in os.listdir(path) if ( f.endswith(".sif") and "entities.sif" not in f ) ]
+  sif_files = [ f for f in os.listdir(path) if ( f.endswith(".sif") ) ]
+  # sif_files = [ f for f in os.listdir(path) if ( f.endswith(".sif") and "entities.sif" not in f ) ]
   os.chdir(path)
   # execute comand and terminate
   for filename in sif_files:
@@ -30,7 +31,8 @@ def run_elmer_solver(path):
 
 def run_elmer_solver_parallel(path, n):
 
-  sif_files = [ f for f in os.listdir(path) if ( f.endswith(".sif") and "entities.sif" not in f ) ]
+  # sif_files = [ f for f in os.listdir(path) if ( f.endswith(".sif") and "entities.sif" not in f ) ]
+  sif_files = [ f for f in os.listdir(path) if ( f.endswith(".sif") ) ]
   os.chdir(path)
   # execute comand and terminate
   for filename in sif_files:
@@ -41,5 +43,5 @@ def run_elmer_solver_parallel(path, n):
       subprocess.call(["mpirun", "-np", "{}".format(n), "ElmerSolver_mpi", "{}".format(filename), ])
 
 
-# dirname = int(sys.argv[1:][0])
+# dirname = int(sdys.argv[1:][0])
 # run_elmer_solver(dirname)
