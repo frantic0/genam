@@ -408,11 +408,12 @@ End
 
 Boundary Condition 5 
   Target Boundaries(1) = $ back
-  Periodic BC = 4
+  Wave Impedance 1 = $ c0
+  Wave Impedance 2 = 0
 End
 
 Boundary Condition 6 
-Target Boundaries(1) = $ right
+  Target Boundaries(1) = $ right
   Wave Impedance 1 = $ c0
   Wave Impedance 2 = 0
 End
@@ -420,6 +421,8 @@ End
 
 Boundary Condition 7 
 Target Boundaries(1) = $ left
+  Wave Impedance 1 = $ c0
+  Wave Impedance 2 = 0
   Periodic BC = 6
 End
 

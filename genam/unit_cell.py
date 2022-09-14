@@ -9,58 +9,19 @@ import SMESH, SALOMEDS
 from salome.smesh import smeshBuilder
 from salome.GMSHPlugin import GMSHPluginBuilder
 
+from abc import ABC, abstractmethod
 
-class Brick():
+
+class UnitCell(ABC):
     
-    def __init__( self,
-                  wavelength,
-                  flaplength,
-                  flapspacing,
-                  translation ):
-        
-        self.wavelength = wavelength
-        self.boxSide = self.wavelength/2 + 2 * self.wavelength/40
-        self.wavelength = wavelength
-        self.flaplength = flaplength
+  def __init__( self, id, name ):
+    self.id = id
+    self.name = name
 
-        if self.flaplength == 0 or self.flapspacing == 0 :
-          # brick_inner = geompy.MakeTranslation(
-          #                   geompy.MakeBoxDXDYDZ( boxSide - 2 * self.wavelenght/40, 
-          #                                         boxSide - 2 * self.wavelenght/40, 
-          #                                         self.wavelenght ),
-          #                   self.wavelenght/40, 
-          #                   self.wavelenght/40,
-          #                   pml_bottom_height + air_bottom_height )    
+    @abstractmethod
+    def calculate_payroll(self):
+        pass
 
-          brick_inner = geompy.MakeTranslation(
-                            geompy.MakeBoxDXDYDZ( self.boxSide - 2 * self.wavelength/40, 
-                                                  self.boxSide - 2 * self.wavelength/40, 
-                                                  self.wavelength ),
-                            translation[0],
-                            translation[1],
-                            translation[2] )    
-
-        else: 
-
-          Sketch_1 = parameterize_2D_inner_shape( self.wavelenght,
-                                                  flaplength * self.wavelenght,
-                                                  flapspacing * self.wavelenght )
-
-          # geompy.addToStudy( Sketch_1, 'Sketch' )
-          rotation = [(x, 90)]
-          
-          # translation = ( waveLenght/40, waveLenght/40 + waveLenght/2, 6.861)
-          # translation_x = self.wavelenght/40 + column * ( self.wavelenght/40 + self.wavelenght/2 )     
-          # translation_y = self.wavelenght/40 + row * (self.wavelenght/40 + self.wavelenght/2 )     
-          
-          # translation = ( translation_shift[0] + translation_x,
-          #                 translation_shift[1] + translation_y + self.wavelenght/2, 
-          #                 6.861 )
-          
-          try:
-            brick_inner = self.__sketch_to_volume__( geompy, Sketch_1, self.wavelenght /2, rotation, translation)
-          except:   
-            pass
 
 
     def sketch_to_volume(geom_builder, sketch_obj, thickness, rotation=None, translation=None):

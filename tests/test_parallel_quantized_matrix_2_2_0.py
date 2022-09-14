@@ -17,8 +17,9 @@ sys.path.insert(0, r'C:/Users/Francisco/Documents/dev/pipeline/tests')
 
 
 # Genam Lens, mesh configurator
-from matrices.quantized_1_1 import quantized_matrix_1_1_x
+from matrices.quantized_2_2 import quantized_matrix_2_2_y, quantized_matrix_2_2_x
 from genam.lens import Lens
+from genam.lens_hemisphere import Lens as Lens_hemi
 from genam.configuration.lens import configurator as lens_configurator 
 from genam.configuration.mesh import configurator as mesh_configurator
 from genam.solver import convert_mesh, copy_solver_templates, copy_sif, run_elmer_solver
@@ -26,37 +27,45 @@ from genam.analysis import Analysis
 
 
 
-brick_ID = -1
+# lens_config = lens_configurator( quantized_matrix_2_2_0 )
 
-if sys.argv == ['']:
-   brick_ID = 15
-else: 
-   print( 'args', sys.argv )
-   brick_ID =  int(sys.argv[2])
-   
-   
+lens_config = lens_configurator( quantized_matrix_2_2_y )
+lens_config_hemi = lens_configurator( quantized_matrix_2_2_y )
 
-lens_config = lens_configurator( quantized_matrix_1_1_x( brick_ID ) )
+lens_name = 'quantized_matrix_2_2_y' 
 
-lens_name = 'quantized_matrix_1_1_{}'.format( brick_ID ) 
+# # # Create lens with name, bricks ID and mesh configurations 
 
-# # Create lens with name, bricks ID and mesh configurations 
+lens_hemi = Lens_hemi(  lens_config_hemi, 
+              mesh_configurator(3), 
+              name              = lens_name,
+              inlet_offset      = 4.3,
+              outlet_offset     = 17.3,
+              wavelength        = 8.661,
+              set_hemisphere    = True )
 
-lens = Lens( lens_config, mesh_configurator(3), name = lens_name  )
+
+lens = Lens(  lens_config, 
+              mesh_configurator(3), 
+              name              = lens_name,
+              wavelenght        = 8.661 )
 
 start = time.time()
 
+
+lens_hemi.process_geometry() # Create the lens geometry 
 lens.process_geometry() # Create the lens geometry 
 
 print("Geometry computation time: {:.2f} sec".format(time.time() - start) )
 
 start = time.time()
 
+lens_hemi.process_mesh() # Create lens mesh 
 lens.process_mesh() # Create lens mesh 
 
 print("Mesh computation time: {:.2f} sec".format( time.time() - start) )
 
-start = time.time()
+# start = time.time()
 
 
 # DATASET_PATH = Path('/SAN/uclic/ammdgop/data')              # Dataset path, where all data will be stored - .unv mesh files and solver directories

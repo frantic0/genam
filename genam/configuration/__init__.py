@@ -1,3 +1,3 @@
-from configuration.lens import configurator
-from configuration.mesh import configurator 
-
+from . import lens
+from . import mesh
+from . import source 
