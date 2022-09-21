@@ -22,7 +22,7 @@ def run_elmer_solver(path):
   # execute comand and terminate
   for filename in sif_files:
     if os.name == 'posix':
-      os.system('ElmerSolver {}'.format(fileName))  
+      os.system('ElmerSolver {}'.format(filename))  
     elif os.name == 'nt':
       # os.system('cmd /c "dir "'.format(fileName))  
       # os.system('cmd /c "ElmerSolver {}"'.format(fileName))  
@@ -37,7 +37,7 @@ def run_elmer_solver_parallel(path, n):
   # execute comand and terminate
   for filename in sif_files:
     if os.name == 'posix':
-      os.system('mpirun -np {} ElmerSolver_mpi {}'.format(n, fileName))  
+      os.system('mpirun -np {} ElmerSolver_mpi {}'.format(n, filename))  
     elif os.name == 'nt':
       # os.system('cmd /c "mpirun -np {} ElmerSolver_mpi {}"'.format(n, fileName))  
       subprocess.call(["mpirun", "-np", "{}".format(n), "ElmerSolver_mpi", "{}".format(filename), ])
