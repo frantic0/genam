@@ -135,7 +135,7 @@ This section introduces what a typical __genam__ script is and how it is structu
 A high-level __genam__ script runs within the Salome environment, so it needs to import the main Salome module and request an initialisation. It also interacts files and from specific directories in the file system, from which it reads and/or writes intermediate data for the meshing and simulation stages.
 
 
-```
+```python
 import sys
 from pathlib import Path
 
@@ -147,7 +147,7 @@ salome.salome_init()
 Because the script is running within Salome, which takes over the current working directory, we need to tell Salome where the __genam__ package is installed, like so:   
 
 
-```
+```python
 # Set file paths for library and tests  
 sys.path.insert(0, r'C:/Users/user/Documents/dev/pipeline')
 sys.path.insert(0, r'C:/Users/user/Documents/dev/pipeline/genam')
@@ -156,7 +156,7 @@ sys.path.insert(0, r'C:/Users/user/Documents/dev/pipeline/tests')
 
 The __genam__ package is structured with a simple namespace that reflects its main package concepts, such as entities and workflow stages, and implementation. Typically, we to use geometry and meshing classes and methods, configuration entities and data structures, and utility functions: 
 
-```
+```python
 # Genam Lens, mesh configurator
 from matrices.quantized_8_8 import quantized_matrix_8_8
 from genam.lens import Lens
@@ -168,7 +168,7 @@ from genam.analysis import Analysis
 
 To create a model of a lens, or a metasurface, you configure it with a matrice of quantized bricks identifiers (between 0 and 15), configure its mesh parameters and name it. 
 
-```
+```python
 lens_config = lens_configurator( quantized_matrix_8_8 )
 
 lens_name = 'quantized_matrix_8_8' 
@@ -178,7 +178,7 @@ lens = Lens( lens_config, mesh_config_selector(3), name = lens_name  )
 
 For instance, the matrix configuration for an 8x8 lens of quantised bricks can be something like this:
 
-```
+```python
 quantized_matrix_8_8 = np.array([ 
                                   [  4,  7, 10, 13, 13, 10,  7,  4 ],
                                   [  5,  9, 13,  3,  3, 13,  9,  5 ],
@@ -193,7 +193,7 @@ quantized_matrix_8_8 = np.array([
 
 Once the lens is created, you can request the lens geometry and mesh processing in that order: 
 
-```
+```python
 lens.process_geometry() 
 
 lens.process_mesh() 
@@ -202,12 +202,12 @@ lens.process_mesh()
 Once the pre-processing stage is completed, we can prepare all the data files and paths for running the ElmerSolver simulation.
 First we define a dataset path, where all data will be stored - .unv mesh files and solver directories, solver *.mesh files, sif. file.
 
-```
+```python
 DATASET_PATH = Path('/SAN/uclic/ammdgop/data')              
 ```
 
 Then we can export the lens mesh data to a __.unv__ file in a dataset subdirectory named after the lens and convert the mesh.
-```
+```python
 UNV_PATH = DATASET_PATH.joinpath( lens_name + '.unv')       
 
 lens.export_mesh( str( UNV_PATH ) ) 
@@ -218,7 +218,7 @@ convert_mesh( UNV_PATH ) # run elmergrid convert .unv mesh file to elmer format 
 We also need to set up everything the ElmerSolver needs to run, which includes setting up the path for folder where the solver configuration file and templates will be copied to. Only then we can run the solver to obtain the simulation.
 
 
-```
+```python
 SOLVER_DATA_PATH = DATASET_PATH.joinpath( lens_name )       
 SIF_PATH = Path('test_quantised_matrix.sif')     
 
@@ -230,7 +230,7 @@ run_elmer_solver( SOLVER_DATA_PATH )
 
 Once the ElmerSolver simulation completes and gets its data stored in a __.vtu__ file, we can get values of specific data series like pressure and phase, and analyse specific data points.
 
-```
+```python
 analysis = Analysis( str(SOLVER_DATA_PATH.joinpath( 'case-40000_t0001.vtu' )) )
 
 find_optimisation_target = lambda points, precision, value: sorted(list(filter( lambda x: x[2] == 0.1 and x[0] < 0 and x[1] < 0, points)))
