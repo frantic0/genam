@@ -2,6 +2,8 @@
 
 __genam__ is a python package and a framework for the generative design and optimisation of acoustic metamaterials.
 
+![alt text](https://github.com/frantic0/genam/blob/main/docs/img/labyrinthine.png)
+
 It implements an automation pipeline for geometric modelling, finite elements method, wave scattering simulation and synthetic data for acoustic metamaterials 
 
 ![alt text](https://github.com/frantic0/genam/blob/main/docs/img/forward-inverse-design.png)
