@@ -4,15 +4,18 @@ __genam__ is a python package and a framework for the generative design and opti
 
 ![alt text](https://github.com/frantic0/genam/blob/main/docs/img/labyrinthine.png)
 
-It implements an automation pipeline for geometric modelling, finite elements method, wave scattering simulation and synthetic data for acoustic metamaterials 
+<br />
+
+__genam__ implements an automation pipeline for geometric modelling, finite elements method, wave scattering simulation and synthetic data generation for acoustic metamaterials. 
 
 ![alt text](https://github.com/frantic0/genam/blob/main/docs/img/forward-inverse-design.png)
 
 
-Genam runs against Salome 9.8.0 and Elmer (Windows and Linux) and its typical use is installed and running in an HPC cluster or a powerfull server.
+__genam__ runs against Salome 9.8.0 and Elmer (Windows and Linux) and its typical use is installed and running in an HPC cluster or a powerfull server.
 
-Genam is designed with an easy-to-use, small surface API with a object-oriented architecture, and test suites with exemplars for different lens configuration (1x1, 2x2, 4x4, 8x1, 16x1, 16x2, 16x6).​
+__genam__ is designed with an easy-to-use, small surface API with a object-oriented architecture, and test suites with exemplars for different lens configuration (1x1, 2x2, 4x4, 8x1, 16x1, 16x2, 16x6).​
 
+<br />
 
 ### Parametric modelling, meshing and simulation
 
