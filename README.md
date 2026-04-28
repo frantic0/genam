@@ -77,7 +77,7 @@ ElmerSolver simulation
 - Mesh size
 - Mesh element order
 
-These parameters can be used to generate different acoustic brick geometries and metasurface lens layouts.
+These parameters can be used to generate different acoustic brick geometries and metasurface lens layouts and integrate them easily in a acoustic field simulation flow.
 
 ## Example: 16×16 focusing metasurface
 
@@ -109,6 +109,7 @@ quantized_matrix_16_16 = np.array([
 ])
 ```
 
+</details>
 
 
 ## System requirements
@@ -346,56 +347,8 @@ print("Target point:", optimisation_target)
 print("Pressure:", optimisation_target_pressure)
 ```
 
-<<<<<<< HEAD
-=======
-## Parametric modelling, meshing, and simulation
 
-![Parametric modelling and simulation](docs/img/parametric-modelling-simulation.png)
 
-`genam` supports parametric generation of 3D labyrinthine acoustic unit cells with configurable design and simulation parameters, including:
-
-- Wavelength
-- Aggregate flap size
-- Aggregate flap distance
-- Perfectly matched layer offset
-- Mesh size
-- Mesh element order
-
-These parameters can be used to generate different acoustic brick geometries and metasurface lens layouts and integrate them easily in a acoustic field simulation flow.
-
-## Example: 16×16 focusing metasurface
-
-`genam` can also define larger metasurface lens layouts as quantized matrices. The following example defines a `16x16` focusing metasurface lens.
-
-<details>
-<summary>Show 16×16 quantized matrix example</summary>
-
-```python
-import numpy as np
-
-quantized_matrix_16_16 = np.array([
-    [13,  0,  3,  5,  7,  8,  9, 10, 10,  9,  8,  7,  5,  3,  0, 13],
-    [ 0,  3,  6,  8, 10, 12, 13, 13, 13, 13, 12, 10,  8,  6,  3,  0],
-    [ 3,  6,  9, 11, 13, 15,  0,  0,  0,  0, 15, 13, 11,  9,  6,  3],
-    [ 5,  8, 11, 14,  0,  1,  2,  3,  3,  2,  1,  0, 14, 11,  8,  5],
-    [ 7, 10, 13,  0,  2,  3,  4,  5,  5,  4,  3,  2,  0, 13, 10,  7],
-    [ 8, 12, 15,  1,  3,  5,  6,  6,  6,  6,  5,  3,  1, 15, 12,  8],
-    [ 9, 13,  1,  4,  5,  6,  7,  7,  7,  7,  6,  5,  4,  1, 13,  9],
-    [10, 13,  0,  3,  5,  6,  7,  8,  8,  7,  6,  5,  3,  0, 13, 10],
-    [10, 13,  0,  3,  5,  6,  7,  8,  8,  7,  6,  5,  3,  0, 13, 10],
-    [ 9, 13,  1,  4,  5,  6,  7,  7,  7,  7,  6,  5,  4,  1, 13,  9],
-    [ 8, 12, 15,  1,  3,  5,  6,  6,  6,  6,  5,  3,  1, 15, 12,  8],
-    [ 7, 10, 13,  0,  2,  3,  4,  5,  5,  4,  3,  2,  0, 13, 10,  7],
-    [ 5,  8, 11, 14,  0,  1,  2,  3,  3,  2,  1,  0, 14, 11,  8,  5],
-    [ 3,  6,  9, 11, 13, 15,  0,  0,  0,  0, 15, 13, 11,  9,  6,  3],
-    [ 0,  3,  6,  8, 10, 12, 13, 13, 13, 13, 12, 10,  8,  6,  3,  0],
-    [13,  0,  3,  5,  7,  8,  9, 10, 10,  9,  8,  7,  5,  3,  0, 13],
-])
-```
-
-</details>
-
->>>>>>> a7d97faef63171a70ec0e85d08af81d75ce28fbd
 ## Repository structure
 
 ```text
