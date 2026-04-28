@@ -6,7 +6,7 @@ It implements an automation pipeline for geometric modelling, finite elements me
 
 ![alt text](https://github.com/frantic0/genam/blob/main/docs/img/forward-inverse-design.png)
 
-## Parametric modelling, meshing and simulation
+### Parametric modelling, meshing and simulation
 
 ![alt text](https://github.com/frantic0/genam/blob/main/docs/img/parametric-modelling-simulation.png)
 
