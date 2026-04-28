@@ -24,7 +24,7 @@ Genam implements algorithms for building parametric 3D models of labyrinthine br
 * Mesh size
 * Mesh Element Order
 
-Genam also allows the specification of complex metasurface lens macros. For instance a 16x16 unit-celll focusing metasurface lens can be specified like so:
+Genam also allows the specification of complex metasurface lens macros. For instance, a 16x16 unit-cell focusing metasurface lens can be specified like so:
 
 
 ```
