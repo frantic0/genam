@@ -36,7 +36,7 @@ The framework is intended for research workflows involving acoustic metasurfaces
 - Example scripts for multiple lens configurations, including `1x1`, `2x2`, `4x4`, `8x1`, `16x1`, `16x2`, `16x6`, and larger quantized matrices.
 
 
-</details>
+
 ## Workflow
 
 ```text
