@@ -6,10 +6,27 @@ It implements an automation pipeline for geometric modelling, finite elements me
 
 ![alt text](https://github.com/frantic0/genam/blob/main/docs/img/forward-inverse-design.png)
 
+
+Genam runs against Salome 9.8.0 and Elmer (Windows and Linux)
+
+Typical use is installed and running in an HPC cluster or a powerfull server.
+
+It was design with an easy-to-use, small surface API with a object-oriented architecture​
+ 
+It provides test suites for different lens configuration (1x1, 2x2, 4x4, 8x1, 16x1, 16x2, 16x6)​
+
+
 ### Parametric modelling, meshing and simulation
 
 ![alt text](https://github.com/frantic0/genam/blob/main/docs/img/parametric-modelling-simulation.png)
 
+Genam provides an algorithm for building parametric 3D models of labyrinthine brick with multiple degrees-of-freedom (DoFs):
+* Wavelength 
+* Aggregate Flap size 
+* Aggregate Flap distance
+* Perfect Matched Layer offset 
+* Mesh size
+* Mesh Element Order
 
 
 <br />
