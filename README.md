@@ -310,7 +310,7 @@ print("Pressure:", optimisation_target_pressure)
 - Mesh size
 - Mesh element order
 
-These parameters can be used to generate different acoustic brick geometries and metasurface lens layouts.
+These parameters can be used to generate different acoustic brick geometries and metasurface lens layouts and integrate them easily in a acoustic field simulation flow.
 
 ## Example: 16×16 focusing metasurface
 
