@@ -27,7 +27,7 @@ Genam implements algorithms for building parametric 3D models of labyrinthine br
 Genam also allows the specification of complex metasurface lens macros. For instance, a 16x16 unit-cell focusing metasurface lens can be specified like so:
 
 
-```
+```python
 import numpy as np
 
 quantized_matrix_16_16 = np.array([
